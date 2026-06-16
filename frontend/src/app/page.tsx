@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 async function getCategorias() {
   const response = await fetch(
     "http://localhost:3000/api/categorias",
@@ -24,12 +26,13 @@ export default async function Home() {
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {categorias.map((categoria: any) => (
-          <div
+          <Link
             key={categoria.id}
-            className="border rounded-lg p-4 shadow"
+            href={`/profissionais?categoria=${categoria.nome}`}
+            className="border rounded-lg p-4 shadow block hover:border-blue-500 hover:shadow-lg transition-all"
           >
             {categoria.nome}
-          </div>
+          </Link>
         ))}
       </div>
     </main>

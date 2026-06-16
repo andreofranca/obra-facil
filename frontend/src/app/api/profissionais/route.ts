@@ -1,16 +1,36 @@
 import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const profissionais = await prisma.profissional.findMany({
-      include: {
-        user: true,
-        servicos: true,
-      },
-    });
+    const categoria =
+      request.nextUrl.searchParams.get("categoria");
+
+    const profissionais =
+      await prisma.profissional.findMany({
+        include: {
+          user: true,
+          servicos: {
+            include: {
+              categoria: true,
+            },
+          },
+        },
+
+        where: categoria
+          ? {
+              servicos: {
+                some: {
+                  categoria: {
+                    nome: categoria,
+                  },
+                },
+              },
+            }
+          : undefined,
+      });
 
     return NextResponse.json(profissionais);
   } catch (error) {
