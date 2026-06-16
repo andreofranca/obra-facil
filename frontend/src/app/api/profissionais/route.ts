@@ -5,19 +5,41 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
+    const id = request.nextUrl.searchParams.get("id");
     const categoria =
       request.nextUrl.searchParams.get("categoria");
 
+    const include = {
+      user: true,
+      servicos: {
+        include: {
+          categoria: true,
+        },
+      },
+    };
+
+    if (id) {
+      const profissional =
+        await prisma.profissional.findUnique({
+          where: {
+            id,
+          },
+          include,
+        });
+
+      if (!profissional) {
+        return NextResponse.json(
+          { error: "Profissional não encontrado" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(profissional);
+    }
+
     const profissionais =
       await prisma.profissional.findMany({
-        include: {
-          user: true,
-          servicos: {
-            include: {
-              categoria: true,
-            },
-          },
-        },
+        include,
 
         where: categoria
           ? {
