@@ -83,6 +83,7 @@ export async function POST(request: NextRequest) {
     const session = {
       userId: user.id,
       clienteId: user.cliente?.id || null,
+      profissionalId: null,
       name: user.name,
       email: user.email,
       role: user.role,

@@ -35,3 +35,23 @@ export type SolicitacaoServicoResumo = {
   createdAt: string;
   profissional: ProfissionalRelacionadoSolicitacao;
 };
+
+export type ClienteResumoSolicitacao = {
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string | null;
+};
+
+export type SolicitacaoProfissionalResumo = {
+  id: string;
+  titulo: string;
+  descricao: string;
+  status: SolicitacaoServicoStatus;
+  createdAt: string;
+  cliente: ClienteResumoSolicitacao;
+};
+
+export type AtualizarSolicitacaoStatusPayload = {
+  status: Exclude<SolicitacaoServicoStatus, "CANCELADA">;
+};

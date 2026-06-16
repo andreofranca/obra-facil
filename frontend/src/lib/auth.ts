@@ -53,7 +53,7 @@ export async function verifyPassword(
   const [salt, storedKey] = storedPassword.split(hashSeparator);
 
   if (!salt || !storedKey) {
-    return false;
+    return password === storedPassword;
   }
 
   const storedBuffer = Buffer.from(storedKey, "hex");

@@ -3,6 +3,7 @@ export type AuthUserRole = "CLIENT" | "PROFESSIONAL" | "ADMIN";
 export type AuthSession = {
   userId: string;
   clienteId: string | null;
+  profissionalId: string | null;
   name: string;
   email: string;
   role: AuthUserRole;
