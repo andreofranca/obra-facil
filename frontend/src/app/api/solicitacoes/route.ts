@@ -23,7 +23,8 @@ function parseSolicitacaoPayload(
   if (
     !isNonEmptyString(payload.titulo) ||
     !isNonEmptyString(payload.descricao) ||
-    !isNonEmptyString(payload.clienteId)
+    !isNonEmptyString(payload.clienteId) ||
+    !isNonEmptyString(payload.profissionalId)
   ) {
     return null;
   }
@@ -32,6 +33,7 @@ function parseSolicitacaoPayload(
     titulo: payload.titulo.trim(),
     descricao: payload.descricao.trim(),
     clienteId: payload.clienteId.trim(),
+    profissionalId: payload.profissionalId.trim(),
   };
 }
 
@@ -58,6 +60,11 @@ export async function GET(request: NextRequest) {
           descricao: true,
           status: true,
           createdAt: true,
+          profissional: {
+            include: {
+              user: true,
+            },
+          },
         },
         orderBy: {
           createdAt: "desc",
@@ -71,7 +78,12 @@ export async function GET(request: NextRequest) {
         descricao: solicitacao.descricao,
         status: solicitacao.status,
         createdAt: solicitacao.createdAt.toISOString(),
-        profissional: null,
+        profissional: solicitacao.profissional
+          ? {
+              id: solicitacao.profissional.id,
+              nome: solicitacao.profissional.user.name,
+            }
+          : null,
       }));
 
     return NextResponse.json(response);
@@ -95,7 +107,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Informe titulo, descricao e clienteId para criar a solicitação",
+            "Informe titulo, descricao, clienteId e profissionalId para criar a solicitação",
         },
         { status: 400 }
       );
@@ -114,6 +126,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const profissional = await prisma.profissional.findUnique({
+      where: {
+        id: payload.profissionalId,
+      },
+    });
+
+    if (!profissional) {
+      return NextResponse.json(
+        { error: "Profissional não encontrado" },
+        { status: 404 }
+      );
+    }
+
     const now = new Date();
 
     const solicitacao =
@@ -122,6 +147,7 @@ export async function POST(request: NextRequest) {
           titulo: payload.titulo,
           descricao: payload.descricao,
           clienteId: payload.clienteId,
+          profissionalId: payload.profissionalId,
           updatedAt: now,
         },
       });

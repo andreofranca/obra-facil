@@ -124,6 +124,13 @@ export default async function MeusPedidosPage() {
                   {solicitacao.profissional?.nome ||
                     "Ainda não definido"}
                 </p>
+
+                <Link
+                  href={`/minhas-solicitacoes/${solicitacao.id}`}
+                  className="inline-block mt-5 rounded-md border px-3 py-2 text-sm font-semibold hover:border-blue-500"
+                >
+                  Ver detalhes
+                </Link>
               </article>
             ))}
           </div>

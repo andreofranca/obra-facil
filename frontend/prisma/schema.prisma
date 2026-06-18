@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid())
+  id           String                @id @default(uuid())
   name         String
-  email        String        @unique
+  email        String                @unique
   phone        String?
   password     String
   role         UserRole
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
   cliente      Cliente?
   profissional Profissional?
+  mensagens    MensagemSolicitacao[]
 
   @@map("users")
 }
@@ -32,14 +33,15 @@ model Cliente {
 }
 
 model Profissional {
-  id          String      @id @default(uuid())
-  userId      String      @unique
-  descricao   String?
-  experiencia Int?
-  ativo       Boolean     @default(true)
-  user        User        @relation(fields: [userId], references: [id])
-  avaliacoes  Avaliacao[]
-  servicos    Servico[]
+  id           String             @id @default(uuid())
+  userId       String             @unique
+  descricao    String?
+  experiencia  Int?
+  ativo        Boolean            @default(true)
+  user         User               @relation(fields: [userId], references: [id])
+  avaliacoes   Avaliacao[]
+  servicos     Servico[]
+  solicitacoes SolicitarServico[]
 
   @@map("professionals")
 }
@@ -65,26 +67,32 @@ model Servico {
 }
 
 model SolicitarServico {
-  id        String                @id @default(uuid())
-  titulo    String
-  descricao String
-  status    SolicitacaoStatus     @default(ABERTA)
-  clienteId String
-  createdAt DateTime              @default(now())
-  updatedAt DateTime
-  mensagens MensagemSolicitacao[]
-  cliente   Cliente               @relation(fields: [clienteId], references: [id])
+  id             String                @id @default(uuid())
+  titulo         String
+  descricao      String
+  status         SolicitacaoStatus     @default(ABERTA)
+  clienteId      String
+  profissionalId String?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime
+  mensagens      MensagemSolicitacao[]
+  cliente        Cliente               @relation(fields: [clienteId], references: [id])
+  profissional   Profissional?         @relation(fields: [profissionalId], references: [id], onDelete: SetNull)
 
+  @@index([profissionalId])
   @@map("service_requests")
 }
 
 model MensagemSolicitacao {
   id            String           @id @default(uuid())
   solicitacaoId String
+  usuarioId     String?
   mensagem      String
   createdAt     DateTime         @default(now())
   solicitacao   SolicitarServico @relation(fields: [solicitacaoId], references: [id])
+  autor         User?            @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
 
+  @@index([usuarioId])
   @@map("service_request_messages")
 }
 

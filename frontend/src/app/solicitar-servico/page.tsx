@@ -15,11 +15,24 @@ const initialForm: CriarSolicitacaoServicoPayload = {
   titulo: "",
   descricao: "",
   clienteId: "",
+  profissionalId: "",
 };
 
 export default function SolicitarServicoPage() {
   const [form, setForm] =
-    useState<CriarSolicitacaoServicoPayload>(initialForm);
+    useState<CriarSolicitacaoServicoPayload>(() => {
+      if (typeof window === "undefined") {
+        return initialForm;
+      }
+
+      return {
+        ...initialForm,
+        profissionalId:
+          new URLSearchParams(window.location.search).get(
+            "profissionalId"
+          ) || "",
+      };
+    });
   const [status, setStatus] = useState<FormStatus>({
     type: "idle",
     message: "",
@@ -154,6 +167,30 @@ export default function SolicitarServicoPage() {
               }
               className="w-full rounded-md border px-3 py-2 bg-transparent"
               placeholder="Cole o ID do cliente cadastrado"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="profissionalId"
+              className="block text-sm font-medium mb-2"
+            >
+              ID do profissional
+            </label>
+            <input
+              id="profissionalId"
+              name="profissionalId"
+              type="text"
+              value={form.profissionalId}
+              onChange={(event) =>
+                setForm((currentForm) => ({
+                  ...currentForm,
+                  profissionalId: event.target.value,
+                }))
+              }
+              className="w-full rounded-md border px-3 py-2 bg-transparent"
+              placeholder="Abra esta página pelo perfil do profissional"
               required
             />
           </div>

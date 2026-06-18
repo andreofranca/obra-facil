@@ -5,10 +5,6 @@ import type { SolicitacaoProfissionalResumo } from "@/types/solicitacao";
 
 const prisma = new PrismaClient();
 
-function normalize(value: string) {
-  return value.trim().toLowerCase();
-}
-
 export async function GET() {
   try {
     const session = await getAuthSession();
@@ -34,13 +30,6 @@ export async function GET() {
       where: {
         id: session.profissionalId,
       },
-      include: {
-        servicos: {
-          include: {
-            categoria: true,
-          },
-        },
-      },
     });
 
     if (!profissional) {
@@ -50,13 +39,11 @@ export async function GET() {
       );
     }
 
-    const termos = profissional.servicos.flatMap((servico) => [
-      normalize(servico.titulo),
-      normalize(servico.categoria.nome),
-    ]);
-
     const solicitacoes =
       await prisma.solicitarServico.findMany({
+        where: {
+          profissionalId: profissional.id,
+        },
         include: {
           cliente: {
             include: {
@@ -71,17 +58,6 @@ export async function GET() {
 
     const response: SolicitacaoProfissionalResumo[] =
       solicitacoes
-        .filter((solicitacao) => {
-          const textoSolicitacao = normalize(
-            `${solicitacao.titulo} ${solicitacao.descricao}`
-          );
-
-          return termos.some((termo) =>
-            termo.length > 0
-              ? textoSolicitacao.includes(termo)
-              : false
-          );
-        })
         .map((solicitacao) => ({
           id: solicitacao.id,
           titulo: solicitacao.titulo,

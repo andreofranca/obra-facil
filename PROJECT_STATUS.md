@@ -36,15 +36,34 @@
 - Sessão de autenticação atualizada para carregar `profissionalId`.
 - Fluxo validado com `npm run lint` e `npm run build`.
 
+### Sprint 06.1 — Ajuste Estrutural do Marketplace
+
+- Relação Prisma `SolicitarServico` ↔ `Profissional` adicionada via `profissionalId`.
+- Página `/profissionais/[id]` atualizada para abrir `/solicitar-servico` com o profissional selecionado.
+- API `POST /api/solicitacoes` atualizada para validar e salvar `profissionalId`.
+- API `GET /api/profissional/solicitacoes` atualizada para filtrar por `profissionalId`, removendo o filtro textual.
+- API `GET /api/solicitacoes?clienteId=UUID` atualizada para retornar o profissional vinculado.
+- Fluxo validado com `npm run lint` e `npm run build`.
+
+### Sprint 07 — Chat Cliente ↔ Profissional
+
+- API `GET /api/solicitacoes/[id]/mensagens` criada para listar mensagens da solicitação em ordem cronológica.
+- API `POST /api/solicitacoes/[id]/mensagens` criada para gravar mensagens na tabela `service_request_messages`.
+- Página `/minhas-solicitacoes/[id]` criada para o cliente visualizar a solicitação e conversar com o profissional.
+- Página `/profissional/pedidos/[id]` criada para o profissional visualizar o pedido e responder mensagens.
+- Componentes `ChatMensagens`, `ChatMensagem` e `ChatFormulario` criados em `components/chat`.
+- Tipagens compartilhadas de chat criadas em `frontend/src/types/chat.ts`.
+
 ## Banco de Dados
 
-Sem alteração de schema Prisma. As solicitações continuam usando a tabela `service_requests`, mapeada pelo model `SolicitarServico`.
+As solicitações continuam usando a tabela `service_requests`, mapeada pelo model `SolicitarServico`.
+A migration `20260618120000_add_profissional_to_service_requests` adiciona `profissionalId`, índice e foreign key opcional para `professionals(id)`.
+A migration `20260618130000_add_author_to_service_request_messages` adiciona `usuarioId`, índice e foreign key opcional para `users(id)` na tabela `service_request_messages`.
 O cadastro cria registros em `users` e `clients`, usando o model `User` existente e a relação `Cliente`.
 
 ## Observações
 
-O model `SolicitarServico` ainda não possui relação direta com `Profissional`; por isso, a API retorna `profissional: null` até que essa relação seja definida no schema.
-O Painel do Profissional filtra solicitações por correspondência entre título/descrição da solicitação e serviços/categorias do profissional. Para produção, o próximo ajuste recomendado é adicionar uma relação explícita entre `SolicitarServico` e `Profissional` ou `Servico`.
+Solicitações antigas podem permanecer sem `profissionalId`; novas solicitações criadas pela API exigem o vínculo com um profissional.
 
 # CHECKPOINT — Sprint 06
 
@@ -94,13 +113,15 @@ Data: 16/06/2026
 
 ### Sprint 06.1
 
-* Relacionar SolicitarServico ↔ Profissional no Prisma
-* Criar migration
-* Remover filtro textual
+* Concluído em 18/06/2026: SolicitarServico ↔ Profissional relacionado no Prisma
+* Concluído em 18/06/2026: migration criada
+* Concluído em 18/06/2026: filtro textual removido
 
 ### Sprint 07
 
-* Chat Cliente ↔ Profissional
+* Concluído em 18/06/2026: APIs de mensagens
+* Concluído em 18/06/2026: páginas de detalhe do cliente e profissional
+* Concluído em 18/06/2026: componentes reutilizáveis de chat
 
 ### Sprint 08
 

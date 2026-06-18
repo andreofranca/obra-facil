@@ -79,7 +79,7 @@ export default async function ProfissionalPage({
         </p>
 
         <Link
-          href="/solicitar-servico"
+          href={`/solicitar-servico?profissionalId=${profissional.id}`}
           className="inline-block rounded-md bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
         >
           Solicitar Serviço

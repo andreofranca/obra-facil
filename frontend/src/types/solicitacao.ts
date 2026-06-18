@@ -10,6 +10,7 @@ export type CriarSolicitacaoServicoPayload = {
   titulo: string;
   descricao: string;
   clienteId: string;
+  profissionalId: string;
 };
 
 export type SolicitacaoServicoCriada = {
@@ -18,6 +19,7 @@ export type SolicitacaoServicoCriada = {
   descricao: string;
   status: SolicitacaoServicoStatus;
   clienteId: string;
+  profissionalId: string | null;
   createdAt: string;
   updatedAt: string;
 };
