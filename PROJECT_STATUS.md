@@ -54,11 +54,22 @@
 - Componentes `ChatMensagens`, `ChatMensagem` e `ChatFormulario` criados em `components/chat`.
 - Tipagens compartilhadas de chat criadas em `frontend/src/types/chat.ts`.
 
+### Sprint 08.1 — Sistema de Propostas
+
+- Model Prisma `Proposta` criado com status, valor, prazo, mensagem e vínculos com solicitação e profissional.
+- Enum Prisma `PropostaStatus` criado com `PENDENTE`, `ACEITA` e `RECUSADA`.
+- API `POST /api/propostas` criada para profissionais enviarem propostas.
+- API `GET /api/propostas` criada para listar propostas com filtros por cliente, profissional e solicitação.
+- Formulário "Enviar Proposta" adicionado em `/profissional/pedidos/[id]`.
+- Página `/minhas-propostas` criada para clientes acompanharem propostas recebidas.
+- Tipagens compartilhadas de propostas criadas em `frontend/src/types/proposta.ts`.
+
 ## Banco de Dados
 
 As solicitações continuam usando a tabela `service_requests`, mapeada pelo model `SolicitarServico`.
 A migration `20260618120000_add_profissional_to_service_requests` adiciona `profissionalId`, índice e foreign key opcional para `professionals(id)`.
 A migration `20260618130000_add_author_to_service_request_messages` adiciona `usuarioId`, índice e foreign key opcional para `users(id)` na tabela `service_request_messages`.
+A migration `20260618140000_create_proposals` cria a tabela `proposals`, o enum `PropostaStatus`, índices e foreign keys para `service_requests` e `professionals`.
 O cadastro cria registros em `users` e `clients`, usando o model `User` existente e a relação `Cliente`.
 
 ## Observações
@@ -122,6 +133,13 @@ Data: 16/06/2026
 * Concluído em 18/06/2026: APIs de mensagens
 * Concluído em 18/06/2026: páginas de detalhe do cliente e profissional
 * Concluído em 18/06/2026: componentes reutilizáveis de chat
+
+### Sprint 08.1
+
+* Concluído em 18/06/2026: model e migration de propostas
+* Concluído em 18/06/2026: APIs de criação e listagem de propostas
+* Concluído em 18/06/2026: envio pelo painel profissional
+* Concluído em 18/06/2026: listagem do cliente em `/minhas-propostas`
 
 ### Sprint 08
 

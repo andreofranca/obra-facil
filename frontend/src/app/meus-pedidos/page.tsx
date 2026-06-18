@@ -79,6 +79,13 @@ export default async function MeusPedidosPage() {
           Cliente: <strong>{session.name}</strong>
         </p>
 
+        <Link
+          href="/minhas-propostas"
+          className="inline-block mb-6 rounded-md border px-3 py-2 text-sm font-semibold hover:border-blue-500"
+        >
+          Ver propostas recebidas
+        </Link>
+
         {solicitacoes.length === 0 ? (
           <div className="border rounded-lg p-6 shadow">
             <p>

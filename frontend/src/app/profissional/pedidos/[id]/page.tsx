@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import ChatMensagens from "@/components/chat/ChatMensagens";
+import PropostaFormulario from "@/components/propostas/PropostaFormulario";
 import { getAuthSession } from "@/lib/auth";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
@@ -149,6 +150,11 @@ export default async function ProfissionalPedidoPage({
             </div>
           </div>
         </section>
+
+        <PropostaFormulario
+          solicitacaoId={solicitacao.id}
+          profissionalId={session.profissionalId}
+        />
 
         <ChatMensagens
           historicoInicial={historico}
