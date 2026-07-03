@@ -43,6 +43,12 @@ function parsePayload(
   };
 }
 
+class HttpError extends Error {
+  constructor(message: string, public status: number) {
+    super(message);
+  }
+}
+
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -78,11 +84,50 @@ export async function PATCH(
 
     const { id } = await context.params;
 
-    const solicitacao =
-      await prisma.solicitarServico.update({
-        where: {
-          id,
-        },
+    const solicitacao = await prisma.$transaction(async (tx) => {
+      const current = await tx.solicitarServico.findUnique({
+        where: { id },
+      });
+
+      if (!current) {
+        throw new HttpError("Solicitação não encontrada", 404);
+      }
+
+      if (current.profissionalId !== session.profissionalId) {
+        throw new HttpError(
+          "Ação permitida apenas para o profissional contratado",
+          403
+        );
+      }
+
+      if (payload.status === "EM_ANDAMENTO") {
+        if (current.status !== "ACEITA") {
+          throw new HttpError(
+            "A solicitação deve estar ACEITA para iniciar o serviço",
+            400
+          );
+        }
+
+        return tx.solicitarServico.update({
+          where: { id },
+          data: {
+            status: "EM_ANDAMENTO",
+            startedAt: new Date(),
+            updatedAt: new Date(),
+          },
+          select: {
+            id: true,
+            titulo: true,
+            descricao: true,
+            status: true,
+            startedAt: true,
+            createdAt: true,
+          },
+        });
+      }
+
+      return tx.solicitarServico.update({
+        where: { id },
         data: {
           status: payload.status,
           updatedAt: new Date(),
@@ -92,15 +137,24 @@ export async function PATCH(
           titulo: true,
           descricao: true,
           status: true,
+          startedAt: true,
           createdAt: true,
         },
       });
+    });
 
     return NextResponse.json({
       ...solicitacao,
       createdAt: solicitacao.createdAt.toISOString(),
+      startedAt: solicitacao.startedAt
+        ? solicitacao.startedAt.toISOString()
+        : null,
     });
   } catch (error) {
+    if (error instanceof HttpError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+
     console.error(error);
 
     return NextResponse.json(

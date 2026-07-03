@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import ChatMensagens from "@/components/chat/ChatMensagens";
 import PropostaFormulario from "@/components/propostas/PropostaFormulario";
+import IniciarServicoButton from "@/components/solicitacao/IniciarServicoButton";
 import { PropostaResumo } from "@/types/proposta";
 import PropostaItem from "@/components/propostas/PropostaItem";
 import { getAuthSession } from "@/lib/auth";
@@ -185,6 +186,10 @@ export default async function ProfissionalPedidoPage({
             </div>
           </div>
         </section>
+
+        {solicitacao.status === "ACEITA" && (
+          <IniciarServicoButton solicitacaoId={solicitacao.id} />
+        )}
 
         <PropostaFormulario
           solicitacaoId={solicitacao.id}

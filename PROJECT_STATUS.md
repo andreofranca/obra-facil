@@ -153,6 +153,22 @@ Data: 16/06/2026
 
 * Orçamento e aceite de proposta
 
+# Sprint Técnica 09.0
+
+- ROADMAP criado
+- ARCHITECTURE criado
+- TECH_DEBT criado
+
+# Sprint Técnica 09.1
+
+- Implementado início de serviço para profissional contratado
+- Atualização de status para `EM_ANDAMENTO` via PATCH `/api/solicitacoes/[id]`
+- Adicionado campo `startedAt` em `SolicitarServico`
+- Migration `add_started_at_to_service_requests` criada e aplicada
+- Banco sincronizado com schema Prisma
+- Botão "Iniciar Serviço" com estado de carregamento e atualização automática da interface
+
+
 # Sprint 08.2
 
 ## Objetivo

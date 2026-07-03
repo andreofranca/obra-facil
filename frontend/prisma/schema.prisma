@@ -74,6 +74,7 @@ model SolicitarServico {
   status         SolicitacaoStatus     @default(ABERTA)
   clienteId      String
   profissionalId String?
+  startedAt      DateTime?
   createdAt      DateTime              @default(now())
   updatedAt      DateTime
   mensagens      MensagemSolicitacao[]
