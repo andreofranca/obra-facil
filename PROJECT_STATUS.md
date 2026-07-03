@@ -64,6 +64,14 @@
 - Página `/minhas-propostas` criada para clientes acompanharem propostas recebidas.
 - Tipagens compartilhadas de propostas criadas em `frontend/src/types/proposta.ts`.
 
+### Sprint Técnica 08.1.1 — Organização e Estabilização
+
+- Criado `CODEX_AGENT.md` com diretrizes de execução e relatório obrigatórios.
+- Atualizado `README.md` com a descrição do projeto, arquitetura, stack, estrutura de pastas e comandos úteis.
+- Ajustado `frontend/src/app/page.tsx` para usar fetch relativa para `/api/categorias`.
+- Verificado que `backend/` está vazio e sugerida remoção caso não seja utilizado.
+- Executadas validações de instalação, formatação Prisma, geração Prisma, lint e build.
+
 ## Banco de Dados
 
 As solicitações continuam usando a tabela `service_requests`, mapeada pelo model `SolicitarServico`.
@@ -144,3 +152,30 @@ Data: 16/06/2026
 ### Sprint 08
 
 * Orçamento e aceite de proposta
+
+# Sprint 08.2
+
+## Objetivo
+
+Implementar o fluxo de aceite e recusa de propostas.
+
+## Funcionalidades
+
+- PATCH /api/propostas/[id]
+- Aceite de proposta
+- Recusa de proposta
+- Atualização automática das demais propostas
+- Atualização da solicitação para EM_ANDAMENTO
+- PropostaItem reutilizável
+- Atualização da área do cliente
+- Atualização da área do profissional
+
+## Regras de negócio implementadas
+
+RN001
+RN002
+RN003
+RN004
+RN005
+RN006
+RN007

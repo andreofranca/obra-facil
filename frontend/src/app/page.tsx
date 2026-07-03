@@ -2,12 +2,9 @@ import Link from "next/link";
 import type { CategoriaServicoResumo } from "@/types/categoria";
 
 async function getCategorias(): Promise<CategoriaServicoResumo[]> {
-  const response = await fetch(
-    "http://localhost:3000/api/categorias",
-    {
-      cache: "no-store",
-    }
-  );
+  const response = await fetch("/api/categorias", {
+    cache: "no-store",
+  });
 
   return response.json();
 }

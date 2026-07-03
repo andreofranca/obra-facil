@@ -5,27 +5,11 @@ import type {
   PropostaResumo,
   PropostaStatus,
 } from "@/types/proposta";
+import PropostaItem from "@/components/propostas/PropostaItem";
 
 const prisma = new PrismaClient();
 
-const statusLabels: Record<PropostaStatus, string> = {
-  PENDENTE: "Pendente",
-  ACEITA: "Aceita",
-  RECUSADA: "Recusada",
-};
-
-const statusClasses: Record<PropostaStatus, string> = {
-  PENDENTE: "bg-yellow-100 text-yellow-800",
-  ACEITA: "bg-emerald-100 text-emerald-700",
-  RECUSADA: "bg-red-100 text-red-700",
-};
-
-function formatCurrency(value: string) {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(Number(value));
-}
+// PropostaItem lida com exibição e ações no cliente
 
 function mapProposta(proposta: {
   id: string;
@@ -137,44 +121,10 @@ export default async function MinhasPropostasPage() {
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {propostasResumo.map((proposta) => (
-              <article
-                key={proposta.id}
-                className="border rounded-lg p-5 shadow"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <h2 className="text-xl font-semibold">
-                      {proposta.solicitacao.titulo}
-                    </h2>
-                    <p className="mt-2 text-sm opacity-80">
-                      Profissional: {proposta.profissional.nome}
-                    </p>
-                  </div>
-
-                  <span
-                    className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[proposta.status]}`}
-                  >
-                    {statusLabels[proposta.status]}
-                  </span>
-                </div>
-
-                <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-                  <p>
-                    <strong>Valor:</strong>{" "}
-                    {formatCurrency(proposta.valor)}
-                  </p>
-                  <p>
-                    <strong>Prazo:</strong>{" "}
-                    {proposta.prazoDias} dias
-                  </p>
-                </div>
-
-                <p className="mt-4">
-                  <strong>Mensagem:</strong>
-                  <br />
-                  {proposta.mensagem}
-                </p>
-              </article>
+              <div key={proposta.id}>
+                {/* Use PropostaItem client component for actions */}
+                <PropostaItem proposta={proposta} />
+              </div>
             ))}
           </div>
         )}
