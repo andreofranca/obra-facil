@@ -19,7 +19,8 @@ Componentes principais:
 
 - Rotas de API implementadas em `src/app/api/`
 - Uso de `PrismaClient` diretamente nas rotas de API e em server components quando necessário
-- Autorização leve baseada em sessão por cookie implementada em `src/lib/auth.ts`
+- Autorização baseada em sessão por cookie centralizada em `src/lib/auth/session.ts` e `src/lib/auth/guards.ts`
+- `src/lib/auth.ts` atua como camada de compatibilidade reexportando a lógica consolidada para o restante da aplicação
 
 ## Banco
 
@@ -34,7 +35,9 @@ Componentes principais:
 ## Autenticação
 
 - Sessão armazenada em cookie HTTP-only assinado
-- Helpers: `getAuthSession()`, `createSessionCookieValue()`, `parseSessionCookieValue()`
+- Camada de sessão centralizada em `src/lib/auth/session.ts` com helpers como `getAuthSession()`, `createSessionCookieValue()` e `parseSessionCookieValue()`
+- Guards reutilizáveis em `src/lib/auth/guards.ts` para autenticação e validação por perfil (`CLIENT` e `PROFESSIONAL`)
+- Rotas protegidas passam a reutilizar a mesma lógica de autorização, sem alterar regras de negócio
 
 ## Fluxo de Solicitação
 

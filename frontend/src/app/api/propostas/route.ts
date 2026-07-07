@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
+import { requireAuth, requireProfessional } from "@/lib/auth/guards";
 import type {
   CriarPropostaPayload,
   PropostaResumo,
@@ -132,6 +133,11 @@ const propostaInclude = {
 export async function GET(request: NextRequest) {
   try {
     const session = await getAuthSession();
+    const authError = requireAuth(session);
+
+    if (authError) {
+      return authError;
+    }
 
     if (!session) {
       return NextResponse.json(
@@ -205,21 +211,19 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getAuthSession();
+    const authError = requireProfessional(
+      session,
+      "Apenas profissionais podem criar propostas"
+    );
+
+    if (authError) {
+      return authError;
+    }
 
     if (!session) {
       return NextResponse.json(
         { error: "Usuário não autenticado" },
         { status: 401 }
-      );
-    }
-
-    if (
-      session.role !== "PROFESSIONAL" ||
-      !session.profissionalId
-    ) {
-      return NextResponse.json(
-        { error: "Apenas profissionais podem criar propostas" },
-        { status: 403 }
       );
     }
 

@@ -1,5 +1,13 @@
 # PROJECT STATUS
 
+## Status Atual
+
+- Sprint atual: 09.1 (concluída)
+- Funcionalidades concluídas: centralização da autenticação, criação da camada de sessão, criação dos guards e integração nas rotas protegidas.
+- Percentual estimado do MVP: 82%
+- Percentual estimado da versão 1.0: 58%
+- Pendências da Sprint 09.2: reforço de autorização em páginas e fluxos adicionais, testes de sessão e auditoria de acessos.
+
 ## Concluído
 
 ### Solicitação de Serviço

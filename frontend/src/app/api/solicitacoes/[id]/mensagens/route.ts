@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth/guards";
 import type { AuthSession } from "@/types/auth";
 import type {
   HistoricoChat,
@@ -107,6 +108,11 @@ export async function GET(
 ) {
   try {
     const session = await getAuthSession();
+    const authError = requireAuth(session);
+
+    if (authError) {
+      return authError;
+    }
 
     if (!session) {
       return NextResponse.json(
@@ -173,6 +179,11 @@ export async function POST(
 ) {
   try {
     const session = await getAuthSession();
+    const authError = requireAuth(session);
+
+    if (authError) {
+      return authError;
+    }
 
     if (!session) {
       return NextResponse.json(

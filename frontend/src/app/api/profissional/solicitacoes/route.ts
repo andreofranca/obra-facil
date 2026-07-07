@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
+import { requireProfessional } from "@/lib/auth/guards";
 import type { SolicitacaoProfissionalResumo } from "@/types/solicitacao";
 
 const prisma = new PrismaClient();
@@ -8,27 +9,27 @@ const prisma = new PrismaClient();
 export async function GET() {
   try {
     const session = await getAuthSession();
+    const authError = requireProfessional(
+      session,
+      "Acesso permitido apenas para profissionais"
+    );
 
-    if (!session) {
-      return NextResponse.json(
-        { error: "Usuário não autenticado" },
-        { status: 401 }
-      );
+    if (authError) {
+      return authError;
     }
 
-    if (
-      session.role !== "PROFESSIONAL" ||
-      !session.profissionalId
-    ) {
+    const profissionalId = session?.profissionalId;
+
+    if (!profissionalId) {
       return NextResponse.json(
-        { error: "Acesso permitido apenas para profissionais" },
+        { error: "Sessão sem profissional associado" },
         { status: 403 }
       );
     }
 
     const profissional = await prisma.profissional.findUnique({
       where: {
-        id: session.profissionalId,
+        id: profissionalId,
       },
     });
 

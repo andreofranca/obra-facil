@@ -2,6 +2,26 @@
 
 ---
 
+## v0.8.4 — Sprint 09.1
+
+### Adicionado
+
+- Centralização da autenticação em camada reutilizável.
+- Criação da camada de sessão para parsing e criação de cookies assinados.
+- Criação dos guards de autenticação e autorização por perfil.
+- Integração dos guards às rotas protegidas do marketplace.
+
+### Alterado
+
+- Mantida a compatibilidade do fluxo existente por meio da camada `auth.ts`.
+- Reorganização da lógica de sessão para reduzir duplicação e facilitar a evolução futura.
+
+### Validação
+
+- Execução bem-sucedida de `npm run lint` e `npm run build` após a integração.
+
+---
+
 ## v0.8.3
 
 ### Adicionado

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
+import { requireAuth, requireClient } from "@/lib/auth/guards";
 
 const prisma = new PrismaClient();
 
@@ -10,9 +11,17 @@ export async function PATCH(
 ) {
   try {
     const session = await getAuthSession();
+    const authError = requireAuth(session);
+
+    if (authError) {
+      return authError;
+    }
 
     if (!session) {
-      return NextResponse.json({ error: "Usuário não autenticado" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Usuário não autenticado" },
+        { status: 401 }
+      );
     }
 
     const { id } = await context.params;
@@ -41,8 +50,16 @@ export async function PATCH(
       return NextResponse.json({ error: "Solicitação não encontrada" }, { status: 404 });
     }
 
-    // Autorização: somente cliente proprietário pode aceitar/recusar
-    if (session.role !== "CLIENT" || !session.clienteId || session.clienteId !== solicitacao.clienteId) {
+    const clientAuthError = requireClient(
+      session,
+      "Ação permitida apenas para o cliente proprietário"
+    );
+
+    if (clientAuthError) {
+      return clientAuthError;
+    }
+
+    if (!session.clienteId || session.clienteId !== solicitacao.clienteId) {
       return NextResponse.json({ error: "Ação permitida apenas para o cliente proprietário" }, { status: 403 });
     }
 

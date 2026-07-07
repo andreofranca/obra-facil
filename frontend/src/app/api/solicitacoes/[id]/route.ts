@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
+import { requireProfessional } from "@/lib/auth/guards";
 import type {
   AtualizarSolicitacaoStatusPayload,
   SolicitacaoServicoStatus,
@@ -55,21 +56,19 @@ export async function PATCH(
 ) {
   try {
     const session = await getAuthSession();
+    const authError = requireProfessional(
+      session,
+      "Acesso permitido apenas para profissionais"
+    );
+
+    if (authError) {
+      return authError;
+    }
 
     if (!session) {
       return NextResponse.json(
         { error: "Usuário não autenticado" },
         { status: 401 }
-      );
-    }
-
-    if (
-      session.role !== "PROFESSIONAL" ||
-      !session.profissionalId
-    ) {
-      return NextResponse.json(
-        { error: "Acesso permitido apenas para profissionais" },
-        { status: 403 }
       );
     }
 
