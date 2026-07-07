@@ -1,12 +1,15 @@
 import Link from "next/link";
+import { PrismaClient } from "@prisma/client";
 import type { CategoriaServicoResumo } from "@/types/categoria";
 
-async function getCategorias(): Promise<CategoriaServicoResumo[]> {
-  const response = await fetch("/api/categorias", {
-    cache: "no-store",
-  });
+const prisma = new PrismaClient();
 
-  return response.json();
+async function getCategorias(): Promise<CategoriaServicoResumo[]> {
+  return prisma.categoriaServico.findMany({
+    orderBy: {
+      nome: "asc",
+    },
+  });
 }
 
 export default async function Home() {
