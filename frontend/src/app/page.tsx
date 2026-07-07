@@ -1,19 +1,83 @@
+"use client";
+
 import Link from "next/link";
-import { PrismaClient } from "@prisma/client";
-import type { CategoriaServicoResumo } from "@/types/categoria";
+import { useEffect, useMemo, useState } from "react";
 
-const prisma = new PrismaClient();
+type CategoriaServicoResumo = {
+  id: string;
+  nome: string;
+};
 
-async function getCategorias(): Promise<CategoriaServicoResumo[]> {
-  return prisma.categoriaServico.findMany({
-    orderBy: {
-      nome: "asc",
-    },
-  });
+type ProfissionalResumo = {
+  servicos: {
+    categoria: CategoriaServicoResumo;
+  }[];
+};
+
+type CategoriasState =
+  | { type: "loading"; categorias: CategoriaServicoResumo[] }
+  | { type: "success"; categorias: CategoriaServicoResumo[] }
+  | { type: "error"; categorias: CategoriaServicoResumo[] };
+
+function getCategoriasFromProfissionais(
+  profissionais: ProfissionalResumo[]
+) {
+  const categorias = new Map<string, CategoriaServicoResumo>();
+
+  for (const profissional of profissionais) {
+    for (const servico of profissional.servicos) {
+      categorias.set(servico.categoria.id, servico.categoria);
+    }
+  }
+
+  return Array.from(categorias.values()).sort((a, b) =>
+    a.nome.localeCompare(b.nome)
+  );
 }
 
-export default async function Home() {
-  const categorias = await getCategorias();
+export default function Home() {
+  const [state, setState] = useState<CategoriasState>({
+    type: "loading",
+    categorias: [],
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCategorias() {
+      try {
+        const response = await fetch("/api/profissionais");
+
+        if (!response.ok) {
+          throw new Error("Erro ao buscar profissionais");
+        }
+
+        const profissionais =
+          (await response.json()) as ProfissionalResumo[];
+        const categorias =
+          getCategoriasFromProfissionais(profissionais);
+
+        if (isMounted) {
+          setState({ type: "success", categorias });
+        }
+      } catch {
+        if (isMounted) {
+          setState({ type: "error", categorias: [] });
+        }
+      }
+    }
+
+    void loadCategorias();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const categorias = useMemo(
+    () => state.categorias,
+    [state.categorias]
+  );
 
   return (
     <main className="p-10">
@@ -46,17 +110,23 @@ export default async function Home() {
         Categorias Disponíveis
       </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {categorias.map((categoria) => (
-          <Link
-            key={categoria.id}
-            href={`/profissionais?categoria=${categoria.nome}`}
-            className="border rounded-lg p-4 shadow block hover:border-blue-500 hover:shadow-lg transition-all"
-          >
-            {categoria.nome}
-          </Link>
-        ))}
-      </div>
+      {state.type === "loading" ? (
+        <p>Carregando categorias...</p>
+      ) : state.type === "error" ? (
+        <p>Não foi possível carregar as categorias.</p>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {categorias.map((categoria) => (
+            <Link
+              key={categoria.id}
+              href={`/profissionais?categoria=${categoria.nome}`}
+              className="border rounded-lg p-4 shadow block hover:border-blue-500 hover:shadow-lg transition-all"
+            >
+              {categoria.nome}
+            </Link>
+          ))}
+        </div>
+      )}
     </main>
   );
 }
