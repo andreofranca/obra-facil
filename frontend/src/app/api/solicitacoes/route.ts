@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { apiError, apiSuccess } from "@/lib/api/responses";
+import { getAuthSession } from "@/lib/auth";
 import type {
   CriarSolicitacaoServicoPayload,
   SolicitacaoServicoResumo,
@@ -13,7 +15,7 @@ function isNonEmptyString(value: unknown): value is string {
 
 function parseSolicitacaoPayload(
   body: unknown
-): CriarSolicitacaoServicoPayload | null {
+): Omit<CriarSolicitacaoServicoPayload, "clienteId"> | null {
   if (!body || typeof body !== "object") {
     return null;
   }
@@ -23,7 +25,6 @@ function parseSolicitacaoPayload(
   if (
     !isNonEmptyString(payload.titulo) ||
     !isNonEmptyString(payload.descricao) ||
-    !isNonEmptyString(payload.clienteId) ||
     !isNonEmptyString(payload.profissionalId)
   ) {
     return null;
@@ -32,7 +33,6 @@ function parseSolicitacaoPayload(
   return {
     titulo: payload.titulo.trim(),
     descricao: payload.descricao.trim(),
-    clienteId: payload.clienteId.trim(),
     profissionalId: payload.profissionalId.trim(),
   };
 }
@@ -43,10 +43,7 @@ export async function GET(request: NextRequest) {
       request.nextUrl.searchParams.get("clienteId");
 
     if (!isNonEmptyString(clienteId)) {
-      return NextResponse.json(
-        { error: "Informe clienteId para buscar solicitações" },
-        { status: 400 }
-      );
+      return apiError("Informe clienteId para buscar solicitações", 400);
     }
 
     const solicitacoes =
@@ -86,44 +83,49 @@ export async function GET(request: NextRequest) {
           : null,
       }));
 
-    return NextResponse.json(response);
+    return apiSuccess(response);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: "Erro ao buscar solicitações de serviço" },
-      { status: 500 }
-    );
+    return apiError("Erro ao buscar solicitações de serviço", 500);
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getAuthSession();
+
+    if (!session) {
+      return apiError("Usuário não autenticado", 401);
+    }
+
+    if (session.role !== "CLIENT") {
+      return apiError("Acesso permitido apenas para clientes", 403);
+    }
+
+    if (!session?.clienteId) {
+      return apiError("Cliente não encontrado", 404);
+    }
+
     const payload = parseSolicitacaoPayload(
       await request.json()
     );
 
     if (!payload) {
-      return NextResponse.json(
-        {
-          error:
-            "Informe titulo, descricao, clienteId e profissionalId para criar a solicitação",
-        },
-        { status: 400 }
+      return apiError(
+        "Informe titulo, descricao e profissionalId para criar a solicitação",
+        400
       );
     }
 
     const cliente = await prisma.cliente.findUnique({
       where: {
-        id: payload.clienteId,
+        id: session.clienteId,
       },
     });
 
     if (!cliente) {
-      return NextResponse.json(
-        { error: "Cliente não encontrado" },
-        { status: 404 }
-      );
+      return apiError("Cliente não encontrado", 404);
     }
 
     const profissional = await prisma.profissional.findUnique({
@@ -133,10 +135,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!profissional) {
-      return NextResponse.json(
-        { error: "Profissional não encontrado" },
-        { status: 404 }
-      );
+      return apiError("Profissional não encontrado", 404);
     }
 
     const now = new Date();
@@ -146,19 +145,16 @@ export async function POST(request: NextRequest) {
         data: {
           titulo: payload.titulo,
           descricao: payload.descricao,
-          clienteId: payload.clienteId,
+          clienteId: session.clienteId,
           profissionalId: payload.profissionalId,
           updatedAt: now,
         },
       });
 
-    return NextResponse.json(solicitacao, { status: 201 });
+    return apiSuccess(solicitacao, 201);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: "Erro ao criar solicitação de serviço" },
-      { status: 500 }
-    );
+    return apiError("Erro ao criar solicitação de serviço", 500);
   }
 }

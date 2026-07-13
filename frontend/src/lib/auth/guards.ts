@@ -50,3 +50,53 @@ export function requireClient(
 ) {
   return requireRole(session, "CLIENT", message);
 }
+
+type SolicitationOwnershipTarget = {
+  clienteId: string | null;
+  profissionalId: string | null;
+};
+
+export function hasSolicitationOwnership(
+  session: AuthSession | null,
+  solicitation: SolicitationOwnershipTarget
+) {
+  if (!session) {
+    return false;
+  }
+
+  if (session.role === "CLIENT") {
+    return Boolean(
+      session.clienteId && solicitation.clienteId === session.clienteId
+    );
+  }
+
+  if (session.role === "PROFESSIONAL") {
+    return Boolean(
+      session.profissionalId &&
+        solicitation.profissionalId === session.profissionalId
+    );
+  }
+
+  return false;
+}
+
+export function requireSolicitationOwnership(
+  session: AuthSession | null,
+  solicitation: SolicitationOwnershipTarget,
+  message = "Acesso permitido apenas ao responsável pela solicitação"
+) {
+  const authError = requireAuth(session);
+
+  if (authError) {
+    return authError;
+  }
+
+  if (!hasSolicitationOwnership(session, solicitation)) {
+    return NextResponse.json(
+      { error: message },
+      { status: 403 }
+    );
+  }
+
+  return null;
+}

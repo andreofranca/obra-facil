@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { apiError, apiSuccess } from "@/lib/api/responses";
 import { getAuthSession } from "@/lib/auth";
-import { requireAuth, requireClient } from "@/lib/auth/guards";
 
 const prisma = new PrismaClient();
 
@@ -11,17 +11,9 @@ export async function PATCH(
 ) {
   try {
     const session = await getAuthSession();
-    const authError = requireAuth(session);
-
-    if (authError) {
-      return authError;
-    }
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Usuário não autenticado" },
-        { status: 401 }
-      );
+      return apiError("Usuário não autenticado", 401);
     }
 
     const { id } = await context.params;
@@ -29,43 +21,44 @@ export async function PATCH(
     const body = await request.json();
 
     if (!body || typeof body !== "object") {
-      return NextResponse.json({ error: "Payload inválido" }, { status: 400 });
+      return apiError("Payload inválido", 400);
     }
 
     const status = body.status as "ACEITA" | "RECUSADA" | undefined;
 
     if (status !== "ACEITA" && status !== "RECUSADA") {
-      return NextResponse.json({ error: "Status inválido" }, { status: 400 });
+      return apiError("Status inválido", 400);
     }
 
     const proposta = await prisma.proposta.findUnique({ where: { id } });
 
     if (!proposta) {
-      return NextResponse.json({ error: "Proposta não encontrada" }, { status: 404 });
+      return apiError("Proposta não encontrada", 404);
     }
 
     const solicitacao = await prisma.solicitarServico.findUnique({ where: { id: proposta.solicitacaoId } });
 
     if (!solicitacao) {
-      return NextResponse.json({ error: "Solicitação não encontrada" }, { status: 404 });
+      return apiError("Solicitação não encontrada", 404);
     }
 
-    const clientAuthError = requireClient(
-      session,
-      "Ação permitida apenas para o cliente proprietário"
-    );
-
-    if (clientAuthError) {
-      return clientAuthError;
+    if (session.role !== "CLIENT") {
+      return apiError(
+        "Ação permitida apenas para o cliente proprietário",
+        403
+      );
     }
 
     if (!session.clienteId || session.clienteId !== solicitacao.clienteId) {
-      return NextResponse.json({ error: "Ação permitida apenas para o cliente proprietário" }, { status: 403 });
+      return apiError(
+        "Ação permitida apenas para o cliente proprietário",
+        403
+      );
     }
 
     if (status === "ACEITA") {
       if (proposta.status === "ACEITA") {
-        return NextResponse.json({ error: "Proposta já aceita" }, { status: 400 });
+        return apiError("Proposta já aceita", 400);
       }
 
       try {
@@ -95,17 +88,17 @@ export async function PATCH(
         });
       } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: String(err) }, { status: 400 });
+        return apiError(String(err), 400);
       }
 
       const updated = await prisma.proposta.findUnique({ where: { id } });
 
-      return NextResponse.json(updated);
+      return apiSuccess(updated);
     }
 
     // RECUSADA
     if (proposta.status === "ACEITA") {
-      return NextResponse.json({ error: "Proposta aceita não pode ser modificada" }, { status: 400 });
+      return apiError("Proposta aceita não pode ser modificada", 400);
     }
 
     const recusada = await prisma.proposta.update({
@@ -113,9 +106,9 @@ export async function PATCH(
       data: { status: "RECUSADA", updatedAt: new Date() },
     });
 
-    return NextResponse.json(recusada);
+    return apiSuccess(recusada);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Erro ao processar a solicitação" }, { status: 500 });
+    return apiError("Erro ao processar a solicitação", 500);
   }
 }

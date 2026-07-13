@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { apiError, apiSuccess } from "@/lib/api/responses";
 import { getAuthSession } from "@/lib/auth";
-import { requireProfessional } from "@/lib/auth/guards";
 import type {
   AtualizarSolicitacaoStatusPayload,
   SolicitacaoServicoStatus,
@@ -56,29 +56,19 @@ export async function PATCH(
 ) {
   try {
     const session = await getAuthSession();
-    const authError = requireProfessional(
-      session,
-      "Acesso permitido apenas para profissionais"
-    );
-
-    if (authError) {
-      return authError;
-    }
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Usuário não autenticado" },
-        { status: 401 }
-      );
+      return apiError("Usuário não autenticado", 401);
+    }
+
+    if (session.role !== "PROFESSIONAL") {
+      return apiError("Acesso permitido apenas para profissionais", 403);
     }
 
     const payload = parsePayload(await request.json());
 
     if (!payload) {
-      return NextResponse.json(
-        { error: "Status inválido para solicitação" },
-        { status: 400 }
-      );
+      return apiError("Status inválido para solicitação", 400);
     }
 
     const { id } = await context.params;
@@ -92,7 +82,10 @@ export async function PATCH(
         throw new HttpError("Solicitação não encontrada", 404);
       }
 
-      if (current.profissionalId !== session.profissionalId) {
+      if (
+        !session.profissionalId ||
+        current.profissionalId !== session.profissionalId
+      ) {
         throw new HttpError(
           "Ação permitida apenas para o profissional contratado",
           403
@@ -142,23 +135,22 @@ export async function PATCH(
       });
     });
 
-    return NextResponse.json({
-      ...solicitacao,
-      createdAt: solicitacao.createdAt.toISOString(),
-      startedAt: solicitacao.startedAt
-        ? solicitacao.startedAt.toISOString()
-        : null,
-    });
+    return apiSuccess(
+      {
+        ...solicitacao,
+        createdAt: solicitacao.createdAt.toISOString(),
+        startedAt: solicitacao.startedAt
+          ? solicitacao.startedAt.toISOString()
+          : null,
+      }
+    );
   } catch (error) {
     if (error instanceof HttpError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return apiError(error.message, error.status);
     }
 
     console.error(error);
 
-    return NextResponse.json(
-      { error: "Erro ao atualizar solicitação" },
-      { status: 500 }
-    );
+    return apiError("Erro ao atualizar solicitação", 500);
   }
 }

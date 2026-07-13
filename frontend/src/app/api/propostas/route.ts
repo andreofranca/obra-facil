@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { apiError, apiSuccess } from "@/lib/api/responses";
 import { getAuthSession } from "@/lib/auth";
-import { requireAuth, requireProfessional } from "@/lib/auth/guards";
 import type {
   CriarPropostaPayload,
   PropostaResumo,
@@ -31,7 +31,9 @@ function parsePositiveInteger(value: unknown) {
     : null;
 }
 
-function parsePayload(body: unknown): CriarPropostaPayload | null {
+function parsePayload(
+  body: unknown
+): Omit<CriarPropostaPayload, "profissionalId"> | null {
   if (!body || typeof body !== "object") {
     return null;
   }
@@ -42,7 +44,6 @@ function parsePayload(body: unknown): CriarPropostaPayload | null {
 
   if (
     !isNonEmptyString(payload.solicitacaoId) ||
-    !isNonEmptyString(payload.profissionalId) ||
     !isNonEmptyString(payload.mensagem) ||
     valor === null ||
     prazoDias === null
@@ -52,7 +53,6 @@ function parsePayload(body: unknown): CriarPropostaPayload | null {
 
   return {
     solicitacaoId: payload.solicitacaoId.trim(),
-    profissionalId: payload.profissionalId.trim(),
     valor: valor.toFixed(2),
     prazoDias,
     mensagem: payload.mensagem.trim(),
@@ -133,17 +133,9 @@ const propostaInclude = {
 export async function GET(request: NextRequest) {
   try {
     const session = await getAuthSession();
-    const authError = requireAuth(session);
-
-    if (authError) {
-      return authError;
-    }
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Usuário não autenticado" },
-        { status: 401 }
-      );
+      return apiError("Usuário não autenticado", 401);
     }
 
     const clienteId =
@@ -157,30 +149,26 @@ export async function GET(request: NextRequest) {
       clienteId &&
       clienteId !== session.clienteId
     ) {
-      return NextResponse.json(
-        { error: "Filtro de cliente não permitido" },
-        { status: 403 }
-      );
+      return apiError("Filtro de cliente não permitido", 403);
     }
 
     if (
       profissionalId &&
       profissionalId !== session.profissionalId
     ) {
-      return NextResponse.json(
-        { error: "Filtro de profissional não permitido" },
-        { status: 403 }
-      );
+      return apiError("Filtro de profissional não permitido", 403);
     }
+
+    const sessionProfissionalId =
+      session.role === "PROFESSIONAL"
+        ? session.profissionalId || undefined
+        : undefined;
 
     const propostas = await prisma.proposta.findMany({
       where: {
         solicitacaoId: solicitacaoId || undefined,
         profissionalId:
-          profissionalId ||
-          (session.role === "PROFESSIONAL"
-            ? session.profissionalId || undefined
-            : undefined),
+          sessionProfissionalId || profissionalId || undefined,
         solicitacao: {
           clienteId:
             clienteId ||
@@ -195,55 +183,39 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
+    return apiSuccess(
       propostas.map(mapProposta) satisfies PropostaResumo[]
     );
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: "Erro ao buscar propostas" },
-      { status: 500 }
-    );
+    return apiError("Erro ao buscar propostas", 500);
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getAuthSession();
-    const authError = requireProfessional(
-      session,
-      "Apenas profissionais podem criar propostas"
-    );
-
-    if (authError) {
-      return authError;
-    }
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Usuário não autenticado" },
-        { status: 401 }
-      );
+      return apiError("Usuário não autenticado", 401);
+    }
+
+    if (session.role !== "PROFESSIONAL") {
+      return apiError("Apenas profissionais podem criar propostas", 403);
     }
 
     const payload = parsePayload(await request.json());
 
     if (!payload) {
-      return NextResponse.json(
-        {
-          error:
-            "Informe solicitacaoId, profissionalId, valor, prazoDias e mensagem",
-        },
-        { status: 400 }
+      return apiError(
+        "Informe solicitacaoId, valor, prazoDias e mensagem",
+        400
       );
     }
 
-    if (payload.profissionalId !== session.profissionalId) {
-      return NextResponse.json(
-        { error: "Profissional inválido para a sessão atual" },
-        { status: 403 }
-      );
+    if (!session.profissionalId) {
+      return apiError("Profissional inválido para a sessão atual", 403);
     }
 
     const solicitacao =
@@ -258,23 +230,17 @@ export async function POST(request: NextRequest) {
       });
 
     if (!solicitacao) {
-      return NextResponse.json(
-        { error: "Solicitação não encontrada" },
-        { status: 404 }
-      );
+      return apiError("Solicitação não encontrada", 404);
     }
 
     if (solicitacao.profissionalId !== session.profissionalId) {
-      return NextResponse.json(
-        { error: "Solicitação não vinculada a este profissional" },
-        { status: 403 }
-      );
+      return apiError("Solicitação não vinculada a este profissional", 403);
     }
 
     const proposta = await prisma.proposta.create({
       data: {
         solicitacaoId: payload.solicitacaoId,
-        profissionalId: payload.profissionalId,
+        profissionalId: session.profissionalId,
         valor: payload.valor,
         prazoDias: payload.prazoDias,
         mensagem: payload.mensagem,
@@ -282,15 +248,10 @@ export async function POST(request: NextRequest) {
       include: propostaInclude,
     });
 
-    return NextResponse.json(mapProposta(proposta), {
-      status: 201,
-    });
+    return apiSuccess(mapProposta(proposta), 201);
   } catch (error) {
     console.error(error);
 
-    return NextResponse.json(
-      { error: "Erro ao criar proposta" },
-      { status: 500 }
-    );
+    return apiError("Erro ao criar proposta", 500);
   }
 }
