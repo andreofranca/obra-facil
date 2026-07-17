@@ -6,16 +6,21 @@ import { ThemeProvider } from "@/theme";
 type AppLayoutProps = {
   children: ReactNode;
   contentSize?: "md" | "lg" | "xl";
+  footer?: ReactNode;
+  navigation?: ReactNode;
   style?: CSSProperties;
 };
 
 export function AppLayout({
   children,
   contentSize = "lg",
+  footer,
+  navigation,
   style,
 }: AppLayoutProps) {
   return (
     <ThemeProvider>
+      {navigation}
       <main
         style={{
           minHeight: "100vh",
@@ -35,6 +40,7 @@ export function AppLayout({
           <Container size={contentSize}>{children}</Container>
         </Section>
       </main>
+      {footer}
     </ThemeProvider>
   );
 }
