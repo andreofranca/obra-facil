@@ -1,33 +1,30 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import { spacing } from "@/design-system";
 
 type ContainerProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
   size?: "md" | "lg" | "xl";
 };
 
-const maxWidths = {
-  md: "960px",
-  lg: "1120px",
-  xl: "1280px",
+const sizeClasses = {
+  md: "max-w-[960px]",
+  lg: "max-w-[1120px]",
+  xl: "max-w-[1280px]",
 } as const;
 
 export function Container({
   children,
   size = "lg",
-  style,
+  className = "",
   ...props
 }: ContainerProps) {
   return (
     <div
       {...props}
-      style={{
-        width: "100%",
-        maxWidth: maxWidths[size],
-        marginInline: "auto",
-        paddingInline: spacing[4],
-        ...style,
-      }}
+      className={`
+        w-full mx-auto px-4
+        ${sizeClasses[size]}
+        ${className}
+      `.replace(/\s+/g, " ").trim()}
     >
       {children}
     </div>

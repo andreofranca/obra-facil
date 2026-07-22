@@ -1,26 +1,44 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Premium Brand Palette */
+  --color-brand-primary: #113240;
+  --color-brand-secondary: #10B981;
+  --color-brand-accent: #F59E0B;
+
+  /* Neutral Slate Palette for sophisticated feel */
+  --color-neutral-white: #FFFFFF;
+  --color-neutral-background: #F8FAFC;
+  --color-neutral-surface: #FFFFFF;
+  --color-neutral-border: #E2E8F0;
+  --color-neutral-muted: #64748B;
+  --color-neutral-text: #0F172A;
+
+  /* Feedback Colors */
+  --color-feedback-success: #10B981;
+  --color-feedback-error: #EF4444;
+  --color-feedback-warning: #F59E0B;
+  --color-feedback-info: #3B82F6;
+
+  /* Premium Shadows */
+  --shadow-soft: 0 4px 24px -4px rgba(15, 23, 42, 0.04);
+  --shadow-elevated: 0 12px 32px -4px rgba(15, 23, 42, 0.08);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

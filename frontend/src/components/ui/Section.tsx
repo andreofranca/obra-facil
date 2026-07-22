@@ -1,5 +1,4 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import { colors, spacing } from "@/design-system";
 
 type SectionProps = HTMLAttributes<HTMLElement> & {
   children: ReactNode;
@@ -9,18 +8,17 @@ type SectionProps = HTMLAttributes<HTMLElement> & {
 export function Section({
   children,
   tone = "default",
-  style,
+  className = "",
   ...props
 }: SectionProps) {
   return (
     <section
       {...props}
-      style={{
-        background:
-          tone === "muted" ? colors.neutral.background : colors.neutral.white,
-        paddingBlock: spacing[12],
-        ...style,
-      }}
+      className={`
+        py-12
+        ${tone === "muted" ? 'bg-neutral-background' : 'bg-neutral-white'}
+        ${className}
+      `.replace(/\s+/g, " ").trim()}
     >
       {children}
     </section>

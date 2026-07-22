@@ -1,211 +1,99 @@
-"use client";
+import { Card } from "@/components/ui/Card";
+import { getProfissionais } from "@/lib/services/profissionais";
+import Link from "next/link";
 
-import { useState } from "react";
-import { Button, Card } from "@/components/ui";
-import { colors, radius, shadows, spacing, typography } from "@/design-system";
-
-const professionals = [
-  {
-    initials: "CS",
-    name: "Carlos Silva",
-    specialty: "Pedreiro",
-    location: "Rio de Janeiro/RJ",
-    reviews: "124 avaliações",
-    description: "Especialista em reformas residenciais e acabamentos de qualidade.",
-  },
-  {
-    initials: "AS",
-    name: "Ana Souza",
-    specialty: "Eletricista",
-    location: "São Paulo/SP",
-    reviews: "98 avaliações",
-    description: "Instalações elétricas seguras para residências e comércios.",
-  },
-  {
-    initials: "JO",
-    name: "João Oliveira",
-    specialty: "Encanador",
-    location: "Belo Horizonte/MG",
-    reviews: "76 avaliações",
-    description: "Soluções ágeis para instalações, reparos e vazamentos.",
-  },
-  {
-    initials: "MC",
-    name: "Mariana Costa",
-    specialty: "Pintora",
-    location: "Curitiba/PR",
-    reviews: "112 avaliações",
-    description: "Pintura cuidadosa para renovar ambientes internos e externos.",
-  },
-] as const;
-
-export function FeaturedProfessionals() {
-  const [activeProfessional, setActiveProfessional] = useState<string | null>(null);
+export async function FeaturedProfessionals() {
+  const profissionaisAll = await getProfissionais();
+  const profissionais = profissionaisAll.slice(0, 4);
 
   return (
-    <section aria-labelledby="featured-professionals-title" style={{ paddingBlock: spacing[16] }}>
-      <div style={{ marginBottom: spacing[8], maxWidth: "560px" }}>
+    <section aria-labelledby="featured-professionals-title" className="py-16">
+      <div className="mb-10 max-w-[560px]">
         <h2
           id="featured-professionals-title"
-          style={{
-            color: colors.neutral.text,
-            fontFamily: typography.fontFamily.sans,
-            fontSize: typography.fontSize["3xl"],
-            fontWeight: typography.fontWeight.bold,
-            lineHeight: typography.lineHeight.tight,
-            margin: spacing[0],
-          }}
+          className="text-neutral-text font-sans text-3xl font-bold leading-tight m-0"
         >
           Profissionais em Destaque
         </h2>
-        <p
-          style={{
-            color: colors.neutral.muted,
-            fontFamily: typography.fontFamily.sans,
-            fontSize: typography.fontSize.md,
-            lineHeight: typography.lineHeight.relaxed,
-            margin: `${spacing[3]} ${spacing[0]} ${spacing[0]}`,
-          }}
-        >
-          Conheça alguns profissionais disponíveis na plataforma.
+        <p className="text-neutral-muted font-sans text-base leading-relaxed mt-3 mb-0">
+          Conheça alguns dos melhores talentos disponíveis na plataforma, avaliados pela comunidade.
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gap: spacing[4],
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-        }}
-      >
-        {professionals.map((professional) => {
-          const isActive = activeProfessional === professional.name;
+      {profissionais.length === 0 ? (
+        <div className="text-center py-16 bg-neutral-surface rounded-2xl border border-neutral-border">
+          <p className="text-neutral-muted font-medium">Nenhum profissional em destaque no momento.</p>
+        </div>
+      ) : (
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          {profissionais.map((profissional) => {
+            const initials = profissional.user.name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .substring(0, 2)
+              .toUpperCase();
 
-          return (
-            <Card
-              key={professional.name}
-              onBlur={() => setActiveProfessional(null)}
-              onFocus={() => setActiveProfessional(professional.name)}
-              onMouseEnter={() => setActiveProfessional(professional.name)}
-              onMouseLeave={() => setActiveProfessional(null)}
-              tabIndex={0}
-              style={{
-                background: isActive ? colors.neutral.background : colors.neutral.surface,
-                borderColor: isActive ? colors.brand.primary : colors.neutral.border,
-                boxShadow: isActive ? shadows.md : shadows.sm,
-                cursor: "pointer",
-                display: "flex",
-                flexDirection: "column",
-                gap: spacing[4],
-                minHeight: "344px",
-                transition: "background 160ms ease, border-color 160ms ease, box-shadow 160ms ease",
-              }}
-            >
-              <div style={{ alignItems: "center", display: "flex", gap: spacing[3] }}>
-                <div
-                  aria-hidden="true"
-                  style={{
-                    alignItems: "center",
-                    background: colors.brand.primary,
-                    borderRadius: radius.full,
-                    color: colors.neutral.white,
-                    display: "flex",
-                    flex: "0 0 auto",
-                    fontFamily: typography.fontFamily.sans,
-                    fontSize: typography.fontSize.sm,
-                    fontWeight: typography.fontWeight.bold,
-                    height: spacing[12],
-                    justifyContent: "center",
-                    width: spacing[12],
-                  }}
+            let reviewsCount = 0;
+            let rating = 0;
+            if (profissional.avaliacoes && profissional.avaliacoes.length > 0) {
+              reviewsCount = profissional.avaliacoes.length;
+              rating = Math.round(
+                profissional.avaliacoes.reduce((acc, curr) => acc + curr.nota, 0) / reviewsCount
+              );
+            }
+            const stars = rating > 0 ? "★".repeat(rating) + "☆".repeat(5 - rating) : "☆☆☆☆☆";
+
+            return (
+              <Link key={profissional.id} href={`/profissionais/${profissional.id}`} className="block outline-none group">
+                <Card
+                  tabIndex={-1}
+                  className="flex flex-col gap-5 min-h-[360px] cursor-pointer transition-all duration-300 ease-out bg-neutral-surface border-neutral-border shadow-[var(--shadow-soft)] group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] group-hover:border-brand-primary/20 h-full p-6 rounded-2xl motion-reduce:transition-none motion-reduce:transform-none"
                 >
-                  {professional.initials}
-                </div>
-                <div>
-                  <h3
-                    style={{
-                      color: colors.neutral.text,
-                      fontFamily: typography.fontFamily.sans,
-                      fontSize: typography.fontSize.lg,
-                      fontWeight: typography.fontWeight.semibold,
-                      lineHeight: typography.lineHeight.tight,
-                      margin: spacing[0],
-                    }}
-                  >
-                    {professional.name}
-                  </h3>
-                  <p
-                    style={{
-                      color: colors.brand.primary,
-                      fontFamily: typography.fontFamily.sans,
-                      fontSize: typography.fontSize.sm,
-                      fontWeight: typography.fontWeight.medium,
-                      lineHeight: typography.lineHeight.normal,
-                      margin: `${spacing[1]} ${spacing[0]} ${spacing[0]}`,
-                    }}
-                  >
-                    {professional.specialty}
+                  <div className="flex items-center gap-4">
+                    <div
+                      aria-hidden="true"
+                      className="flex flex-none items-center justify-center w-14 h-14 bg-brand-primary/10 rounded-2xl text-brand-primary font-sans text-base font-bold transition-colors duration-300 group-hover:bg-brand-primary group-hover:text-neutral-white"
+                    >
+                      {initials}
+                    </div>
+                    <div>
+                      <h3 className="text-neutral-text font-sans text-lg font-bold leading-tight m-0 transition-colors duration-300 group-hover:text-brand-primary">
+                        {profissional.user.name}
+                      </h3>
+                      <p className="text-neutral-muted font-sans text-sm font-medium leading-normal mt-1 mb-0 line-clamp-1">
+                        {profissional.servicos[0]?.titulo || "Profissional parceiro"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span
+                      aria-label={`Avaliação de ${rating} estrelas`}
+                      className="text-brand-accent text-base tracking-[0.04em] leading-tight drop-shadow-sm"
+                    >
+                      {stars}
+                    </span>
+                    <span className="text-neutral-muted font-sans text-xs font-medium leading-normal">
+                      {reviewsCount > 0 ? `${reviewsCount} avaliações` : "Novo talento"}
+                    </span>
+                  </div>
+
+                  <p className="text-neutral-muted font-sans text-sm leading-relaxed m-0 flex-1 line-clamp-3">
+                    {profissional.descricao || "Profissional certificado e verificado pela plataforma."}
                   </p>
-                </div>
-              </div>
 
-              <p
-                style={{
-                  color: colors.neutral.muted,
-                  fontFamily: typography.fontFamily.sans,
-                  fontSize: typography.fontSize.sm,
-                  lineHeight: typography.lineHeight.normal,
-                  margin: spacing[0],
-                }}
-              >
-                {professional.location}
-              </p>
-
-              <div style={{ alignItems: "center", display: "flex", gap: spacing[2] }}>
-                <span
-                  aria-label="Avaliação de cinco estrelas"
-                  style={{
-                    color: colors.brand.accent,
-                    fontSize: typography.fontSize.md,
-                    letterSpacing: "0.04em",
-                    lineHeight: typography.lineHeight.tight,
-                  }}
-                >
-                  ★★★★★
-                </span>
-                <span
-                  style={{
-                    color: colors.neutral.muted,
-                    fontFamily: typography.fontFamily.sans,
-                    fontSize: typography.fontSize.xs,
-                    lineHeight: typography.lineHeight.normal,
-                  }}
-                >
-                  {professional.reviews}
-                </span>
-              </div>
-
-              <p
-                style={{
-                  color: colors.neutral.muted,
-                  fontFamily: typography.fontFamily.sans,
-                  fontSize: typography.fontSize.sm,
-                  lineHeight: typography.lineHeight.normal,
-                  margin: spacing[0],
-                }}
-              >
-                {professional.description}
-              </p>
-
-              <div style={{ marginTop: "auto" }}>
-                <Button disabled size="sm" style={{ width: "100%" }}>
-                  Ver Perfil
-                </Button>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+                  <div className="mt-auto pt-5 border-t border-neutral-border/50">
+                    <span className="inline-flex items-center justify-center w-full min-h-11 px-4 py-2 text-sm bg-neutral-white border border-neutral-border rounded-xl text-neutral-text font-sans font-semibold leading-tight transition-all duration-300 group-hover:bg-brand-primary group-hover:border-brand-primary group-hover:text-neutral-white shadow-sm">
+                      Ver Perfil Completo
+                    </span>
+                  </div>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

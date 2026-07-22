@@ -1,22 +1,18 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import { colors, radius, shadows, spacing } from "@/design-system";
 
 type CardProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
 };
 
-export function Card({ children, style, ...props }: CardProps) {
+export function Card({ children, className = "", ...props }: CardProps) {
   return (
     <div
       {...props}
-      style={{
-        background: colors.neutral.surface,
-        border: `1px solid ${colors.neutral.border}`,
-        borderRadius: radius.lg,
-        boxShadow: shadows.sm,
-        padding: spacing[4],
-        ...style,
-      }}
+      className={`
+        bg-neutral-surface border border-solid border-neutral-border
+        rounded-lg shadow-sm p-4
+        ${className}
+      `.replace(/\s+/g, " ").trim()}
     >
       {children}
     </div>

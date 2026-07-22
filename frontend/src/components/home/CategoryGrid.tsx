@@ -1,116 +1,71 @@
-"use client";
-
-import { useState } from "react";
 import { Card } from "@/components/ui";
-import { colors, shadows, spacing, typography } from "@/design-system";
+import { getCategorias } from "@/lib/services/categorias";
+import Link from "next/link";
 
-const categories = [
-  { emoji: "🧱", name: "Pedreiro", description: "Construção, reparos e acabamentos." },
-  { emoji: "⚡", name: "Eletricista", description: "Instalações e reparos elétricos." },
-  { emoji: "🔧", name: "Encanador", description: "Soluções para água e encanamentos." },
-  { emoji: "🎨", name: "Pintor", description: "Pintura e renovação de ambientes." },
-  { emoji: "🪚", name: "Marceneiro", description: "Móveis e projetos sob medida." },
-  { emoji: "🌿", name: "Jardineiro", description: "Cuidados e projetos para jardins." },
-  { emoji: "🏠", name: "Gesseiro", description: "Forros, divisórias e acabamentos." },
-  { emoji: "🛠️", name: "Marido de Aluguel", description: "Pequenos reparos para o dia a dia." },
-] as const;
+const categoryDictionary: Record<string, { emoji: string; description: string }> = {
+  "Pedreiro": { emoji: "🧱", description: "Construção, reparos e acabamentos." },
+  "Eletricista": { emoji: "⚡", description: "Instalações e reparos elétricos." },
+  "Encanador": { emoji: "🔧", description: "Soluções para água e encanamentos." },
+  "Pintor": { emoji: "🎨", description: "Pintura e renovação de ambientes." },
+  "Marceneiro": { emoji: "🪚", description: "Móveis e projetos sob medida." },
+  "Jardineiro": { emoji: "🌿", description: "Cuidados e projetos para jardins." },
+  "Gesseiro": { emoji: "🏠", description: "Forros, divisórias e acabamentos." },
+  "Marido de Aluguel": { emoji: "🛠️", description: "Pequenos reparos para o dia a dia." },
+};
 
-export function CategoryGrid() {
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+export async function CategoryGrid() {
+  const categorias = await getCategorias();
 
   return (
-    <section aria-labelledby="categories-title" style={{ paddingBlock: spacing[16] }}>
-      <div style={{ marginBottom: spacing[8], maxWidth: "560px" }}>
+    <section aria-labelledby="categories-title" className="py-16">
+      <div className="mb-8 max-w-[560px]">
         <h2
           id="categories-title"
-          style={{
-            color: colors.neutral.text,
-            fontFamily: typography.fontFamily.sans,
-            fontSize: typography.fontSize["3xl"],
-            fontWeight: typography.fontWeight.bold,
-            lineHeight: typography.lineHeight.tight,
-            margin: spacing[0],
-          }}
+          className="text-neutral-text font-sans text-3xl font-bold leading-tight m-0"
         >
           Encontre o serviço ideal
         </h2>
-        <p
-          style={{
-            color: colors.neutral.muted,
-            fontFamily: typography.fontFamily.sans,
-            fontSize: typography.fontSize.md,
-            lineHeight: typography.lineHeight.relaxed,
-            margin: `${spacing[3]} ${spacing[0]} ${spacing[0]}`,
-          }}
-        >
+        <p className="text-neutral-muted font-sans text-base leading-relaxed mt-3 mb-0">
           Selecione uma categoria e encontre profissionais especializados.
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gap: spacing[4],
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-        }}
-      >
-        {categories.map((category) => {
-          const isActive = activeCategory === category.name;
+      {categorias.length === 0 ? (
+        <div className="text-center py-12 bg-neutral-surface rounded-lg border border-neutral-border">
+          <p className="text-neutral-muted">Nenhuma categoria encontrada.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
+          {categorias.map((categoria) => {
+            const data = categoryDictionary[categoria.nome] || {
+              emoji: "📌",
+              description: "Serviço especializado para sua necessidade.",
+            };
 
-          return (
-            <Card
-              key={category.name}
-              onBlur={() => setActiveCategory(null)}
-              onFocus={() => setActiveCategory(category.name)}
-              onMouseEnter={() => setActiveCategory(category.name)}
-              onMouseLeave={() => setActiveCategory(null)}
-              tabIndex={0}
-              style={{
-                background: isActive ? colors.neutral.background : colors.neutral.surface,
-                borderColor: isActive ? colors.brand.primary : colors.neutral.border,
-                boxShadow: isActive ? shadows.md : shadows.sm,
-                cursor: "pointer",
-                minHeight: "168px",
-                transition: "background 160ms ease, border-color 160ms ease, box-shadow 160ms ease",
-              }}
-            >
-              <span
-                aria-hidden="true"
-                style={{
-                  display: "inline-flex",
-                  fontSize: typography.fontSize["2xl"],
-                  lineHeight: typography.lineHeight.tight,
-                }}
-              >
-                {category.emoji}
-              </span>
-              <h3
-                style={{
-                  color: colors.neutral.text,
-                  fontFamily: typography.fontFamily.sans,
-                  fontSize: typography.fontSize.lg,
-                  fontWeight: typography.fontWeight.semibold,
-                  lineHeight: typography.lineHeight.tight,
-                  margin: `${spacing[4]} ${spacing[0]} ${spacing[2]}`,
-                }}
-              >
-                {category.name}
-              </h3>
-              <p
-                style={{
-                  color: colors.neutral.muted,
-                  fontFamily: typography.fontFamily.sans,
-                  fontSize: typography.fontSize.sm,
-                  lineHeight: typography.lineHeight.normal,
-                  margin: spacing[0],
-                }}
-              >
-                {category.description}
-              </p>
-            </Card>
-          );
-        })}
-      </div>
+            return (
+              <Link key={categoria.id} href={`/profissionais?categoria=${encodeURIComponent(categoria.nome)}`} className="block outline-none group">
+                <Card
+                  tabIndex={-1}
+                  className="flex flex-col min-h-[168px] cursor-pointer transition-all duration-300 ease-out bg-neutral-surface border-neutral-border shadow-[var(--shadow-soft)] group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] group-hover:border-brand-primary/30 group-focus-within:-translate-y-1 group-focus-within:shadow-[var(--shadow-elevated)] group-focus-within:border-brand-primary/50 h-full p-6 motion-reduce:transition-none motion-reduce:transform-none"
+                >
+                  <div
+                    aria-hidden="true"
+                    className="flex items-center justify-center w-12 h-12 rounded-2xl bg-brand-primary/5 text-2xl transition-colors duration-300 group-hover:bg-brand-primary/10"
+                  >
+                    {data.emoji}
+                  </div>
+                  <h3 className="text-neutral-text font-sans text-lg font-bold leading-tight mt-5 mb-2 transition-colors duration-300 group-hover:text-brand-primary">
+                    {categoria.nome}
+                  </h3>
+                  <p className="text-neutral-muted font-sans text-sm leading-relaxed m-0">
+                    {data.description}
+                  </p>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

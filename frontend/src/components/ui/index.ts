@@ -5,3 +5,5 @@ export { Container } from "./Container";
 export { Input } from "./Input";
 export { Logo } from "./Logo";
 export { Section } from "./Section";
+export { Skeleton } from "./Skeleton";
+
