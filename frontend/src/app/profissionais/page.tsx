@@ -1,17 +1,28 @@
 import Link from "next/link";
-import { getProfissionais } from "@/lib/services/profissionais";
+import { getProfissionais, type OrdenacaoProfissionais } from "@/lib/services/profissionais";
 import { Button, Card, Badge, Input } from "@/components/ui";
 
 export default async function ProfissionaisPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categoria?: string; q?: string }>;
+  searchParams: Promise<{ categoria?: string; q?: string; avaliacao?: string; disponivel?: string; ordenacao?: string; pagina?: string; limite?: string }>;
 }) {
   const params = await searchParams;
-  const { categoria, q } = params;
+  const { categoria, q, avaliacao, disponivel, ordenacao, pagina, limite } = params;
 
   // revalidate 0 (no-store) pois a busca pode precisar de dados fresquinhos
-  const profissionais = await getProfissionais({ categoria, q, revalidate: 0 });
+  const resultado = await getProfissionais({ 
+    categoria, 
+    q, 
+    avaliacaoMinima: avaliacao ? parseInt(avaliacao, 10) : undefined,
+    disponibilidade: disponivel === 'true' ? true : undefined,
+    ordenacao: ordenacao as OrdenacaoProfissionais | undefined,
+    pagina: pagina ? parseInt(pagina, 10) : 1,
+    limite: limite ? parseInt(limite, 10) : 10,
+    revalidate: 0 
+  });
+
+  const profissionais = resultado.dados;
 
   return (
     <main className="max-w-7xl mx-auto px-4 md:px-8 py-10 w-full">
@@ -21,15 +32,18 @@ export default async function ProfissionaisPage({
         </h1>
         <p className="text-neutral-muted font-sans text-lg">
           {q 
-            ? `Resultados para "${q}"` 
+            ? `Resultados para "${q}" (${resultado.totalRegistros} encontrados)` 
             : categoria 
-              ? `Especialistas em ${categoria}` 
+              ? `Especialistas em ${categoria} (${resultado.totalRegistros} encontrados)` 
               : "Encontre os melhores profissionais para a sua obra."}
         </p>
       </div>
 
       <form method="GET" action="/profissionais" className="mb-8 flex flex-col md:flex-row gap-4 bg-neutral-surface p-4 rounded-lg shadow-sm border border-neutral-border">
         {categoria && <input type="hidden" name="categoria" value={categoria} />}
+        {ordenacao && <input type="hidden" name="ordenacao" value={ordenacao} />}
+        {avaliacao && <input type="hidden" name="avaliacao" value={avaliacao} />}
+        {disponivel && <input type="hidden" name="disponivel" value={disponivel} />}
         <Input 
           name="q" 
           defaultValue={q || ""}

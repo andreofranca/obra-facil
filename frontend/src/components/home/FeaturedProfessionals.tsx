@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export async function FeaturedProfessionals() {
   const profissionaisAll = await getProfissionais();
-  const profissionais = profissionaisAll.slice(0, 4);
+  const profissionais = profissionaisAll.dados.slice(0, 4);
 
   return (
     <section aria-labelledby="featured-professionals-title" className="py-16">
