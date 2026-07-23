@@ -1,16 +1,28 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
+
 
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
+  const reqLogger = logger.withRequest(request);
   try {
     const id = request.nextUrl.searchParams.get("id");
     const categoria = request.nextUrl.searchParams.get("categoria");
     const q = request.nextUrl.searchParams.get("q");
 
     const include = {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          role: true,
+          createdAt: true,
+        },
+      },
       avaliacoes: true,
       servicos: {
         include: {
@@ -72,7 +84,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(profissionais);
   } catch (error) {
-    console.error(error);
+    reqLogger.error(error);
 
     return NextResponse.json(
       { error: "Erro ao buscar profissionais" },

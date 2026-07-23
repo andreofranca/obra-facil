@@ -10,6 +10,8 @@ import type {
   AuthResponse,
   LoginPayload,
 } from "@/types/auth";
+import { audit } from "@/lib/audit";
+import { logger } from "@/lib/logger";
 
 const prisma = new PrismaClient();
 
@@ -51,13 +53,30 @@ export async function POST(request: NextRequest) {
     where: {
       email: payload.email,
     },
-    include: {
-      cliente: true,
-      profissional: true,
+    select: {
+      id: true,
+      email: true,
+      password: true,
+      name: true,
+      role: true,
+      cliente: {
+        select: { id: true },
+      },
+      profissional: {
+        select: { id: true },
+      },
     },
   });
 
+  const reqLogger = logger.withRequest(request);
+
   if (!user) {
+    audit.log(reqLogger, request, {
+      action: "AUTH_LOGIN",
+      severity: "CRITICAL",
+      result: "FAILURE",
+      metadata: { reason: "Credenciais inválidas", email: payload.email },
+    });
     return NextResponse.json<AuthErrorResponse>(
       { error: "Credenciais inválidas" },
       { status: 401 }
@@ -70,6 +89,13 @@ export async function POST(request: NextRequest) {
   );
 
   if (!passwordMatches) {
+    audit.log(reqLogger, request, {
+      action: "AUTH_LOGIN",
+      severity: "CRITICAL",
+      userId: user.id,
+      result: "FAILURE",
+      metadata: { reason: "Senha incorreta", email: user.email },
+    });
     return NextResponse.json<AuthErrorResponse>(
       { error: "Credenciais inválidas" },
       { status: 401 }
@@ -100,6 +126,14 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7,
     }
   );
+
+  audit.log(reqLogger, request, {
+    action: "AUTH_LOGIN",
+    severity: "CRITICAL",
+    userId: session.userId,
+    result: "SUCCESS",
+    metadata: { role: session.role, email: session.email },
+  });
 
   return response;
 }

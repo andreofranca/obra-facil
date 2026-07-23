@@ -2,6 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { apiError, apiSuccess } from "@/lib/api/responses";
 import { getAuthSession } from "@/lib/auth";
+import { logger } from "@/lib/logger";
+import { audit } from "@/lib/audit";
+
 import type {
   AtualizarSolicitacaoStatusPayload,
   SolicitacaoServicoStatus,
@@ -54,6 +57,7 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const reqLogger = logger.withRequest(request);
   try {
     const session = await getAuthSession();
 
@@ -135,6 +139,15 @@ export async function PATCH(
       });
     });
 
+    audit.log(reqLogger, request, {
+      action: "SOLICITACAO_STATUS_CHANGED",
+      severity: "CRITICAL",
+      userId: session.userId,
+      targetId: solicitacao.id,
+      result: "SUCCESS",
+      metadata: { status: solicitacao.status },
+    });
+
     return apiSuccess(
       {
         ...solicitacao,
@@ -146,10 +159,22 @@ export async function PATCH(
     );
   } catch (error) {
     if (error instanceof HttpError) {
+      audit.log(reqLogger, request, {
+        action: "SOLICITACAO_STATUS_CHANGED",
+        severity: "CRITICAL",
+        result: "FAILURE",
+        metadata: { reason: error.message },
+      });
       return apiError(error.message, error.status);
     }
 
-    console.error(error);
+    audit.log(reqLogger, request, {
+      action: "SOLICITACAO_STATUS_CHANGED",
+      severity: "CRITICAL",
+      result: "FAILURE",
+      metadata: { reason: "Internal Error" },
+    });
+    reqLogger.error(error);
 
     return apiError("Erro ao atualizar solicitação", 500);
   }

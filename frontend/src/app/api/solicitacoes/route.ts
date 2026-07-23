@@ -2,6 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { apiError, apiSuccess } from "@/lib/api/responses";
 import { getAuthSession } from "@/lib/auth";
+import { logger } from "@/lib/logger";
+import { audit } from "@/lib/audit";
+
 import type {
   CriarSolicitacaoServicoPayload,
   SolicitacaoServicoResumo,
@@ -37,19 +40,22 @@ function parseSolicitacaoPayload(
   };
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
+  const reqLogger = logger.withRequest(_request);
   try {
-    const clienteId =
-      request.nextUrl.searchParams.get("clienteId");
+    const session = await getAuthSession();
 
-    if (!isNonEmptyString(clienteId)) {
-      return apiError("Informe clienteId para buscar solicitações", 400);
+    if (!session || !session.clienteId) {
+      return apiError("Usuário não autenticado", 401);
     }
+
+    // Force filtering by the authenticated user's ID to prevent IDOR
+    const clienteId = session.clienteId;
 
     const solicitacoes =
       await prisma.solicitarServico.findMany({
         where: {
-          clienteId: clienteId.trim(),
+          clienteId: clienteId,
         },
         select: {
           id: true,
@@ -58,8 +64,13 @@ export async function GET(request: NextRequest) {
           status: true,
           createdAt: true,
           profissional: {
-            include: {
-              user: true,
+            select: {
+              id: true,
+              user: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
         },
@@ -85,13 +96,14 @@ export async function GET(request: NextRequest) {
 
     return apiSuccess(response);
   } catch (error) {
-    console.error(error);
+    reqLogger.error(error);
 
     return apiError("Erro ao buscar solicitações de serviço", 500);
   }
 }
 
 export async function POST(request: NextRequest) {
+  const reqLogger = logger.withRequest(request);
   try {
     const session = await getAuthSession();
 
@@ -151,9 +163,24 @@ export async function POST(request: NextRequest) {
         },
       });
 
+    audit.log(reqLogger, request, {
+      action: "SOLICITACAO_CREATED",
+      severity: "CRITICAL",
+      userId: session.userId,
+      targetId: solicitacao.id,
+      result: "SUCCESS",
+      metadata: { profissionalId: payload.profissionalId },
+    });
+
     return apiSuccess(solicitacao, 201);
   } catch (error) {
-    console.error(error);
+    audit.log(reqLogger, request, {
+      action: "SOLICITACAO_CREATED",
+      severity: "CRITICAL",
+      result: "FAILURE",
+      metadata: { reason: "Internal Error" },
+    });
+    reqLogger.error(error);
 
     return apiError("Erro ao criar solicitação de serviço", 500);
   }

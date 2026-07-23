@@ -2,6 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { apiError, apiSuccess } from "@/lib/api/responses";
 import { getAuthSession } from "@/lib/auth";
+import { logger } from "@/lib/logger";
+import { audit } from "@/lib/audit";
+
 
 const prisma = new PrismaClient();
 
@@ -9,6 +12,7 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const reqLogger = logger.withRequest(request);
   try {
     const session = await getAuthSession();
 
@@ -87,11 +91,26 @@ export async function PATCH(
           });
         });
       } catch (err) {
-        console.error(err);
+        audit.log(reqLogger, request, {
+          action: "PROPOSTA_STATUS_CHANGED",
+          severity: "CRITICAL",
+          result: "FAILURE",
+          metadata: { reason: String(err) },
+        });
+        reqLogger.error(err);
         return apiError(String(err), 400);
       }
 
       const updated = await prisma.proposta.findUnique({ where: { id } });
+
+      audit.log(reqLogger, request, {
+        action: "PROPOSTA_STATUS_CHANGED",
+        severity: "CRITICAL",
+        userId: session.userId,
+        targetId: id,
+        result: "SUCCESS",
+        metadata: { status: "ACEITA" },
+      });
 
       return apiSuccess(updated);
     }
@@ -106,9 +125,24 @@ export async function PATCH(
       data: { status: "RECUSADA", updatedAt: new Date() },
     });
 
+    audit.log(reqLogger, request, {
+      action: "PROPOSTA_STATUS_CHANGED",
+      severity: "CRITICAL",
+      userId: session.userId,
+      targetId: id,
+      result: "SUCCESS",
+      metadata: { status: "RECUSADA" },
+    });
+
     return apiSuccess(recusada);
   } catch (error) {
-    console.error(error);
+    audit.log(reqLogger, request, {
+      action: "PROPOSTA_STATUS_CHANGED",
+      severity: "CRITICAL",
+      result: "FAILURE",
+      metadata: { reason: "Internal Error" },
+    });
+    reqLogger.error(error);
     return apiError("Erro ao processar a solicitação", 500);
   }
 }

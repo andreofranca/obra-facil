@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
+
 
 const prisma = new PrismaClient();
 
@@ -13,7 +15,7 @@ export async function GET() {
 
     return NextResponse.json(categorias);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
 
     return NextResponse.json(
       { error: "Erro ao buscar categorias" },

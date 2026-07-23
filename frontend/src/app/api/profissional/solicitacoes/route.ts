@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
 import { requireProfessional } from "@/lib/auth/guards";
 import type { SolicitacaoProfissionalResumo } from "@/types/solicitacao";
+import { logger } from "@/lib/logger";
+
 
 const prisma = new PrismaClient();
 
@@ -47,8 +49,15 @@ export async function GET() {
         },
         include: {
           cliente: {
-            include: {
-              user: true,
+            select: {
+              id: true,
+              user: {
+                select: {
+                  name: true,
+                  email: true,
+                  phone: true,
+                },
+              },
             },
           },
         },
@@ -75,7 +84,7 @@ export async function GET() {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
 
     return NextResponse.json(
       { error: "Erro ao buscar solicitações do profissional" },

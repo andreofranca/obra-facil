@@ -1,5 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
+
 import {
   createSessionCookieValue,
   getSessionCookieName,
@@ -10,6 +12,7 @@ import type {
   AuthResponse,
   RegisterPayload,
 } from "@/types/auth";
+import { audit } from "@/lib/audit";
 
 const prisma = new PrismaClient();
 
@@ -45,6 +48,7 @@ function parseRegisterPayload(
 }
 
 export async function POST(request: NextRequest) {
+  const reqLogger = logger.withRequest(request);
   try {
     const payload = parseRegisterPayload(await request.json());
 
@@ -75,8 +79,16 @@ export async function POST(request: NextRequest) {
           create: {},
         },
       },
-      include: {
-        cliente: true,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        cliente: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
@@ -106,19 +118,33 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    audit.log(reqLogger, request, {
+      action: "AUTH_REGISTER",
+      severity: "CRITICAL",
+      userId: session.userId,
+      result: "SUCCESS",
+      metadata: { role: session.role, email: session.email },
+    });
+
     return response;
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
+      audit.log(reqLogger, request, {
+        action: "AUTH_REGISTER",
+        severity: "CRITICAL",
+        result: "FAILURE",
+        metadata: { reason: "Email já cadastrado" },
+      });
       return NextResponse.json<AuthErrorResponse>(
         { error: "Email já cadastrado" },
         { status: 409 }
       );
     }
 
-    console.error(error);
+    reqLogger.error(error);
 
     return NextResponse.json<AuthErrorResponse>(
       { error: "Erro ao cadastrar usuário" },

@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
 import { requireAuth } from "@/lib/auth/guards";
 import type { AuthSession } from "@/types/auth";
+import { logger } from "@/lib/logger";
+
 import type {
   HistoricoChat,
   MensagemChat,
@@ -106,6 +108,7 @@ export async function GET(
   _request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const reqLogger = logger.withRequest(_request);
   try {
     const session = await getAuthSession();
     const authError = requireAuth(session);
@@ -164,7 +167,7 @@ export async function GET(
 
     return NextResponse.json(historico);
   } catch (error) {
-    console.error(error);
+    reqLogger.error(error);
 
     return NextResponse.json(
       { error: "Erro ao buscar mensagens da solicitação" },
@@ -177,6 +180,7 @@ export async function POST(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const reqLogger = logger.withRequest(request);
   try {
     const session = await getAuthSession();
     const authError = requireAuth(session);
@@ -253,7 +257,7 @@ export async function POST(
       status: 201,
     });
   } catch (error) {
-    console.error(error);
+    reqLogger.error(error);
 
     return NextResponse.json(
       { error: "Erro ao enviar mensagem" },
