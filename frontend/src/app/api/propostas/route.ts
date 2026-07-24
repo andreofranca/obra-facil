@@ -118,15 +118,17 @@ function mapProposta(proposta: {
 
 const propostaInclude = {
   solicitacao: {
-    include: {
+    select: {
+      id: true,
+      titulo: true,
+      descricao: true,
       cliente: {
-        include: {
+        select: {
+          id: true,
           user: {
             select: {
-              id: true,
               name: true,
               email: true,
-              phone: true,
             },
           },
         },
@@ -134,13 +136,12 @@ const propostaInclude = {
     },
   },
   profissional: {
-    include: {
+    select: {
+      id: true,
       user: {
         select: {
-          id: true,
           name: true,
           email: true,
-          phone: true,
         },
       },
     },

@@ -23,10 +23,14 @@ export async function GET(request: NextRequest) {
           createdAt: true,
         },
       },
-      avaliacoes: true,
       servicos: {
         include: {
-          categoria: true,
+          categoria: {
+            select: {
+              id: true,
+              nome: true,
+            },
+          },
         },
       },
     };
@@ -78,7 +82,7 @@ export async function GET(request: NextRequest) {
       where: Object.keys(where).length > 0 ? where : undefined,
       include,
       orderBy: {
-        user: { name: 'asc' }
+        avaliacaoMedia: 'desc'
       }
     });
 
