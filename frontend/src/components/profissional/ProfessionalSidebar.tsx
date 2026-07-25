@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button, Badge } from "@/components/ui";
-import { Clock, MapPin, CheckCircle2, ShieldCheck, ArrowRight } from "lucide-react";
+import { Clock, MapPin, ShieldCheck, ArrowRight } from "lucide-react";
 
 type ProfessionalSidebarProps = {
   profissionalId: string;

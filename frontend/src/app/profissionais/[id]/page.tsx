@@ -22,7 +22,7 @@ async function getProfissional(id: string): Promise<ProfissionalResumo | null> {
     }
 
     return response.json();
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -40,10 +40,6 @@ export default async function ProfissionalPage({
   }
 
   // Derived determinist mock data for UI visual constraints
-  const charCode = profissional.id.charCodeAt(0) || 1;
-  const mockRating = (4.5 + (charCode % 5) * 0.1).toFixed(1);
-  const mockTotalReviews = 5 + (charCode % 45);
-  
   const principalServico = profissional.servicos[0];
   const especialidade = principalServico?.categoria.nome || "Especialista Parceiro";
   
@@ -55,8 +51,6 @@ export default async function ProfissionalPage({
         <ProfessionalHero 
           name={profissional.user.name} 
           specialty={especialidade}
-          rating={mockRating.toString()}
-          totalReviews={mockTotalReviews}
         />
 
         <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-3 gap-10">

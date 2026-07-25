@@ -4,11 +4,9 @@ import { Badge } from "@/components/ui";
 type ProfessionalHeroProps = {
   name: string;
   specialty: string;
-  rating: string;
-  totalReviews: number;
 };
 
-export function ProfessionalHero({ name, specialty, rating, totalReviews }: ProfessionalHeroProps) {
+export function ProfessionalHero({ name, specialty }: ProfessionalHeroProps) {
   // Gera Iniciais determinísticas
   const initials = name
     .split(" ")

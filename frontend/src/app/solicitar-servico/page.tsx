@@ -1,223 +1,33 @@
-"use client";
-
-import { FormEvent, useState } from "react";
-import type {
-  CriarSolicitacaoServicoPayload,
-  SolicitacaoServicoCriada,
-} from "@/types/solicitacao";
-
-type FormStatus =
-  | { type: "idle"; message: string }
-  | { type: "success"; message: string }
-  | { type: "error"; message: string };
-
-const initialForm: CriarSolicitacaoServicoPayload = {
-  titulo: "",
-  descricao: "",
-  clienteId: "",
-  profissionalId: "",
-};
+import { Header, Footer } from "@/components/layout";
+import { ServiceWizard } from "@/components/solicitacao";
+import { Wrench } from "lucide-react";
 
 export default function SolicitarServicoPage() {
-  const [form, setForm] =
-    useState<CriarSolicitacaoServicoPayload>(() => {
-      if (typeof window === "undefined") {
-        return initialForm;
-      }
-
-      return {
-        ...initialForm,
-        profissionalId:
-          new URLSearchParams(window.location.search).get(
-            "profissionalId"
-          ) || "",
-      };
-    });
-  const [status, setStatus] = useState<FormStatus>({
-    type: "idle",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setStatus({ type: "idle", message: "" });
-
-    try {
-      const response = await fetch("/api/solicitacoes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = (await response.json()) as
-        | SolicitacaoServicoCriada
-        | { error: string };
-
-      if (!response.ok) {
-        const errorMessage =
-          "error" in data
-            ? data.error
-            : "Não foi possível criar a solicitação";
-
-        setStatus({
-          type: "error",
-          message: errorMessage,
-        });
-        return;
-      }
-
-      const solicitacao = data as SolicitacaoServicoCriada;
-
-      setForm(initialForm);
-      setStatus({
-        type: "success",
-        message: `Solicitação criada com sucesso. Protocolo: ${solicitacao.id}`,
-      });
-    } catch {
-      setStatus({
-        type: "error",
-        message: "Erro inesperado ao enviar a solicitação",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
   return (
-    <main className="p-10">
-      <div className="max-w-2xl">
-        <h1 className="text-4xl font-bold mb-6">
-          Solicitar Serviço
-        </h1>
-
-        <form
-          onSubmit={handleSubmit}
-          className="border rounded-lg p-6 shadow space-y-5"
-        >
-          <div>
-            <label
-              htmlFor="titulo"
-              className="block text-sm font-medium mb-2"
-            >
-              Título
-            </label>
-            <input
-              id="titulo"
-              name="titulo"
-              type="text"
-              value={form.titulo}
-              onChange={(event) =>
-                setForm((currentForm) => ({
-                  ...currentForm,
-                  titulo: event.target.value,
-                }))
-              }
-              className="w-full rounded-md border px-3 py-2 bg-transparent"
-              placeholder="Ex.: Reforma do banheiro"
-              required
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="descricao"
-              className="block text-sm font-medium mb-2"
-            >
-              Descrição
-            </label>
-            <textarea
-              id="descricao"
-              name="descricao"
-              value={form.descricao}
-              onChange={(event) =>
-                setForm((currentForm) => ({
-                  ...currentForm,
-                  descricao: event.target.value,
-                }))
-              }
-              className="min-h-36 w-full rounded-md border px-3 py-2 bg-transparent"
-              placeholder="Descreva o serviço, local e detalhes importantes."
-              required
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="clienteId"
-              className="block text-sm font-medium mb-2"
-            >
-              ID do cliente
-            </label>
-            <input
-              id="clienteId"
-              name="clienteId"
-              type="text"
-              value={form.clienteId}
-              onChange={(event) =>
-                setForm((currentForm) => ({
-                  ...currentForm,
-                  clienteId: event.target.value,
-                }))
-              }
-              className="w-full rounded-md border px-3 py-2 bg-transparent"
-              placeholder="Cole o ID do cliente cadastrado"
-              required
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="profissionalId"
-              className="block text-sm font-medium mb-2"
-            >
-              ID do profissional
-            </label>
-            <input
-              id="profissionalId"
-              name="profissionalId"
-              type="text"
-              value={form.profissionalId}
-              onChange={(event) =>
-                setForm((currentForm) => ({
-                  ...currentForm,
-                  profissionalId: event.target.value,
-                }))
-              }
-              className="w-full rounded-md border px-3 py-2 bg-transparent"
-              placeholder="Abra esta página pelo perfil do profissional"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="rounded-md bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSubmitting
-              ? "Enviando..."
-              : "Criar Solicitação"}
-          </button>
-
-          {status.message && (
-            <p
-              className={
-                status.type === "success"
-                  ? "text-sm text-green-600"
-                  : "text-sm text-red-600"
-              }
-            >
-              {status.message}
+    <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
+      <Header />
+      
+      <main className="flex-1 w-full flex items-center justify-center py-10 px-4 md:px-8 bg-gradient-to-b from-neutral-background to-neutral-surface">
+        <div className="w-full max-w-2xl relative z-10 animate-fade-in-up">
+          
+          <div className="mb-10 text-center">
+            <div className="w-16 h-16 bg-brand-primary/10 text-brand-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-soft">
+              <Wrench className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-neutral-text mb-3 tracking-tight">
+              Solicitar Serviço
+            </h1>
+            <p className="text-neutral-muted text-lg max-w-lg mx-auto leading-relaxed">
+              Responda algumas perguntas rápidas para que o profissional entenda exatamente o que você precisa.
             </p>
-          )}
-        </form>
-      </div>
-    </main>
+          </div>
+
+          <ServiceWizard />
+          
+        </div>
+      </main>
+
+      <Footer />
+    </div>
   );
 }
