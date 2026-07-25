@@ -12,8 +12,8 @@
   --font-mono: var(--font-geist-mono), monospace;
 
   /* Premium Brand Palette */
-  --color-brand-primary: #113240;
-  --color-brand-secondary: #10B981;
+  --color-brand-primary: #2563EB;
+  --color-brand-secondary: #3B82F6;
   --color-brand-accent: #F59E0B;
 
   /* Neutral Slate Palette for sophisticated feel */
@@ -25,7 +25,7 @@
   --color-neutral-text: #0F172A;
 
   /* Feedback Colors */
-  --color-feedback-success: #10B981;
+  --color-feedback-success: #22C55E;
   --color-feedback-error: #EF4444;
   --color-feedback-warning: #F59E0B;
   --color-feedback-info: #3B82F6;

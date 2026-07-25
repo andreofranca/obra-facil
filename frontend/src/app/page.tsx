@@ -5,11 +5,15 @@ import {
   Hero,
   HowItWorks,
 } from "@/components/home";
-import { AppLayout } from "@/components/layout";
+import { AppLayout, Header, Footer } from "@/components/layout";
 
 export default function Home() {
   return (
-    <AppLayout contentSize="xl">
+    <AppLayout 
+      contentSize="xl"
+      navigation={<Header />}
+      footer={<Footer />}
+    >
       <Hero />
       <CategoryGrid />
       <FeaturedProfessionals />
