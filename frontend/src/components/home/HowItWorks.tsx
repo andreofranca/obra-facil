@@ -37,7 +37,7 @@ export function HowItWorks() {
 
       <div className="relative max-w-5xl mx-auto">
         {/* Connection Line (Hidden on Mobile) */}
-        <div className="hidden md:block absolute top-[60px] left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-brand-primary/10 via-brand-primary/40 to-brand-primary/10 z-0" />
+        <div className="hidden md:block absolute top-16 left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-brand-primary/10 via-brand-primary/40 to-brand-primary/10 z-0" />
 
         <div className="grid gap-8 grid-cols-1 md:grid-cols-3 relative z-10">
           {steps.map((step, index) => {
@@ -61,7 +61,7 @@ export function HowItWorks() {
                 <h3 className="text-neutral-text font-sans text-xl font-bold leading-tight mb-2">
                   {step.title}
                 </h3>
-                <p className="text-neutral-muted font-sans text-base leading-relaxed max-w-[240px]">
+                <p className="text-neutral-muted font-sans text-base leading-relaxed max-w-xs">
                   {step.description}
                 </p>
 

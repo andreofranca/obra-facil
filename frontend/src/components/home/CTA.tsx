@@ -6,8 +6,8 @@ export function CTA() {
       <div className="relative flex flex-col items-center text-center bg-brand-primary rounded-3xl shadow-elevated overflow-hidden px-6 py-16 md:py-24 mx-auto max-w-5xl">
         
         {/* Decorative blur elements for Premium Feel */}
-        <div className="absolute -right-24 -top-24 w-64 h-64 bg-brand-secondary/30 rounded-full blur-[80px]" />
-        <div className="absolute -left-24 -bottom-24 w-64 h-64 bg-brand-accent/20 rounded-full blur-[80px]" />
+        <div className="absolute -right-24 -top-24 w-64 h-64 bg-brand-secondary/30 rounded-full blur-3xl" />
+        <div className="absolute -left-24 -bottom-24 w-64 h-64 bg-brand-accent/20 rounded-full blur-3xl" />
 
         <div className="relative z-10 max-w-2xl">
           <h2

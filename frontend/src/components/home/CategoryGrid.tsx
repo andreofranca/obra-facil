@@ -50,7 +50,7 @@ export async function CategoryGrid() {
               <Link key={categoria.id} href={`/profissionais?categoria=${encodeURIComponent(categoria.nome)}`} className="block outline-none group focus-visible:ring-2 focus-visible:ring-brand-primary rounded-2xl">
                 <Card
                   tabIndex={-1}
-                  className="flex flex-col h-full min-h-[200px] p-6 bg-neutral-surface border border-neutral-border rounded-2xl shadow-sm transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:shadow-elevated group-hover:border-brand-primary/30"
+                  className="flex flex-col h-full min-h-52 p-6 bg-neutral-surface border border-neutral-border rounded-2xl shadow-sm transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:shadow-elevated group-hover:border-brand-primary/30"
                 >
                   <div
                     aria-hidden="true"
