@@ -1,22 +1,30 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Header, Footer } from "@/components/layout";
+import {
+  ProfessionalHero,
+  ProfessionalInfo,
+  ProfessionalServices,
+  ProfessionalSidebar,
+  ProfessionalCTA,
+} from "@/components/profissional";
 import type { ProfissionalResumo } from "@/types/profissional";
 
-async function getProfissional(
-  id: string
-): Promise<ProfissionalResumo | null> {
-  const response = await fetch(
-    `http://localhost:3000/api/profissionais?id=${id}`,
-    {
+// SSR data fetch
+async function getProfissional(id: string): Promise<ProfissionalResumo | null> {
+  const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  try {
+    const response = await fetch(`${url}/api/profissionais?id=${id}`, {
       cache: "no-store",
-    }
-  );
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return null;
+    }
+
+    return response.json();
+  } catch (error) {
     return null;
   }
-
-  return response.json();
 }
 
 export default async function ProfissionalPage({
@@ -31,60 +39,53 @@ export default async function ProfissionalPage({
     notFound();
   }
 
+  // Derived determinist mock data for UI visual constraints
+  const charCode = profissional.id.charCodeAt(0) || 1;
+  const mockRating = (4.5 + (charCode % 5) * 0.1).toFixed(1);
+  const mockTotalReviews = 5 + (charCode % 45);
+  
   const principalServico = profissional.servicos[0];
-
+  const especialidade = principalServico?.categoria.nome || "Especialista Parceiro";
+  
   return (
-    <main className="p-10">
-      <h1 className="text-4xl font-bold mb-6">
-        {profissional.user.name}
-      </h1>
+    <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
+      <Header />
+      
+      <main className="flex-1 w-full pb-16">
+        <ProfessionalHero 
+          name={profissional.user.name} 
+          specialty={especialidade}
+          rating={mockRating.toString()}
+          totalReviews={mockTotalReviews}
+        />
 
-      <div className="border rounded-lg p-6 shadow max-w-2xl">
-        <p className="mb-4">
-          <strong>Descrição:</strong>
-          <br />
-          {profissional.descricao || "Não informada"}
-        </p>
+        <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
+          
+          {/* Coluna Principal: Conteúdo do Profissional */}
+          <div className="lg:col-span-2 space-y-12">
+            <ProfessionalInfo 
+              description={profissional.descricao} 
+              experience={profissional.experiencia}
+              categoryName={especialidade}
+            />
+            
+            <ProfessionalServices services={profissional.servicos} />
+            
+            <ProfessionalCTA profissionalId={profissional.id} />
+          </div>
 
-        <p className="mb-4">
-          <strong>Experiência:</strong>
-          <br />
-          {profissional.experiencia !== null
-            ? `${profissional.experiencia} anos`
-            : "Não informada"}
-        </p>
+          {/* Coluna Lateral: Dados rápidos e CTA */}
+          <aside className="lg:col-span-1">
+            <ProfessionalSidebar 
+              profissionalId={profissional.id} 
+              ativo={profissional.ativo} 
+            />
+          </aside>
 
-        <p className="mb-4">
-          <strong>Serviço:</strong>
-          <br />
-          {principalServico?.titulo || "Não informado"}
-        </p>
+        </div>
+      </main>
 
-        <p className="mb-4">
-          <strong>Categoria:</strong>
-          <br />
-          {principalServico?.categoria.nome || "Não informada"}
-        </p>
-
-        <p className="mb-4">
-          <strong>Email:</strong>
-          <br />
-          {profissional.user.email}
-        </p>
-
-        <p className="mb-4">
-          <strong>Telefone:</strong>
-          <br />
-          {profissional.user.phone || "Não informado"}
-        </p>
-
-        <Link
-          href={`/solicitar-servico?profissionalId=${profissional.id}`}
-          className="inline-block rounded-md bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
-        >
-          Solicitar Serviço
-        </Link>
-      </div>
-    </main>
+      <Footer />
+    </div>
   );
 }
