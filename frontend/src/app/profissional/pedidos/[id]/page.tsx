@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
-import ChatMensagens from "@/components/chat/ChatMensagens";
+import { ChatContainer } from "@/components/chat";
 import { ProposalsSection } from "@/components/proposals";
 import IniciarServicoButton from "@/components/solicitacao/IniciarServicoButton";
 import { getAuthSession } from "@/lib/auth";
@@ -170,11 +170,16 @@ export default async function ProfissionalPedidoPage({
           <ProposalsSection solicitacaoId={solicitacao.id} userRole="PROFESSIONAL" />
         </div>
 
-        <ChatMensagens
-          historicoInicial={historico}
-          solicitacaoId={solicitacao.id}
-          usuarioAtualId={session.userId}
-        />
+        <div className="mt-8 h-[600px]">
+          <ChatContainer
+            historicoInicial={historico}
+            solicitacaoId={solicitacao.id}
+            usuarioAtualId={session.userId}
+            title={solicitacao.cliente.user.name}
+            subtitle="Cliente"
+            status={solicitacao.status as SolicitacaoServicoStatus}
+          />
+        </div>
       </div>
     </main>
   );

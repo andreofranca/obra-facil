@@ -75,8 +75,8 @@ export function ProposalsSection({ solicitacaoId, userRole }: ProposalsSectionPr
       } else {
         alert("Erro ao criar proposta.");
       }
-    } catch (err) {
-      alert("Erro ao criar proposta.");
+    } catch {
+      alert("Falha ao atualizar proposta.");
     }
   };
 
@@ -95,7 +95,7 @@ export function ProposalsSection({ solicitacaoId, userRole }: ProposalsSectionPr
       } else {
         alert("Erro ao atualizar proposta.");
       }
-    } catch (err) {
+    } catch {
       alert("Erro ao atualizar proposta.");
     }
   };

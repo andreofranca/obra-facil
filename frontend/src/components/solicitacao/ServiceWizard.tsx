@@ -71,7 +71,7 @@ export function ServiceWizard() {
 
       setProtocoloId((data as SolicitacaoServicoCriada).id);
       setCurrentStep(6); // Sucesso
-    } catch (err) {
+    } catch {
       setError("Ocorreu um erro de conexão. Tente novamente.");
     } finally {
       setIsSubmitting(false);
