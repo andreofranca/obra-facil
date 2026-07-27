@@ -4,6 +4,7 @@ import { ChatContainer } from "@/components/chat";
 import { ProposalsSection } from "@/components/proposals";
 import IniciarServicoButton from "@/components/solicitacao/IniciarServicoButton";
 import { ServiceCompletionCard, CompletionTimeline } from "@/components/service-completion";
+import { ReviewCard } from "@/components/reviews";
 import { getAuthSession } from "@/lib/auth";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
@@ -99,6 +100,7 @@ export default async function ProfissionalPedidoPage({
           createdAt: "asc",
         },
       },
+      avaliacao: true,
     },
   });
 
@@ -181,6 +183,24 @@ export default async function ProfissionalPedidoPage({
             role="PROFESSIONAL" 
           />
         </div>
+
+        {solicitacao.avaliacao && (
+          <div className="mt-6 border rounded-lg p-6 shadow bg-white">
+            <h2 className="text-xl font-semibold mb-4">Avaliação do Cliente</h2>
+            <ReviewCard
+              id={solicitacao.avaliacao.id}
+              nota={solicitacao.avaliacao.nota}
+              comentario={solicitacao.avaliacao.comentario}
+              createdAt={solicitacao.avaliacao.createdAt.toISOString()}
+              cliente={{
+                nome: solicitacao.cliente.user.name,
+              }}
+              solicitacao={{
+                titulo: solicitacao.titulo,
+              }}
+            />
+          </div>
+        )}
 
         <div className="mt-6">
           <ProposalsSection solicitacaoId={solicitacao.id} userRole="PROFESSIONAL" />

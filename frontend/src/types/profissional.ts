@@ -17,7 +17,7 @@ export type ProfissionalResumo = {
     descricao: string | null;
     categoria: CategoriaServicoResumo;
   }[];
-  avaliacoes?: {
+  avaliacoesServico?: {
     nota: number;
   }[];
 };

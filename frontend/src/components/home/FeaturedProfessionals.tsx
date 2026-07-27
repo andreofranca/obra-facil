@@ -31,10 +31,10 @@ export async function FeaturedProfessionals() {
           {profissionais.map((profissional) => {
             let reviewsCount = 0;
             let rating = 0;
-            if (profissional.avaliacoes && profissional.avaliacoes.length > 0) {
-              reviewsCount = profissional.avaliacoes.length;
+            if (profissional.avaliacoesServico && profissional.avaliacoesServico.length > 0) {
+              reviewsCount = profissional.avaliacoesServico.length;
               rating = Math.round(
-                profissional.avaliacoes.reduce((acc, curr) => acc + curr.nota, 0) / reviewsCount
+                profissional.avaliacoesServico.reduce((acc: any, curr: any) => acc + curr.nota, 0) / reviewsCount
               );
             }
             

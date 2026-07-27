@@ -7,6 +7,7 @@ import { OrderTimeline, OrderStatusBadge } from "@/components/pedidos";
 import { ServiceCompletionCard, CompletionTimeline } from "@/components/service-completion";
 import { Card } from "@/components/ui/Card";
 import { ProposalsSection } from "@/components/proposals";
+import { ReviewForm, ReviewCard } from "@/components/reviews";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
 
@@ -80,6 +81,7 @@ export default async function MinhaSolicitacaoPage({
           createdAt: "asc",
         },
       },
+      avaliacao: true,
     },
   });
 
@@ -157,6 +159,31 @@ export default async function MinhaSolicitacaoPage({
             status={solicitacao.status as SolicitacaoServicoStatus} 
             role="CLIENT" 
           />
+          
+          {solicitacao.status === "CONCLUIDA" && (
+            <div className="mt-4">
+              {solicitacao.avaliacao ? (
+                <Card className="p-6 bg-white border-neutral-border shadow-sm">
+                  <h3 className="text-lg font-bold text-neutral-text mb-4">Sua Avaliação</h3>
+                  <ReviewCard
+                    id={solicitacao.avaliacao.id}
+                    nota={solicitacao.avaliacao.nota}
+                    comentario={solicitacao.avaliacao.comentario}
+                    createdAt={solicitacao.avaliacao.createdAt.toISOString()}
+                    cliente={{
+                      nome: session.name || "Você",
+                    }}
+                    solicitacao={{
+                      titulo: solicitacao.titulo,
+                    }}
+                  />
+                </Card>
+              ) : (
+                <ReviewForm solicitacaoId={solicitacao.id} />
+              )}
+            </div>
+          )}
+
           <div className="h-[500px]">
             <ChatContainer
               solicitacaoId={solicitacao.id}

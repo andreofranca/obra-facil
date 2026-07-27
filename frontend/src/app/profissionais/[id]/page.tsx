@@ -6,6 +6,7 @@ import {
   ProfessionalServices,
   ProfessionalSidebar,
   ProfessionalCTA,
+  ProfessionalReviews
 } from "@/components/profissional";
 import type { ProfissionalResumo } from "@/types/profissional";
 
@@ -66,6 +67,8 @@ export default async function ProfissionalPage({
             <ProfessionalServices services={profissional.servicos} />
             
             <ProfessionalCTA profissionalId={profissional.id} />
+
+            <ProfessionalReviews profissionalId={profissional.id} />
           </div>
 
           {/* Coluna Lateral: Dados rápidos e CTA */}

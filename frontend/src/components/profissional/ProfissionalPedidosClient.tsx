@@ -14,16 +14,21 @@ import type {
   SolicitacaoProfissionalResumo,
 } from "@/types/solicitacao";
 
+import type { RatingSummary } from "@/domain/RatingService";
+import { ReviewSummary } from "@/components/reviews";
+
 type ProfissionalPedidosClientProps = {
   initialSolicitacoes: SolicitacaoProfissionalResumo[];
   initialErrorMessage: string;
   profissionalNome: string;
+  summary: RatingSummary;
 };
 
 export default function ProfissionalPedidosClient({
   initialSolicitacoes,
   initialErrorMessage,
   profissionalNome,
+  summary,
 }: ProfissionalPedidosClientProps) {
   const [solicitacoes, setSolicitacoes] = useState(initialSolicitacoes);
   const [errorMessage, setErrorMessage] = useState(initialErrorMessage);
@@ -96,6 +101,13 @@ export default function ProfissionalPedidosClient({
         emAndamento={dashboard.emAndamento}
         concluidas={dashboard.concluidas}
       />
+
+      <div className="mb-6">
+        <h2 className="text-xl font-bold text-neutral-text mb-4">
+          Sua Reputação
+        </h2>
+        <ReviewSummary summary={summary} />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2">

@@ -64,6 +64,8 @@ export default async function ProfissionalPedidosPage() {
 
   const { solicitacoes, errorMessage } =
     await getSolicitacoesProfissional();
+    
+  const summary = await import("@/domain/RatingService").then(mod => mod.RatingService.getProfissionalReputation(session.profissionalId!));
 
   return (
     <main className="bg-neutral-background min-h-screen pt-4">
@@ -71,6 +73,7 @@ export default async function ProfissionalPedidosPage() {
         initialSolicitacoes={solicitacoes}
         initialErrorMessage={errorMessage}
         profissionalNome={session.name || "Profissional"}
+        summary={summary}
       />
     </main>
   );

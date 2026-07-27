@@ -28,7 +28,8 @@ model Cliente {
   id           String             @id @default(uuid())
   userId       String             @unique
   user         User               @relation(fields: [userId], references: [id])
-  solicitacoes SolicitarServico[]
+  solicitacoes    SolicitarServico[]
+  avaliacoesServico AvaliacaoServico[]
 
   @@map("clients")
 }
@@ -40,16 +41,13 @@ model Profissional {
   experiencia  Int?
   ativo        Boolean            @default(true)
   user         User               @relation(fields: [userId], references: [id])
-  avaliacoes      Avaliacao[]
-  avaliacaoMedia  Decimal?           @default(0.0)
-  totalAvaliacoes Int                @default(0)
+  avaliacoesServico AvaliacaoServico[]
   servicos        Servico[]
   solicitacoes SolicitarServico[]
   propostas    Proposta[]
   endereco     Endereco?
   planos       ProfissionalPlano[]
 
-  @@index([avaliacaoMedia(sort: Desc)])
   @@map("professionals")
 }
 
@@ -88,6 +86,7 @@ model SolicitarServico {
   updatedAt      DateTime
   mensagens      MensagemSolicitacao[]
   propostas      Proposta[]
+  avaliacao      AvaliacaoServico?
   historicoStatus HistoricoStatusServico[]
   cliente        Cliente               @relation(fields: [clienteId], references: [id])
   profissional   Profissional?         @relation(fields: [profissionalId], references: [id], onDelete: SetNull)
@@ -130,16 +129,23 @@ model Proposta {
   @@map("proposals")
 }
 
-model Avaliacao {
-  id             String       @id @default(uuid())
+model AvaliacaoServico {
+  id             String           @id @default(uuid())
+  solicitacaoId  String           @unique
+  clienteId      String
+  profissionalId String
   nota           Int
   comentario     String?
-  profissionalId String
-  createdAt      DateTime     @default(now())
-  profissional   Profissional @relation(fields: [profissionalId], references: [id])
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  solicitacao    SolicitarServico @relation(fields: [solicitacaoId], references: [id])
+  cliente        Cliente          @relation(fields: [clienteId], references: [id])
+  profissional   Profissional     @relation(fields: [profissionalId], references: [id])
 
   @@index([profissionalId])
-  @@map("ratings")
+  @@index([clienteId])
+  @@map("service_ratings")
 }
 
 model HistoricoStatusServico {

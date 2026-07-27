@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       where: Object.keys(where).length > 0 ? where : undefined,
       include,
       orderBy: {
-        avaliacaoMedia: 'desc'
+        user: { name: 'asc' }
       }
     });
 
