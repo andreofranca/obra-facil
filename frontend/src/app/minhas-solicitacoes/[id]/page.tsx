@@ -5,6 +5,7 @@ import ChatMensagens from "@/components/chat/ChatMensagens";
 import { getAuthSession } from "@/lib/auth";
 import { OrderTimeline, OrderStatusBadge } from "@/components/pedidos";
 import { Card } from "@/components/ui/Card";
+import { ProposalsSection } from "@/components/proposals";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
 
@@ -144,7 +145,10 @@ export default async function MinhaSolicitacaoPage({
           </Card>
         </div>
 
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 flex flex-col gap-6">
+          <Card className="p-5 bg-white border-neutral-border shadow-sm">
+            <ProposalsSection solicitacaoId={solicitacao.id} userRole="CLIENT" />
+          </Card>
           <Card className="p-0 bg-white border-neutral-border shadow-sm overflow-hidden h-[500px] flex flex-col">
             <div className="p-4 border-b border-neutral-border bg-neutral-surface">
               <h2 className="font-bold text-neutral-text flex items-center gap-2">

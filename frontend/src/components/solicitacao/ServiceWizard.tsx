@@ -11,7 +11,7 @@ import type { CriarSolicitacaoServicoPayload, SolicitacaoServicoCriada } from "@
 
 export function ServiceWizard() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [profissionalId, setProfissionalId] = useState(() => {
+  const [profissionalId] = useState(() => {
     if (typeof window !== "undefined") {
       return new URLSearchParams(window.location.search).get("profissionalId") || "";
     }
@@ -71,7 +71,7 @@ export function ServiceWizard() {
 
       setProtocoloId((data as SolicitacaoServicoCriada).id);
       setCurrentStep(6); // Sucesso
-    } catch (error) {
+    } catch (err) {
       setError("Ocorreu um erro de conexão. Tente novamente.");
     } finally {
       setIsSubmitting(false);

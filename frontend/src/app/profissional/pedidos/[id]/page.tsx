@@ -1,10 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import ChatMensagens from "@/components/chat/ChatMensagens";
-import PropostaFormulario from "@/components/propostas/PropostaFormulario";
+import { ProposalsSection } from "@/components/proposals";
 import IniciarServicoButton from "@/components/solicitacao/IniciarServicoButton";
-import { PropostaResumo } from "@/types/proposta";
-import PropostaItem from "@/components/propostas/PropostaItem";
 import { getAuthSession } from "@/lib/auth";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
@@ -114,30 +112,7 @@ export default async function ProfissionalPedidoPage({
     mensagens: solicitacao.mensagens.map(mapMensagem),
   };
 
-  const propostasResumo: PropostaResumo[] = (solicitacao.propostas || []).map((p) => ({
-    id: p.id,
-    valor: p.valor.toString(),
-    prazoDias: p.prazoDias,
-    mensagem: p.mensagem,
-    status: p.status,
-    createdAt: p.createdAt.toISOString(),
-    updatedAt: p.updatedAt.toISOString(),
-    solicitacao: {
-      id: solicitacao.id,
-      titulo: solicitacao.titulo,
-      descricao: solicitacao.descricao,
-      cliente: {
-        id: solicitacao.cliente.id,
-        nome: solicitacao.cliente.user.name,
-        email: solicitacao.cliente.user.email,
-      },
-    },
-    profissional: {
-      id: p.profissional.id,
-      nome: p.profissional.user.name,
-      email: p.profissional.user.email,
-    },
-  }));
+
 
   return (
     <main className="p-10">
@@ -191,17 +166,8 @@ export default async function ProfissionalPedidoPage({
           <IniciarServicoButton solicitacaoId={solicitacao.id} />
         )}
 
-        <PropostaFormulario
-          solicitacaoId={solicitacao.id}
-          profissionalId={session.profissionalId}
-        />
         <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-3">Propostas</h2>
-          <div className="grid gap-3">
-            {propostasResumo.map((p) => (
-              <PropostaItem key={p.id} proposta={p} />
-            ))}
-          </div>
+          <ProposalsSection solicitacaoId={solicitacao.id} userRole="PROFESSIONAL" />
         </div>
 
         <ChatMensagens

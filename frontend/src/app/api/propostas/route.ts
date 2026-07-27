@@ -67,7 +67,7 @@ function mapProposta(proposta: {
   valor: { toString: () => string };
   prazoDias: number;
   mensagem: string;
-  status: "PENDENTE" | "ACEITA" | "RECUSADA";
+  status: "PENDENTE" | "ACEITA" | "RECUSADA" | "CANCELADA" | "EXPIRADA";
   createdAt: Date;
   updatedAt: Date;
   solicitacao: {

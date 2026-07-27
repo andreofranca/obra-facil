@@ -1,4 +1,4 @@
-export type PropostaStatus = "PENDENTE" | "ACEITA" | "RECUSADA";
+export type PropostaStatus = "PENDENTE" | "ACEITA" | "RECUSADA" | "CANCELADA" | "EXPIRADA";
 
 export type CriarPropostaPayload = {
   solicitacaoId: string;
