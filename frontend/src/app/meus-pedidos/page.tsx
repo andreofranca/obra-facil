@@ -1,32 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/lib/auth";
-import type {
-  SolicitacaoServicoResumo,
-  SolicitacaoServicoStatus,
-} from "@/types/solicitacao";
+import { Button } from "@/components/ui/Button";
+import { OrdersList } from "@/components/pedidos";
+import type { SolicitacaoServicoResumo } from "@/types/solicitacao";
 
-const statusLabels: Record<SolicitacaoServicoStatus, string> = {
-  ABERTA: "Aberta",
-  EM_ANALISE: "Em análise",
-  ACEITA: "Aceita",
-  EM_ANDAMENTO: "Em andamento",
-  CONCLUIDA: "Concluída",
-  CANCELADA: "Cancelada",
-};
-
-const statusClasses: Record<SolicitacaoServicoStatus, string> = {
-  ABERTA: "bg-blue-100 text-blue-700",
-  EM_ANALISE: "bg-yellow-100 text-yellow-800",
-  ACEITA: "bg-emerald-100 text-emerald-700",
-  EM_ANDAMENTO: "bg-indigo-100 text-indigo-700",
-  CONCLUIDA: "bg-green-100 text-green-700",
-  CANCELADA: "bg-red-100 text-red-700",
-};
-
-async function getSolicitacoes(): Promise<
-  SolicitacaoServicoResumo[]
-> {
+async function getSolicitacoes(): Promise<SolicitacaoServicoResumo[]> {
   const session = await getAuthSession();
 
   if (!session) {
@@ -51,14 +30,6 @@ async function getSolicitacoes(): Promise<
   return response.json();
 }
 
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(date));
-}
-
 export default async function MeusPedidosPage() {
   const session = await getAuthSession();
 
@@ -69,80 +40,31 @@ export default async function MeusPedidosPage() {
   const solicitacoes = await getSolicitacoes();
 
   return (
-    <main className="p-10">
-      <div className="max-w-4xl">
-        <h1 className="text-4xl font-bold mb-6">
-          Meus Pedidos
-        </h1>
-
-        <p className="mb-6">
-          Cliente: <strong>{session.name}</strong>
-        </p>
-
-        <Link
-          href="/minhas-propostas"
-          className="inline-block mb-6 rounded-md border px-3 py-2 text-sm font-semibold hover:border-blue-500"
-        >
-          Ver propostas recebidas
-        </Link>
-
-        {solicitacoes.length === 0 ? (
-          <div className="border rounded-lg p-6 shadow">
-            <p>
-              Nenhuma solicitação encontrada para este cliente.
-            </p>
-            <Link
-              href="/solicitar-servico"
-              className="inline-block mt-4 rounded-md bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
-            >
-              Solicitar Serviço
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {solicitacoes.map((solicitacao) => (
-              <article
-                key={solicitacao.id}
-                className="border rounded-lg p-5 shadow"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <h2 className="text-xl font-semibold">
-                      {solicitacao.titulo}
-                    </h2>
-                    <p className="mt-2 text-sm opacity-80">
-                      {formatDate(solicitacao.createdAt)}
-                    </p>
-                  </div>
-
-                  <span
-                    className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[solicitacao.status]}`}
-                  >
-                    {statusLabels[solicitacao.status]}
-                  </span>
-                </div>
-
-                <p className="mt-4">
-                  {solicitacao.descricao}
-                </p>
-
-                <p className="mt-4 text-sm opacity-80">
-                  Profissional:{" "}
-                  {solicitacao.profissional?.nome ||
-                    "Ainda não definido"}
-                </p>
-
-                <Link
-                  href={`/minhas-solicitacoes/${solicitacao.id}`}
-                  className="inline-block mt-5 rounded-md border px-3 py-2 text-sm font-semibold hover:border-blue-500"
-                >
-                  Ver detalhes
-                </Link>
-              </article>
-            ))}
-          </div>
-        )}
+    <main className="p-4 sm:p-10 max-w-7xl mx-auto w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-neutral-text mb-2">
+            Meus Pedidos
+          </h1>
+          <p className="text-neutral-text/70 max-w-2xl">
+            Acompanhe o andamento das suas solicitações de serviço. Bem-vindo de volta, <strong>{session.name}</strong>.
+          </p>
+        </div>
+        <div className="flex gap-3 w-full sm:w-auto">
+          <Link href="/minhas-propostas" tabIndex={-1} className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto">
+              Ver propostas
+            </Button>
+          </Link>
+          <Link href="/solicitar-servico" tabIndex={-1} className="w-full sm:w-auto">
+            <Button variant="primary" className="w-full sm:w-auto">
+              Novo Pedido
+            </Button>
+          </Link>
+        </div>
       </div>
+
+      <OrdersList solicitacoes={solicitacoes} />
     </main>
   );
 }
