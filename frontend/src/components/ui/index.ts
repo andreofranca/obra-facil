@@ -6,4 +6,4 @@ export { Input } from "./Input";
 export { Logo } from "./Logo";
 export { Section } from "./Section";
 export { Skeleton } from "./Skeleton";
-
+export { Avatar } from "./Avatar";

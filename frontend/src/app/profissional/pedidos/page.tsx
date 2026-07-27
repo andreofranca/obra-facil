@@ -66,10 +66,11 @@ export default async function ProfissionalPedidosPage() {
     await getSolicitacoesProfissional();
 
   return (
-    <main className="p-10">
+    <main className="bg-neutral-background min-h-screen pt-4">
       <ProfissionalPedidosClient
         initialSolicitacoes={solicitacoes}
         initialErrorMessage={errorMessage}
+        profissionalNome={session.name || "Profissional"}
       />
     </main>
   );
