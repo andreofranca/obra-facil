@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChatContainer } from "@/components/chat";
 import { getAuthSession } from "@/lib/auth";
 import { OrderTimeline, OrderStatusBadge } from "@/components/pedidos";
+import { ServiceCompletionCard, CompletionTimeline } from "@/components/service-completion";
 import { Card } from "@/components/ui/Card";
 import { ProposalsSection } from "@/components/proposals";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
@@ -149,6 +150,13 @@ export default async function MinhaSolicitacaoPage({
           <Card className="p-5 bg-white border-neutral-border shadow-sm">
             <ProposalsSection solicitacaoId={solicitacao.id} userRole="CLIENT" />
           </Card>
+          
+          <CompletionTimeline status={solicitacao.status as SolicitacaoServicoStatus} />
+          <ServiceCompletionCard 
+            solicitacaoId={solicitacao.id} 
+            status={solicitacao.status as SolicitacaoServicoStatus} 
+            role="CLIENT" 
+          />
           <div className="h-[500px]">
             <ChatContainer
               solicitacaoId={solicitacao.id}

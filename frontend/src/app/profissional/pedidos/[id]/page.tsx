@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ChatContainer } from "@/components/chat";
 import { ProposalsSection } from "@/components/proposals";
 import IniciarServicoButton from "@/components/solicitacao/IniciarServicoButton";
+import { ServiceCompletionCard, CompletionTimeline } from "@/components/service-completion";
 import { getAuthSession } from "@/lib/auth";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
@@ -14,6 +15,7 @@ const statusLabels: Record<SolicitacaoServicoStatus, string> = {
   EM_ANALISE: "Em análise",
   ACEITA: "Aceita",
   EM_ANDAMENTO: "Em andamento",
+  AGUARDANDO_CONFIRMACAO_CLIENTE: "Aguardando confirmação",
   CONCLUIDA: "Concluída",
   CANCELADA: "Cancelada",
 };
@@ -163,8 +165,22 @@ export default async function ProfissionalPedidoPage({
         </section>
 
         {solicitacao.status === "ACEITA" && (
-          <IniciarServicoButton solicitacaoId={solicitacao.id} />
+          <div className="mt-6">
+            <IniciarServicoButton solicitacaoId={solicitacao.id} />
+          </div>
         )}
+
+        <div className="mt-6">
+          <CompletionTimeline status={solicitacao.status as SolicitacaoServicoStatus} />
+        </div>
+
+        <div className="mt-6">
+          <ServiceCompletionCard 
+            solicitacaoId={solicitacao.id} 
+            status={solicitacao.status as SolicitacaoServicoStatus} 
+            role="PROFESSIONAL" 
+          />
+        </div>
 
         <div className="mt-6">
           <ProposalsSection solicitacaoId={solicitacao.id} userRole="PROFESSIONAL" />

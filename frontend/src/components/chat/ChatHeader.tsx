@@ -14,15 +14,17 @@ const statusColorMap: Record<SolicitacaoServicoStatus, "neutral" | "success" | "
   EM_ANALISE: "warning",
   ACEITA: "info",
   EM_ANDAMENTO: "info",
+  AGUARDANDO_CONFIRMACAO_CLIENTE: "warning",
   CONCLUIDA: "success",
   CANCELADA: "error",
 };
 
 const statusLabelMap: Record<SolicitacaoServicoStatus, string> = {
   ABERTA: "Aberta",
-  EM_ANALISE: "Em análise",
+  EM_ANALISE: "Em Análise",
   ACEITA: "Aceita",
   EM_ANDAMENTO: "Em andamento",
+  AGUARDANDO_CONFIRMACAO_CLIENTE: "Aguardando confirmação",
   CONCLUIDA: "Concluída",
   CANCELADA: "Cancelada",
 };

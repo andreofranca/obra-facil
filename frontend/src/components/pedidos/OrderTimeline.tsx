@@ -17,6 +17,9 @@ export function OrderTimeline({ status }: OrderTimelineProps) {
   
   // Find current index based on status
   let currentIndex = TIMELINE_STEPS.findIndex((s) => s.id === status);
+  if (status === "AGUARDANDO_CONFIRMACAO_CLIENTE") {
+    currentIndex = TIMELINE_STEPS.findIndex((s) => s.id === "EM_ANDAMENTO");
+  }
   if (currentIndex === -1) {
     if (isCancelled) currentIndex = TIMELINE_STEPS.length; // all inactive if we just want to show cancelled
     else currentIndex = 0; // fallback

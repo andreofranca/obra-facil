@@ -18,7 +18,8 @@ model User {
   updatedAt    DateTime              @updatedAt
   cliente      Cliente?
   profissional Profissional?
-  mensagens    MensagemSolicitacao[]
+  mensagens       MensagemSolicitacao[]
+  historicoStatus HistoricoStatusServico[]
 
   @@map("users")
 }
@@ -82,10 +83,12 @@ model SolicitarServico {
   clienteId      String
   profissionalId String?
   startedAt      DateTime?
+  finishedAt     DateTime?
   createdAt      DateTime              @default(now())
   updatedAt      DateTime
   mensagens      MensagemSolicitacao[]
   propostas      Proposta[]
+  historicoStatus HistoricoStatusServico[]
   cliente        Cliente               @relation(fields: [clienteId], references: [id])
   profissional   Profissional?         @relation(fields: [profissionalId], references: [id], onDelete: SetNull)
 
@@ -139,6 +142,21 @@ model Avaliacao {
   @@map("ratings")
 }
 
+model HistoricoStatusServico {
+  id            String             @id @default(uuid())
+  solicitacaoId String
+  usuarioId     String
+  statusAnterior SolicitacaoStatus?
+  novoStatus    SolicitacaoStatus
+  createdAt     DateTime           @default(now())
+  solicitacao   SolicitarServico   @relation(fields: [solicitacaoId], references: [id])
+  usuario       User               @relation(fields: [usuarioId], references: [id])
+
+  @@index([solicitacaoId])
+  @@index([usuarioId])
+  @@map("service_request_status_history")
+}
+
 enum UserRole {
   CLIENT
   PROFESSIONAL
@@ -150,6 +168,7 @@ enum SolicitacaoStatus {
   EM_ANALISE
   ACEITA
   EM_ANDAMENTO
+  AGUARDANDO_CONFIRMACAO_CLIENTE
   CONCLUIDA
   CANCELADA
 }

@@ -9,6 +9,7 @@ export const ORDER_STATUS_MAP: Record<
   EM_ANALISE: { label: "Em análise", tone: "warning" },
   ACEITA: { label: "Proposta recebida", tone: "success" },
   EM_ANDAMENTO: { label: "Em execução", tone: "info" },
+  AGUARDANDO_CONFIRMACAO_CLIENTE: { label: "Em execução", tone: "info" },
   CONCLUIDA: { label: "Finalizado", tone: "success" },
   CANCELADA: { label: "Cancelado", tone: "error" },
 };

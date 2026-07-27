@@ -3,6 +3,7 @@ export type SolicitacaoServicoStatus =
   | "EM_ANALISE"
   | "ACEITA"
   | "EM_ANDAMENTO"
+  | "AGUARDANDO_CONFIRMACAO_CLIENTE"
   | "CONCLUIDA"
   | "CANCELADA";
 

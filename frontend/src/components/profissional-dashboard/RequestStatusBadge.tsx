@@ -7,8 +7,9 @@ export const REQUEST_STATUS_MAP: Record<
 > = {
   ABERTA: { label: "Nova solicitação", tone: "info" },
   EM_ANALISE: { label: "Em análise", tone: "warning" },
-  ACEITA: { label: "Proposta enviada", tone: "success" },
+  ACEITA: { label: "Proposta recebida", tone: "success" },
   EM_ANDAMENTO: { label: "Em execução", tone: "info" },
+  AGUARDANDO_CONFIRMACAO_CLIENTE: { label: "Aguardando confirmação", tone: "warning" },
   CONCLUIDA: { label: "Finalizado", tone: "success" },
   CANCELADA: { label: "Cancelado", tone: "error" },
 };
