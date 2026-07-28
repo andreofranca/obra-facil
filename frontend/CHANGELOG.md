@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to Semantic Versioning (loosely on beta).
 
+## [Unreleased] - (Trabalho Atual)
+
+### Adicionado (Epic 3.1 DevOps Foundation)
+- **CI/CD**: Workflows em GitHub Actions para `ci.yml`, `quality-gate.yml` e um placeholder `release.yml`.
+- **Comunidade**: Adicionados os arquivos `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`.
+- **Templates**: `bug.yml`, `feature.yml`, `question.yml` e `PULL_REQUEST_TEMPLATE.md` padronizados para escalar o controle de contribuições.
+- **Documentação Ops**: Novas diretrizes para CI/CD (`ci-cd.md`), estratégias de branch (`branching.md`) e processo de lançamento (`release-process.md`).
+
 ## [0.23.0-beta] - 2026-07-28
 ### Added
 - **Platform Layer** (EPIC 1):

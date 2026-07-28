@@ -1,0 +1,39 @@
+name: Bug Report
+description: Relatar um erro ou comportamento inesperado na aplicação
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por dedicar um tempo para relatar um problema!
+  - type: input
+    id: titulo
+    attributes:
+      label: Qual é o problema (em uma frase)?
+      placeholder: ex. O formulário de login trava quando envio uma senha incorreta
+    validations:
+      required: true
+  - type: textarea
+    id: descricao
+    attributes:
+      label: Descrição do Bug
+      description: O que aconteceu e o que deveria ter acontecido?
+    validations:
+      required: true
+  - type: textarea
+    id: reproducao
+    attributes:
+      label: Passos para Reproduzir
+      description: Como podemos reproduzir o problema?
+    validations:
+      required: true
+  - type: dropdown
+    id: ambiente
+    attributes:
+      label: Ambiente
+      options:
+        - Desenvolvimento (Local)
+        - Staging / Beta
+        - Produção
+    validations:
+      required: true

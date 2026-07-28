@@ -13,8 +13,10 @@
 | **Cobertura E2E** | Inicial (QEF) | Estrutura Playwright rodando com validação base de Acessibilidade via teclado. |
 | **Status Acessibilidade (a11y)**| Automatizado | `jest-axe` ativo no CI para componentes. Foco e Contraste monitorados E2E. |
 | **Status Performance** | Monitorado | Documentação ativa para LCP, CLS, INP (ADR-016). |
+| **Status DevOps (CI/CD)** | Implantado (V1) | Workflows ativos via GitHub Actions (Quality Gate e Release). |
+| **Políticas Comunitárias** | Implantadas | Code of Conduct, Contributing, Security e PR/Issue Templates vigentes. |
 | **Dívida Técnica** | Moderada | Regras em Route Handlers; Adicionada a futura necessidade de Regressão Visual. |
 | **Status Build** | Passando (OK) | O build Next.js foi consertado e passa limpo (turbopack). |
-| **Status Lint** | Alertas | Contém avisos legados em rotas ainda não refatoradas. |
-| **Última Revisão** | QEF (Epic 2) | Implementação da Quality Engineering Foundation (Testes unit/comp/e2e). |
+| **Status Lint** | Limpo | Dívidas técnicas zeradas (0 errors) durante a inicialização DevOps. |
+| **Última Revisão** | DevOps (Epic 3.1) | Implantação da DevOps Foundation (Workflows e Templates). |
 | **Próxima Sprint** | A Definir | Aguardando diretrizes de Core Business. |
