@@ -39,9 +39,9 @@ export default function ProfissionalPedidosClient({
       abertas: solicitacoes.filter((s) => s.status === "ABERTA").length,
       emAndamento: solicitacoes.filter(
         (s) =>
-          s.status === "EM_ANDAMENTO" ||
+          s.status === "EM_EXECUCAO" ||
           s.status === "ACEITA" ||
-          s.status === "EM_ANALISE"
+          s.status === "NEGOCIACAO"
       ).length,
       concluidas: solicitacoes.filter((s) => s.status === "CONCLUIDA").length,
     };

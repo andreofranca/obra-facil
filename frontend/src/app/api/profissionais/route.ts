@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
-
+import { paginate, PaginationRequest } from "@/lib/pagination";
 
 const prisma = new PrismaClient();
 
@@ -33,6 +33,8 @@ export async function GET(request: NextRequest) {
           },
         },
       },
+      endereco: true,
+      avaliacoesServico: true,
     };
 
     if (id) {
@@ -78,7 +80,9 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    const profissionais = await prisma.profissional.findMany({
+    const paginationRequest = PaginationRequest.fromSearchParams(request.nextUrl.searchParams);
+
+    const profissionais = await paginate(prisma.profissional as unknown as import("@/lib/pagination").PrismaDelegate<unknown>, paginationRequest, {
       where: Object.keys(where).length > 0 ? where : undefined,
       include,
       orderBy: {

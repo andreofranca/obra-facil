@@ -14,10 +14,14 @@ const prisma = new PrismaClient();
 
 const allowedStatus: SolicitacaoServicoStatus[] = [
   "ABERTA",
-  "EM_ANALISE",
+  "PROPOSTAS",
+  "NEGOCIACAO",
   "ACEITA",
-  "EM_ANDAMENTO",
+  "EM_EXECUCAO",
   "CONCLUIDA",
+  "CANCELADA",
+  "EXPIRADA",
+  "RECUSADA",
 ];
 
 function isAllowedStatus(
@@ -96,7 +100,7 @@ export async function PATCH(
         );
       }
 
-      if (payload.status === "EM_ANDAMENTO") {
+      if (payload.status === "EM_EXECUCAO") {
         if (current.status !== "ACEITA") {
           throw new HttpError(
             "A solicitação deve estar ACEITA para iniciar o serviço",
@@ -107,7 +111,7 @@ export async function PATCH(
         return tx.solicitarServico.update({
           where: { id },
           data: {
-            status: "EM_ANDAMENTO",
+            status: "EM_EXECUCAO",
             startedAt: new Date(),
             updatedAt: new Date(),
           },

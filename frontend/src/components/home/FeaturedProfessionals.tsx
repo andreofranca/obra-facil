@@ -3,10 +3,11 @@ import { getProfissionais } from "@/lib/services/profissionais";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Star } from "lucide-react";
+import { EmptyState } from "@/components/feedback/empty-states/EmptyState";
 
 export async function FeaturedProfessionals() {
-  const profissionaisAll = await getProfissionais();
-  const profissionais = profissionaisAll.dados.slice(0, 4);
+  const profissionaisAll = await getProfissionais({ limite: 4 });
+  const profissionais = profissionaisAll.dados;
 
   return (
     <section aria-labelledby="featured-professionals-title" className="py-16 md:py-24 bg-neutral-background">
@@ -23,9 +24,11 @@ export async function FeaturedProfessionals() {
       </div>
 
       {profissionais.length === 0 ? (
-        <div className="text-center py-16 bg-neutral-surface rounded-2xl border border-neutral-border shadow-soft">
-          <p className="text-neutral-muted font-medium">Nenhum profissional em destaque no momento.</p>
-        </div>
+        <EmptyState 
+          title="Nenhum destaque"
+          description="Nenhum profissional em destaque no momento."
+          icon="search"
+        />
       ) : (
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {profissionais.map((profissional) => {
@@ -37,14 +40,10 @@ export async function FeaturedProfessionals() {
                 profissional.avaliacoesServico.reduce((acc: number, curr: { nota: number }) => acc + curr.nota, 0) / reviewsCount
               );
             }
-            
-            // Fallback for visual mockup if no ratings exist
-            if (reviewsCount === 0) {
-              rating = 5;
-              reviewsCount = (profissional.id.charCodeAt(0) % 50) + 10;
-            }
 
             const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(profissional.user.name)}&backgroundColor=b6e3f4`;
+            const cidade = "São Paulo";
+            const estado = "SP";
 
             return (
               <Card
@@ -72,18 +71,24 @@ export async function FeaturedProfessionals() {
                   
                   <div className="flex items-center gap-1 text-neutral-muted text-sm mb-4 bg-neutral-background px-3 py-1 rounded-full">
                     <MapPin className="w-4 h-4" />
-                    <span>São Paulo, SP</span> {/* Dados mockados de cidade conforme mockup visual */}
+                    <span>{cidade}{estado ? `, ${estado}` : ''}</span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <div className="flex text-brand-accent">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className={`w-4 h-4 ${star <= rating ? 'fill-current' : 'text-neutral-border fill-transparent'}`} />
-                      ))}
+                  {reviewsCount > 0 ? (
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <div className="flex text-brand-accent">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} className={`w-4 h-4 ${star <= rating ? 'fill-current' : 'text-neutral-border fill-transparent'}`} />
+                        ))}
+                      </div>
+                      <span className="text-neutral-text font-semibold text-sm">{rating.toFixed(1)}</span>
+                      <span className="text-neutral-muted text-xs">({reviewsCount})</span>
                     </div>
-                    <span className="text-neutral-text font-semibold text-sm">{rating.toFixed(1)}</span>
-                    <span className="text-neutral-muted text-xs">({reviewsCount})</span>
-                  </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 mb-2 text-brand-accent bg-brand-primary/10 px-3 py-0.5 rounded-full">
+                      <span className="text-sm font-semibold">Novo na plataforma</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-4 border-t border-neutral-border/50 bg-neutral-surface">

@@ -1,17 +1,16 @@
 import { Badge } from "@/components/ui/Badge";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
 
-export const ORDER_STATUS_MAP: Record<
-  SolicitacaoServicoStatus,
-  { label: string; tone: "neutral" | "success" | "warning" | "error" | "info" }
-> = {
-  ABERTA: { label: "Solicitado", tone: "info" },
-  EM_ANALISE: { label: "Em análise", tone: "warning" },
-  ACEITA: { label: "Proposta recebida", tone: "success" },
-  EM_ANDAMENTO: { label: "Em execução", tone: "info" },
-  AGUARDANDO_CONFIRMACAO_CLIENTE: { label: "Em execução", tone: "info" },
-  CONCLUIDA: { label: "Finalizado", tone: "success" },
-  CANCELADA: { label: "Cancelado", tone: "error" },
+export const ORDER_STATUS_MAP: Record<SolicitacaoServicoStatus, { label: string; tone: "success" | "warning" | "error" | "info" | "neutral" }> = {
+  ABERTA: { label: "Aberta", tone: "neutral" },
+  PROPOSTAS: { label: "Propostas", tone: "info" },
+  NEGOCIACAO: { label: "Negociação", tone: "warning" },
+  ACEITA: { label: "Aceita", tone: "success" },
+  EM_EXECUCAO: { label: "Em execução", tone: "info" },
+  CONCLUIDA: { label: "Concluída", tone: "success" },
+  CANCELADA: { label: "Cancelada", tone: "error" },
+  EXPIRADA: { label: "Expirada", tone: "error" },
+  RECUSADA: { label: "Recusada", tone: "error" },
 };
 
 export interface OrderStatusBadgeProps {

@@ -1,11 +1,13 @@
 export type SolicitacaoServicoStatus =
   | "ABERTA"
-  | "EM_ANALISE"
+  | "PROPOSTAS"
+  | "NEGOCIACAO"
   | "ACEITA"
-  | "EM_ANDAMENTO"
-  | "AGUARDANDO_CONFIRMACAO_CLIENTE"
+  | "EM_EXECUCAO"
   | "CONCLUIDA"
-  | "CANCELADA";
+  | "CANCELADA"
+  | "EXPIRADA"
+  | "RECUSADA";
 
 export type CriarSolicitacaoServicoPayload = {
   titulo: string;

@@ -24,10 +24,10 @@ export function ServiceCompletionCard({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Regras de visibilidade
-  const isProfessionalAndCanFinish = role === "PROFESSIONAL" && status === "EM_ANDAMENTO";
-  const isClientAndCanConfirm = role === "CLIENT" && status === "AGUARDANDO_CONFIRMACAO_CLIENTE";
+  const isProfessionalAndCanFinish = role === "PROFESSIONAL" && status === "EM_EXECUCAO";
+  const isClientAndCanConfirm = role === "CLIENT" && status === "CONCLUIDA";
   
-  const showCard = isProfessionalAndCanFinish || isClientAndCanConfirm || status === "CONCLUIDA" || status === "AGUARDANDO_CONFIRMACAO_CLIENTE";
+  const showCard = isProfessionalAndCanFinish || isClientAndCanConfirm || status === "CONCLUIDA";
 
   if (!showCard) return null;
 
@@ -100,13 +100,13 @@ export function ServiceCompletionCard({
               </p>
             )}
             
-            {status === "AGUARDANDO_CONFIRMACAO_CLIENTE" && role === "PROFESSIONAL" && (
+            {status === "CONCLUIDA" && role === "PROFESSIONAL" && (
               <p className="text-sm text-neutral-text">
                 Você marcou o serviço como finalizado. Agora estamos aguardando o cliente confirmar a conclusão.
               </p>
             )}
 
-            {status === "AGUARDANDO_CONFIRMACAO_CLIENTE" && role === "CLIENT" && (
+            {status === "CONCLUIDA" && role === "CLIENT" && (
               <p className="text-sm text-neutral-text">
                 O profissional sinalizou que concluiu o serviço. Verifique se está tudo correto e confirme abaixo para encerrar.
               </p>

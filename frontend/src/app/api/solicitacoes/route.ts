@@ -52,8 +52,11 @@ export async function GET(_request: NextRequest) {
     // Force filtering by the authenticated user's ID to prevent IDOR
     const clienteId = session.clienteId;
 
-    const solicitacoes =
-      await prisma.solicitarServico.findMany({
+    const { paginate, PaginationRequest } = await import("@/lib/pagination");
+    const paginationRequest = PaginationRequest.fromSearchParams(_request.nextUrl.searchParams);
+
+    const paginatedSolicitacoes =
+      await paginate(prisma.solicitarServico as unknown as import("@/lib/pagination").PrismaDelegate<unknown>, paginationRequest, {
         where: {
           clienteId: clienteId,
         },
@@ -79,22 +82,35 @@ export async function GET(_request: NextRequest) {
         },
       });
 
-    const response: SolicitacaoServicoResumo[] =
-      solicitacoes.map((solicitacao) => ({
-        id: solicitacao.id,
-        titulo: solicitacao.titulo,
-        descricao: solicitacao.descricao,
-        status: solicitacao.status,
-        createdAt: solicitacao.createdAt.toISOString(),
-        profissional: solicitacao.profissional
-          ? {
-              id: solicitacao.profissional.id,
-              nome: solicitacao.profissional.user.name,
-            }
-          : null,
-      }));
+    const responseItems: SolicitacaoServicoResumo[] =
+      paginatedSolicitacoes.items.map((solicitacao: unknown) => {
+        const s = solicitacao as {
+          id: string;
+          titulo: string;
+          descricao: string;
+          status: string;
+          createdAt: Date;
+          profissional?: { id: string; user: { name: string } } | null;
+        };
+        return {
+          id: s.id,
+          titulo: s.titulo,
+          descricao: s.descricao,
+          status: s.status as import("@prisma/client").SolicitacaoStatus,
+          createdAt: s.createdAt.toISOString(),
+          profissional: s.profissional
+            ? {
+                id: s.profissional.id,
+                nome: s.profissional.user.name,
+              }
+            : null,
+        };
+      });
 
-    return apiSuccess(response);
+    return apiSuccess({
+      ...paginatedSolicitacoes,
+      items: responseItems
+    });
   } catch (error) {
     reqLogger.error(error);
 

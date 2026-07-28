@@ -20,7 +20,7 @@ export default function IniciarServicoButton({ solicitacaoId }: IniciarServicoBu
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: "EM_ANDAMENTO" }),
+        body: JSON.stringify({ status: "EM_EXECUCAO" }),
       });
 
       if (!response.ok) {

@@ -1,13 +1,6 @@
-import {
-  randomBytes,
-  scrypt as scryptCallback,
-  timingSafeEqual,
-} from "node:crypto";
-import { promisify } from "node:util";
+import { NodeCryptoProvider } from "@/platform/security";
 
-const scrypt = promisify(scryptCallback);
-const hashSeparator = ":";
-const hashKeyLength = 64;
+const cryptoProvider = new NodeCryptoProvider();
 
 export {
   createSessionCookieValue,
@@ -17,35 +10,9 @@ export {
 } from "./auth/session";
 
 export async function hashPassword(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  const derivedKey = (await scrypt(
-    password,
-    salt,
-    hashKeyLength
-  )) as Buffer;
-
-  return `${salt}${hashSeparator}${derivedKey.toString("hex")}`;
+  return cryptoProvider.hashPassword(password);
 }
 
-export async function verifyPassword(
-  password: string,
-  storedPassword: string
-) {
-  const [salt, storedKey] = storedPassword.split(hashSeparator);
-
-  if (!salt || !storedKey) {
-    return password === storedPassword;
-  }
-
-  const storedBuffer = Buffer.from(storedKey, "hex");
-  const derivedKey = (await scrypt(
-    password,
-    salt,
-    storedBuffer.length
-  )) as Buffer;
-
-  return (
-    storedBuffer.length === derivedKey.length &&
-    timingSafeEqual(storedBuffer, derivedKey)
-  );
+export async function verifyPassword(password: string, storedPassword: string) {
+  return cryptoProvider.verifyPassword(password, storedPassword);
 }

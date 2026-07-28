@@ -6,7 +6,7 @@ interface CompletionStatusBadgeProps {
 }
 
 export function CompletionStatusBadge({ status }: CompletionStatusBadgeProps) {
-  if (status === "EM_ANDAMENTO") {
+  if (status === "EM_EXECUCAO") {
     return (
       <Badge tone="info" className="w-fit">
         Em Andamento
@@ -14,14 +14,6 @@ export function CompletionStatusBadge({ status }: CompletionStatusBadgeProps) {
     );
   }
   
-  if (status === "AGUARDANDO_CONFIRMACAO_CLIENTE") {
-    return (
-      <Badge tone="warning" className="w-fit">
-        Aguardando sua Confirmação
-      </Badge>
-    );
-  }
-
   if (status === "CONCLUIDA") {
     return (
       <Badge tone="success" className="w-fit">

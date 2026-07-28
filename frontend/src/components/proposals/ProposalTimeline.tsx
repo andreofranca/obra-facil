@@ -9,7 +9,7 @@ const timelineSteps = [
   { id: "PENDENTE", label: "Criada" },
   { id: "VISUALIZADA", label: "Visualizada" },
   { id: "ACEITA", label: "Aceita" },
-  { id: "EM_ANDAMENTO", label: "Em andamento" },
+  { id: "EM_EXECUCAO", label: "Em andamento" },
   { id: "CONCLUIDA", label: "Concluída" },
 ];
 

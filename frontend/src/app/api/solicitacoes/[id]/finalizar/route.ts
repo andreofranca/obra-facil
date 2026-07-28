@@ -44,20 +44,20 @@ export async function POST(
         throw new HttpError("Ação permitida apenas para o profissional contratado", 403);
       }
 
-      if (current.status !== "EM_ANDAMENTO") {
-        throw new HttpError("A solicitação deve estar EM_ANDAMENTO para ser finalizada", 400);
+      if (current.status !== "EM_EXECUCAO") {
+        throw new HttpError("A solicitação deve estar EM_EXECUCAO para ser finalizada", 400);
       }
 
       const updated = await tx.solicitarServico.update({
         where: { id },
         data: {
-          status: "AGUARDANDO_CONFIRMACAO_CLIENTE",
+          status: "CONCLUIDA",
           updatedAt: new Date(),
           historicoStatus: {
             create: {
               usuarioId: session.userId,
               statusAnterior: current.status,
-              novoStatus: "AGUARDANDO_CONFIRMACAO_CLIENTE",
+              novoStatus: "CONCLUIDA",
             }
           }
         },

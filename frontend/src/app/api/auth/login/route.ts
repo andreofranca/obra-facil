@@ -12,6 +12,7 @@ import type {
 } from "@/types/auth";
 import { audit } from "@/lib/audit";
 import { logger } from "@/lib/logger";
+import { withRateLimit } from "@/lib/performance/rateLimit";
 
 const prisma = new PrismaClient();
 
@@ -39,7 +40,7 @@ function parseLoginPayload(body: unknown): LoginPayload | null {
   };
 }
 
-export async function POST(request: NextRequest) {
+async function loginHandler(request: NextRequest) {
   const payload = parseLoginPayload(await request.json());
 
   if (!payload) {
@@ -137,3 +138,9 @@ export async function POST(request: NextRequest) {
 
   return response;
 }
+
+export const POST = withRateLimit(loginHandler, {
+  limit: 5, // 5 requests
+  windowSeconds: 60, // per minute
+  keyPrefix: "login",
+});

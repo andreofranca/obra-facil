@@ -1,8 +1,22 @@
 import { NextResponse } from "next/server";
 import type { AuthSession, AuthUserRole } from "@/types/auth";
+import { PolicyAuthorizationService, Principal, Action } from "@/platform/security";
+
+const authService = new PolicyAuthorizationService();
+
+function toPrincipal(session: AuthSession | null): Principal | null {
+  if (!session) return null;
+  return {
+    id: session.userId, // We can define 'id' as the main subject ID
+    role: session.role,
+    // Add additional IDs to the principal for ownership matching
+    clienteId: session.clienteId,
+    profissionalId: session.profissionalId
+  };
+}
 
 export function hasRole(session: AuthSession | null, role: AuthUserRole) {
-  return Boolean(session && session.role === role);
+  return authService.hasRole(toPrincipal(session), role);
 }
 
 export function requireAuth(session: AuthSession | null) {
@@ -12,7 +26,6 @@ export function requireAuth(session: AuthSession | null) {
       { status: 401 }
     );
   }
-
   return null;
 }
 
@@ -22,16 +35,10 @@ export function requireRole(
   message = "Acesso não permitido para este perfil"
 ) {
   const authError = requireAuth(session);
-
-  if (authError) {
-    return authError;
-  }
+  if (authError) return authError;
 
   if (!hasRole(session, role)) {
-    return NextResponse.json(
-      { error: message },
-      { status: 403 }
-    );
+    return NextResponse.json({ error: message }, { status: 403 });
   }
 
   return null;
@@ -60,21 +67,20 @@ export function hasSolicitationOwnership(
   session: AuthSession | null,
   solicitation: SolicitationOwnershipTarget
 ) {
-  if (!session) {
-    return false;
+  if (!session) return false;
+  
+  // Create resource representations to check ownership using generic RBAC/ABAC
+  const clientAction: Action = { name: "access" };
+  const professionalAction: Action = { name: "access" };
+  
+  const principal = toPrincipal(session);
+
+  if (session.role === "CLIENT" && solicitation.clienteId) {
+    return authService.canAccess(principal, clientAction, { type: "solicitation", ownerId: solicitation.clienteId });
   }
 
-  if (session.role === "CLIENT") {
-    return Boolean(
-      session.clienteId && solicitation.clienteId === session.clienteId
-    );
-  }
-
-  if (session.role === "PROFESSIONAL") {
-    return Boolean(
-      session.profissionalId &&
-        solicitation.profissionalId === session.profissionalId
-    );
+  if (session.role === "PROFESSIONAL" && solicitation.profissionalId) {
+    return authService.canAccess(principal, professionalAction, { type: "solicitation", ownerId: solicitation.profissionalId });
   }
 
   return false;
@@ -86,16 +92,10 @@ export function requireSolicitationOwnership(
   message = "Acesso permitido apenas ao responsável pela solicitação"
 ) {
   const authError = requireAuth(session);
-
-  if (authError) {
-    return authError;
-  }
+  if (authError) return authError;
 
   if (!hasSolicitationOwnership(session, solicitation)) {
-    return NextResponse.json(
-      { error: message },
-      { status: 403 }
-    );
+    return NextResponse.json({ error: message }, { status: 403 });
   }
 
   return null;

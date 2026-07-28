@@ -49,12 +49,12 @@ export function RequestCard({
       <Button
         variant="primary"
         isLoading={isUpdating}
-        onClick={() => onUpdateStatus(solicitacao.id, "EM_ANDAMENTO")}
+        onClick={() => onUpdateStatus(solicitacao.id, "EM_EXECUCAO")}
       >
         Iniciar Serviço
       </Button>
     );
-  } else if (solicitacao.status === "EM_ANDAMENTO") {
+  } else if (solicitacao.status === "EM_EXECUCAO") {
     actionButton = (
       <Button
         variant="primary"

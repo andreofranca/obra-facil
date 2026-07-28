@@ -13,12 +13,14 @@ const prisma = new PrismaClient();
 
 const statusLabels: Record<SolicitacaoServicoStatus, string> = {
   ABERTA: "Aberta",
-  EM_ANALISE: "Em análise",
+  PROPOSTAS: "Propostas",
+  NEGOCIACAO: "Negociação",
   ACEITA: "Aceita",
-  EM_ANDAMENTO: "Em andamento",
-  AGUARDANDO_CONFIRMACAO_CLIENTE: "Aguardando confirmação",
+  EM_EXECUCAO: "Em execução",
   CONCLUIDA: "Concluída",
   CANCELADA: "Cancelada",
+  EXPIRADA: "Expirada",
+  RECUSADA: "Recusada",
 };
 
 function mapMensagem(mensagem: {

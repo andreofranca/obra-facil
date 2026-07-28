@@ -11,22 +11,26 @@ interface ChatHeaderProps {
 
 const statusColorMap: Record<SolicitacaoServicoStatus, "neutral" | "success" | "warning" | "error" | "info"> = {
   ABERTA: "neutral",
-  EM_ANALISE: "warning",
-  ACEITA: "info",
-  EM_ANDAMENTO: "info",
-  AGUARDANDO_CONFIRMACAO_CLIENTE: "warning",
+  PROPOSTAS: "info",
+  NEGOCIACAO: "warning",
+  ACEITA: "success",
+  EM_EXECUCAO: "info",
   CONCLUIDA: "success",
   CANCELADA: "error",
+  EXPIRADA: "error",
+  RECUSADA: "error",
 };
 
 const statusLabelMap: Record<SolicitacaoServicoStatus, string> = {
   ABERTA: "Aberta",
-  EM_ANALISE: "Em Análise",
+  PROPOSTAS: "Propostas",
+  NEGOCIACAO: "Negociação",
   ACEITA: "Aceita",
-  EM_ANDAMENTO: "Em andamento",
-  AGUARDANDO_CONFIRMACAO_CLIENTE: "Aguardando confirmação",
+  EM_EXECUCAO: "Em execução",
   CONCLUIDA: "Concluída",
   CANCELADA: "Cancelada",
+  EXPIRADA: "Expirada",
+  RECUSADA: "Recusada",
 };
 
 export function ChatHeader({ title, subtitle, status, lastUpdate }: ChatHeaderProps) {

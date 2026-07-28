@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui";
+import { logger } from "@/platform/observability";
 
-export default function GlobalError({
+export default function ErrorPage({
   error,
   reset,
 }: {
@@ -11,8 +12,12 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Integração futura com ferramentas de observabilidade (ex: Sentry)
-    console.error("Global Error Caught:", error);
+    logger.error("App Router Error Boundary Caught", {
+      module: "NextAppRouter",
+      action: "PAGE_RENDER_ERROR",
+      digest: error.digest,
+      errorMessage: error.message,
+    });
   }, [error]);
 
   return (

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { WizardStep } from "./WizardStep";
@@ -53,7 +53,7 @@ export function ServiceWizard() {
     handleSubmit,
     setValue,
     trigger,
-    watch,
+    control,
     formState: { errors }
   } = useForm<WizardFormData>({
     resolver: zodResolver(wizardSchema),
@@ -62,7 +62,7 @@ export function ServiceWizard() {
     }
   });
 
-  const watchAllFields = watch();
+  const watchAllFields = useWatch({ control });
 
   const handleNext = async () => {
     let isValid = false;

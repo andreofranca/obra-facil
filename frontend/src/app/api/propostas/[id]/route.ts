@@ -87,7 +87,7 @@ export async function PATCH(
 
           await tx.solicitarServico.update({
             where: { id: proposta.solicitacaoId },
-            data: { status: "EM_ANDAMENTO", updatedAt: new Date() },
+            data: { status: "EM_EXECUCAO", updatedAt: new Date() },
           });
         });
       } catch (err) {
