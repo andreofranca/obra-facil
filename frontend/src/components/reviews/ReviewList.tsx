@@ -1,8 +1,10 @@
 import { ReviewCard } from "./ReviewCard";
 import { ReviewEmptyState } from "./ReviewEmptyState";
 
+import { ComponentProps } from "react";
+
 interface ReviewListProps {
-  avaliacoes: any[];
+  avaliacoes: (ComponentProps<typeof ReviewCard> & { id: string })[];
 }
 
 export function ReviewList({ avaliacoes }: ReviewListProps) {

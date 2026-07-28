@@ -41,7 +41,7 @@ export function ReviewCard({ nota, comentario, createdAt, cliente, solicitacao }
         </span>
         {comentario && (
           <p className="text-sm text-neutral-dark mt-2 leading-relaxed">
-            "{comentario}"
+            &quot;{comentario}&quot;
           </p>
         )}
       </div>

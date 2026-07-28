@@ -5,7 +5,6 @@ import {
   requireAuth,
   requireRole,
   hasSolicitationOwnership,
-  requireSolicitationOwnership,
 } from "./guards";
 
 describe("Guards de Autenticação e Autorização", () => {

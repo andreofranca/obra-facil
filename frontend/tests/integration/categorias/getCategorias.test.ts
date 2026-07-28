@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { GET } from '@/app/api/categorias/route';
-import { NextRequest } from 'next/server';
 import { CategoriaFactory } from '../factories/categoriaFactory';
 
 describe('Integration - Categorias', () => {

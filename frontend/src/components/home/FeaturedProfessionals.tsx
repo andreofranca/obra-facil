@@ -34,7 +34,7 @@ export async function FeaturedProfessionals() {
             if (profissional.avaliacoesServico && profissional.avaliacoesServico.length > 0) {
               reviewsCount = profissional.avaliacoesServico.length;
               rating = Math.round(
-                profissional.avaliacoesServico.reduce((acc: any, curr: any) => acc + curr.nota, 0) / reviewsCount
+                profissional.avaliacoesServico.reduce((acc: number, curr: { nota: number }) => acc + curr.nota, 0) / reviewsCount
               );
             }
             

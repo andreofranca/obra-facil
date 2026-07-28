@@ -108,7 +108,7 @@ async function fetchProfissionaisFromDB(options: GetProfissionaisOptions): Promi
     orderBy = { user: { createdAt: 'desc' } };
   }
 
-  let profissionais: any[] = [];
+  let profissionais: ProfissionalResumo[] = [];
   let totalRegistros = 0;
 
   const needsMemoryProcessing = options.avaliacaoMinima !== undefined || options.ordenacao === 'avaliacao';
@@ -123,7 +123,7 @@ async function fetchProfissionaisFromDB(options: GetProfissionaisOptions): Promi
     if (options.avaliacaoMinima !== undefined && options.avaliacaoMinima > 0) {
       profissionais = profissionais.filter(profissional => {
         if (!profissional.avaliacoesServico || profissional.avaliacoesServico.length === 0) return false;
-        const soma = profissional.avaliacoesServico.reduce((acc: any, curr: any) => acc + curr.nota, 0);
+        const soma = profissional.avaliacoesServico.reduce((acc: number, curr: { nota: number }) => acc + curr.nota, 0);
         const media = Math.round(soma / profissional.avaliacoesServico.length);
         return media >= options.avaliacaoMinima!;
       });
@@ -132,10 +132,10 @@ async function fetchProfissionaisFromDB(options: GetProfissionaisOptions): Promi
     if (options.ordenacao === 'avaliacao') {
       profissionais.sort((a, b) => {
         const notaA = a.avaliacoesServico && a.avaliacoesServico.length > 0
-          ? a.avaliacoesServico.reduce((acc: any, curr: any) => acc + curr.nota, 0) / a.avaliacoesServico.length
+          ? a.avaliacoesServico.reduce((acc: number, curr: { nota: number }) => acc + curr.nota, 0) / a.avaliacoesServico.length
           : 0;
         const notaB = b.avaliacoesServico && b.avaliacoesServico.length > 0
-          ? b.avaliacoesServico.reduce((acc: any, curr: any) => acc + curr.nota, 0) / b.avaliacoesServico.length
+          ? b.avaliacoesServico.reduce((acc: number, curr: { nota: number }) => acc + curr.nota, 0) / b.avaliacoesServico.length
           : 0;
         return notaB - notaA;
       });

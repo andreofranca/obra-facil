@@ -41,8 +41,8 @@ export function ReviewForm({ solicitacaoId, onSuccess }: ReviewFormProps) {
 
       router.refresh();
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
       setIsSubmitting(false);
     }
