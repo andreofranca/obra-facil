@@ -47,6 +47,7 @@ model Profissional {
   propostas    Proposta[]
   endereco     Endereco?
   planos       ProfissionalPlano[]
+  transfers    Transfer[]
 
   @@map("professionals")
 }
@@ -245,4 +246,55 @@ model ProfissionalPlano {
   @@index([status])
   @@index([dataFim])
   @@map("professional_plans")
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  COMPLETED
+  FAILED
+  REFUNDED
+  DISPUTED
+}
+
+enum TransferStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Transaction {
+  id            String         @id @default(uuid())
+  amount        Decimal
+  currency      String         @default("BRL")
+  status        PaymentStatus  @default(PENDING)
+  providerId    String?        
+  referenceId   String?        
+  metadata      Json?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  transfers     Transfer[]
+
+  @@index([referenceId])
+  @@index([providerId])
+  @@index([status])
+  @@map("transactions")
+}
+
+model Transfer {
+  id            String         @id @default(uuid())
+  transactionId String
+  recipientId   String
+  amount        Decimal
+  status        TransferStatus @default(PENDING)
+  providerId    String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  transaction   Transaction    @relation(fields: [transactionId], references: [id])
+  profissional  Profissional   @relation(fields: [recipientId], references: [id])
+
+  @@index([transactionId])
+  @@index([recipientId])
+  @@map("transfers")
 }

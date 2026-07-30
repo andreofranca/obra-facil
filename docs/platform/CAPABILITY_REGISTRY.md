@@ -51,3 +51,11 @@ Este documento serve como o catálogo oficial de todas as *Capabilities* (capaci
 - **Maturidade:** Level 1 (Foundation)
 - **Dependências:** Observability (Para Logging e Rastreamento)
 - **Próxima Evolução:** Adicionar um AuditProvider robusto conectado a um SIEM, e implementar Rate Limiting via Redis na Edge.
+
+## Plataforma: Payments
+- **Versão:** v1.0.0 (MVP)
+- **Status:** Active
+- **Owner:** Platform Engineering Team
+- **Maturidade:** Level 1 (Foundation)
+- **Dependências:** Observability, Operations, Security
+- **Próxima Evolução:** Integração real com gateways de pagamento (ex: Stripe, PIX) e reconciliação financeira em lote.

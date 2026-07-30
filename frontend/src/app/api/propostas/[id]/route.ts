@@ -1,12 +1,16 @@
-import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { apiError, apiSuccess } from "@/lib/api/responses";
 import { getAuthSession } from "@/lib/auth";
 import { logger } from "@/lib/logger";
 import { audit } from "@/lib/audit";
+import { ContractingDomainService } from "@/domain/marketplace/ContractingDomainService";
+import { PaymentService } from "@/lib/payments/service";
+import { MockPaymentProvider } from "@/lib/payments/providers/mock";
 
-
-const prisma = new PrismaClient();
+// Na arquitetura real, você pode usar um contêiner de Injeção de Dependências.
+const paymentProvider = new MockPaymentProvider();
+const paymentService = new PaymentService(paymentProvider);
+const contractingService = new ContractingDomainService(paymentService);
 
 export async function PATCH(
   request: NextRequest,
@@ -16,12 +20,11 @@ export async function PATCH(
   try {
     const session = await getAuthSession();
 
-    if (!session) {
-      return apiError("Usuário não autenticado", 401);
+    if (!session || !session.clienteId) {
+      return apiError("Usuário não autenticado ou não é cliente", 401);
     }
 
     const { id } = await context.params;
-
     const body = await request.json();
 
     if (!body || typeof body !== "object") {
@@ -34,107 +37,61 @@ export async function PATCH(
       return apiError("Status inválido", 400);
     }
 
-    const proposta = await prisma.proposta.findUnique({ where: { id } });
-
-    if (!proposta) {
-      return apiError("Proposta não encontrada", 404);
-    }
-
-    const solicitacao = await prisma.solicitarServico.findUnique({ where: { id: proposta.solicitacaoId } });
-
-    if (!solicitacao) {
-      return apiError("Solicitação não encontrada", 404);
-    }
-
     if (session.role !== "CLIENT") {
-      return apiError(
-        "Ação permitida apenas para o cliente proprietário",
-        403
-      );
-    }
-
-    if (!session.clienteId || session.clienteId !== solicitacao.clienteId) {
-      return apiError(
-        "Ação permitida apenas para o cliente proprietário",
-        403
-      );
+      return apiError("Ação permitida apenas para o cliente", 403);
     }
 
     if (status === "ACEITA") {
-      if (proposta.status === "ACEITA") {
-        return apiError("Proposta já aceita", 400);
-      }
-
       try {
-        await prisma.$transaction(async (tx) => {
-          const alreadyAccepted = await tx.proposta.findFirst({
-            where: { solicitacaoId: proposta.solicitacaoId, status: "ACEITA" },
-          });
-
-          if (alreadyAccepted) {
-            throw new Error("Já existe uma proposta aceita para esta solicitação");
-          }
-
-          await tx.proposta.update({
-            where: { id },
-            data: { status: "ACEITA", updatedAt: new Date() },
-          });
-
-          await tx.proposta.updateMany({
-            where: { solicitacaoId: proposta.solicitacaoId, id: { not: id } },
-            data: { status: "RECUSADA", updatedAt: new Date() },
-          });
-
-          await tx.solicitarServico.update({
-            where: { id: proposta.solicitacaoId },
-            data: { status: "EM_EXECUCAO", updatedAt: new Date() },
-          });
+        const acceptedProposal = await contractingService.acceptProposal(id, session.clienteId);
+        
+        audit.log(reqLogger, request, {
+          action: "PROPOSTA_STATUS_CHANGED",
+          severity: "CRITICAL",
+          userId: session.userId,
+          targetId: id,
+          result: "SUCCESS",
+          metadata: { status: "ACEITA" },
         });
-      } catch (err) {
+
+        return apiSuccess(acceptedProposal);
+      } catch (err: any) {
         audit.log(reqLogger, request, {
           action: "PROPOSTA_STATUS_CHANGED",
           severity: "CRITICAL",
           result: "FAILURE",
-          metadata: { reason: String(err) },
+          metadata: { reason: err.message || String(err) },
         });
         reqLogger.error(err);
-        return apiError(String(err), 400);
+        return apiError(err.message || String(err), 400);
       }
+    }
 
-      const updated = await prisma.proposta.findUnique({ where: { id } });
-
+    // RECUSADA
+    try {
+      const rejectedProposal = await contractingService.rejectProposal(id, session.clienteId);
+      
       audit.log(reqLogger, request, {
         action: "PROPOSTA_STATUS_CHANGED",
         severity: "CRITICAL",
         userId: session.userId,
         targetId: id,
         result: "SUCCESS",
-        metadata: { status: "ACEITA" },
+        metadata: { status: "RECUSADA" },
       });
 
-      return apiSuccess(updated);
+      return apiSuccess(rejectedProposal);
+    } catch (err: any) {
+       audit.log(reqLogger, request, {
+        action: "PROPOSTA_STATUS_CHANGED",
+        severity: "CRITICAL",
+        result: "FAILURE",
+        metadata: { reason: err.message || String(err) },
+      });
+      reqLogger.error(err);
+      return apiError(err.message || String(err), 400);
     }
 
-    // RECUSADA
-    if (proposta.status === "ACEITA") {
-      return apiError("Proposta aceita não pode ser modificada", 400);
-    }
-
-    const recusada = await prisma.proposta.update({
-      where: { id },
-      data: { status: "RECUSADA", updatedAt: new Date() },
-    });
-
-    audit.log(reqLogger, request, {
-      action: "PROPOSTA_STATUS_CHANGED",
-      severity: "CRITICAL",
-      userId: session.userId,
-      targetId: id,
-      result: "SUCCESS",
-      metadata: { status: "RECUSADA" },
-    });
-
-    return apiSuccess(recusada);
   } catch (error) {
     audit.log(reqLogger, request, {
       action: "PROPOSTA_STATUS_CHANGED",
