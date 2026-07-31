@@ -22,6 +22,7 @@ type ProfissionalPedidosClientProps = {
   initialErrorMessage: string;
   profissionalNome: string;
   summary: RatingSummary;
+  revenue: number;
 };
 
 export default function ProfissionalPedidosClient({
@@ -29,6 +30,7 @@ export default function ProfissionalPedidosClient({
   initialErrorMessage,
   profissionalNome,
   summary,
+  revenue,
 }: ProfissionalPedidosClientProps) {
   const [solicitacoes, setSolicitacoes] = useState(initialSolicitacoes);
   const [errorMessage, setErrorMessage] = useState(initialErrorMessage);
@@ -101,6 +103,16 @@ export default function ProfissionalPedidosClient({
         emAndamento={dashboard.emAndamento}
         concluidas={dashboard.concluidas}
       />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="p-6 bg-brand-primary/5 border border-brand-primary/20 rounded-lg">
+          <h3 className="text-sm font-semibold text-neutral-dark mb-1">Estimativa de Receita</h3>
+          <p className="text-3xl font-bold text-brand-primary">
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(revenue)}
+          </p>
+          <p className="text-xs text-neutral-text mt-2">Baseado em propostas aceitas e serviços finalizados</p>
+        </div>
+      </div>
 
       <div className="mb-6">
         <h2 className="text-xl font-bold text-neutral-text mb-4">

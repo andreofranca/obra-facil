@@ -11,6 +11,8 @@ export const REQUEST_STATUS_MAP: Record<
   ACEITA: { label: "Aceita", tone: "success" },
   EM_EXECUCAO: { label: "Em execução", tone: "info" },
   CONCLUIDA: { label: "Concluída", tone: "success" },
+  AGUARDANDO_CONFIRMACAO: { label: "Aguardando confirmação", tone: "warning" },
+  FINALIZADA: { label: "Finalizada", tone: "success" },
   CANCELADA: { label: "Cancelada", tone: "error" },
   EXPIRADA: { label: "Expirada", tone: "error" },
   RECUSADA: { label: "Recusada", tone: "error" },

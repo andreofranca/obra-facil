@@ -2,23 +2,28 @@ import React from "react";
 import Link from "next/link";
 import { Button, Badge } from "@/components/ui";
 import { Clock, MapPin, ShieldCheck, ArrowRight } from "lucide-react";
+import { FavoriteButton } from "./FavoriteButton";
 
 type ProfessionalSidebarProps = {
   profissionalId: string;
   ativo: boolean;
   city?: string;
   responseTime?: string;
+  isFavorito?: boolean;
 };
 
-export function ProfessionalSidebar({ profissionalId, ativo, city = "São Paulo, SP", responseTime = "Até 2 horas" }: ProfessionalSidebarProps) {
+export function ProfessionalSidebar({ profissionalId, ativo, city = "São Paulo, SP", responseTime = "Até 2 horas", isFavorito = false }: ProfessionalSidebarProps) {
   return (
     <div className="sticky top-24 bg-neutral-surface rounded-3xl border border-neutral-border p-6 shadow-soft space-y-6 animate-fade-in-up" style={{ animationDelay: "200ms" }}>
       
       <div className="flex items-center justify-between pb-4 border-b border-neutral-border/50">
         <h3 className="font-bold text-neutral-text text-lg">Informações Adicionais</h3>
-        <Badge tone={ativo ? "success" : "neutral"} className="shadow-sm">
-          {ativo ? "Disponível" : "Indisponível"}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge tone={ativo ? "success" : "neutral"} className="shadow-sm">
+            {ativo ? "Disponível" : "Indisponível"}
+          </Badge>
+          <FavoriteButton profissionalId={profissionalId} initialIsFavorito={isFavorito} />
+        </div>
       </div>
 
       <div className="space-y-5">

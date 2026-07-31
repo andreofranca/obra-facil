@@ -9,6 +9,10 @@ import {
   ProfessionalReviews
 } from "@/components/profissional";
 import type { ProfissionalResumo } from "@/types/profissional";
+import { getAuthSession } from "@/lib/auth";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 // SSR data fetch
 async function getProfissional(id: string): Promise<ProfissionalResumo | null> {
@@ -44,6 +48,18 @@ export default async function ProfissionalPage({
   const principalServico = profissional.servicos[0];
   const especialidade = principalServico?.categoria.nome || "Especialista Parceiro";
   
+  const session = await getAuthSession();
+  let isFavorito = false;
+  if (session?.role === "CLIENT" && session.clienteId) {
+    const fav = await prisma.favorito.findFirst({
+      where: {
+        clienteId: session.clienteId,
+        profissionalId: profissional.id,
+      },
+    });
+    isFavorito = !!fav;
+  }
+  
   return (
     <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
       <Header />
@@ -76,6 +92,7 @@ export default async function ProfissionalPage({
             <ProfessionalSidebar 
               profissionalId={profissional.id} 
               ativo={profissional.ativo} 
+              isFavorito={isFavorito}
             />
           </aside>
 

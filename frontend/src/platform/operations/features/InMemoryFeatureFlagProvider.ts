@@ -7,6 +7,7 @@ export class InMemoryFeatureFlagProvider implements IFeatureFlagProvider {
     this.flags = new Map(Object.entries(initialFlags || {}));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isEnabled(featureName: string, _context?: unknown): boolean {
     return this.flags.get(featureName) ?? false;
   }

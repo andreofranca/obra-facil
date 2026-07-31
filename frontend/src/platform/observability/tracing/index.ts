@@ -12,6 +12,7 @@ export class MockTracer implements ITracer {
     return { name, startTime: Date.now() };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   endSpan(_span: unknown): void {
     // Record duration if needed
   }

@@ -7,16 +7,16 @@ interface CompletionTimelineProps {
 export function CompletionTimeline({ status }: CompletionTimelineProps) {
   const steps = [
     { id: "EM_EXECUCAO", label: "Em Andamento" },
-    { id: "CONCLUIDA", label: "Finalizado pelo Profissional" },
-    { id: "CONCLUIDA", label: "Concluído pelo Cliente" }
+    { id: "AGUARDANDO_CONFIRMACAO", label: "Finalizado pelo Profissional" },
+    { id: "FINALIZADA", label: "Concluído pelo Cliente" }
   ];
 
   let currentIndex = 0;
-  if (status === "CONCLUIDA") currentIndex = 1;
-  if (status === "CONCLUIDA") currentIndex = 2;
+  if (status === "AGUARDANDO_CONFIRMACAO") currentIndex = 1;
+  if (status === "FINALIZADA" || status === "CONCLUIDA") currentIndex = 2;
 
   // Se for antes de em andamento, não mostrar
-  if (!["EM_EXECUCAO", "CONCLUIDA", "CONCLUIDA"].includes(status)) {
+  if (!["EM_EXECUCAO", "AGUARDANDO_CONFIRMACAO", "FINALIZADA", "CONCLUIDA"].includes(status)) {
     return null;
   }
 

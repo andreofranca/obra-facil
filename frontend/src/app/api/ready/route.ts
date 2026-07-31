@@ -5,6 +5,7 @@ import { withObservability } from "@/platform/observability/middleware/withObser
 
 const prisma = new PrismaClient();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function readyHandler(_request: NextRequest) {
   const payload = {
     status: "up",

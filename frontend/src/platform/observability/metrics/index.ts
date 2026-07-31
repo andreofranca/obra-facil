@@ -6,14 +6,17 @@ export interface IMetricsCollector {
 }
 
 export class MockMetricsCollector implements IMetricsCollector {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   incrementCounter(_name: string, _value = 1, _tags?: Record<string, string>): void {
     // Placeholder for future implementation (e.g. Prometheus)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   recordGauge(_name: string, _value: number, _tags?: Record<string, string>): void {
     // Placeholder for future implementation
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   recordHistogram(_name: string, _value: number, _tags?: Record<string, string>): void {
     // Placeholder for future implementation
   }

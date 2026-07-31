@@ -28,6 +28,7 @@ export class MockPaymentProvider implements PaymentProvider {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async createTransfer(params: TransferParams): Promise<TransferResult> {
     return {
       providerId: `mock_transfer_${Date.now()}`,
@@ -36,6 +37,7 @@ export class MockPaymentProvider implements PaymentProvider {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   verifyWebhookSignature(payload: any, signature: string): boolean {
     // Simula validação (em prod, usaria a chave secreta e hash do payload)
     return signature === 'mock-valid-signature';

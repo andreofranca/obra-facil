@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrismaClient, SolicitacaoStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -7,15 +8,14 @@ export class ServiceRequestDomainService {
     clienteId: string;
     titulo: string;
     descricao: string;
-    categoriaId: string;
   }) {
     return prisma.solicitarServico.create({
       data: {
         clienteId: params.clienteId,
         titulo: params.titulo,
         descricao: params.descricao,
-        categoriaId: params.categoriaId,
-        status: 'ABERTA'
+        status: 'ABERTA',
+        updatedAt: new Date()
       }
     });
   }

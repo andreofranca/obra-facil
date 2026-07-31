@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withObservability } from "@/platform/observability/middleware/withObservability";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function healthHandler(_request: NextRequest) {
   const payload = {
     status: "up",

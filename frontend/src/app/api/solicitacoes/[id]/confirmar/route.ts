@@ -45,21 +45,21 @@ export async function POST(
         throw new HttpError("Ação permitida apenas para o cliente dono da solicitação", 403);
       }
 
-      if (current.status !== "EM_EXECUCAO") {
-        throw new HttpError("A solicitação deve estar em execução para ser concluída", 400);
+      if (current.status !== "AGUARDANDO_CONFIRMACAO") {
+        throw new HttpError("A solicitação deve estar aguardando confirmação para ser concluída", 400);
       }
 
       const updated = await tx.solicitarServico.update({
         where: { id },
         data: {
-          status: "CONCLUIDA",
+          status: "FINALIZADA",
           updatedAt: new Date(),
           finishedAt: new Date(),
           historicoStatus: {
             create: {
               usuarioId: session.userId,
               statusAnterior: current.status,
-              novoStatus: "CONCLUIDA",
+              novoStatus: "FINALIZADA",
             }
           }
         },

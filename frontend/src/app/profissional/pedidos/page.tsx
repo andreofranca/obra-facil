@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import ProfissionalPedidosClient from "@/components/profissional/ProfissionalPedidosClient";
 import { getAuthSession } from "@/lib/auth";
 import type { SolicitacaoProfissionalResumo } from "@/types/solicitacao";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 async function getSolicitacoesProfissional(): Promise<{
   solicitacoes: SolicitacaoProfissionalResumo[];
@@ -46,7 +49,7 @@ export default async function ProfissionalPedidosPage() {
     redirect("/login");
   }
 
-  if (session.role !== "PROFESSIONAL") {
+  if (session.role !== "PROFESSIONAL" || !session.profissionalId) {
     return (
       <main className="p-10">
         <div className="max-w-3xl border rounded-lg p-6 shadow">
@@ -67,6 +70,19 @@ export default async function ProfissionalPedidosPage() {
     
   const summary = await import("@/domain/RatingService").then(mod => mod.RatingService.getProfissionalReputation(session.profissionalId!));
 
+  // Estimativa de receita:
+  const revenueData = await prisma.proposta.aggregate({
+    _sum: {
+      valor: true,
+    },
+    where: {
+      profissionalId: session.profissionalId,
+      status: "ACEITA",
+    },
+  });
+  
+  const estimatedRevenue = revenueData._sum.valor ? Number(revenueData._sum.valor) : 0;
+
   return (
     <main className="bg-neutral-background min-h-screen pt-4">
       <ProfissionalPedidosClient
@@ -74,6 +90,7 @@ export default async function ProfissionalPedidosPage() {
         initialErrorMessage={errorMessage}
         profissionalNome={session.name || "Profissional"}
         summary={summary}
+        revenue={estimatedRevenue}
       />
     </main>
   );

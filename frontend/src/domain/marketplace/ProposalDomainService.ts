@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrismaClient, PropostaStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -16,13 +17,14 @@ export class ProposalDomainService {
         solicitacaoId: params.solicitacaoId,
         profissionalId: params.profissionalId,
         valor: params.valor,
-        prazoEstimado: params.prazoEstimado,
-        mensagem: params.mensagem,
+        prazoDias: params.prazoEstimado,
+        mensagem: params.mensagem ?? '',
         status: 'PENDENTE'
       }
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async listProposalsBySolicitacao(solicitacaoId: string, userId: string, role: string) {
     // Filtros de segurança baseados no papel
     return prisma.proposta.findMany({

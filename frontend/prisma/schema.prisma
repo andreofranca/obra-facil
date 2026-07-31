@@ -30,6 +30,7 @@ model Cliente {
   user         User               @relation(fields: [userId], references: [id])
   solicitacoes    SolicitarServico[]
   avaliacoesServico AvaliacaoServico[]
+  favoritos       Favorito[]
 
   @@map("clients")
 }
@@ -45,6 +46,7 @@ model Profissional {
   servicos        Servico[]
   solicitacoes SolicitarServico[]
   propostas    Proposta[]
+  favoritos    Favorito[]
   endereco     Endereco?
   planos       ProfissionalPlano[]
   transfers    Transfer[]
@@ -176,7 +178,9 @@ enum SolicitacaoStatus {
   NEGOCIACAO
   ACEITA
   EM_EXECUCAO
+  AGUARDANDO_CONFIRMACAO
   CONCLUIDA
+  FINALIZADA
   CANCELADA
   EXPIRADA
   RECUSADA
@@ -297,4 +301,19 @@ model Transfer {
   @@index([transactionId])
   @@index([recipientId])
   @@map("transfers")
+}
+
+model Favorito {
+  id             String       @id @default(uuid())
+  clienteId      String
+  profissionalId String
+  createdAt      DateTime     @default(now())
+  
+  cliente        Cliente      @relation(fields: [clienteId], references: [id])
+  profissional   Profissional @relation(fields: [profissionalId], references: [id])
+
+  @@unique([clienteId, profissionalId])
+  @@index([clienteId])
+  @@index([profissionalId])
+  @@map("favorites")
 }

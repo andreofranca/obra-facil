@@ -160,7 +160,7 @@ export default async function MinhaSolicitacaoPage({
             role="CLIENT" 
           />
           
-          {solicitacao.status === "CONCLUIDA" && (
+          {solicitacao.status === "FINALIZADA" && (
             <div className="mt-4">
               {solicitacao.avaliacao ? (
                 <Card className="p-6 bg-white border-neutral-border shadow-sm">

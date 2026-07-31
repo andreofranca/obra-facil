@@ -18,6 +18,8 @@ const statusLabels: Record<SolicitacaoServicoStatus, string> = {
   ACEITA: "Aceita",
   EM_EXECUCAO: "Em execução",
   CONCLUIDA: "Concluída",
+  AGUARDANDO_CONFIRMACAO: "Aguardando confirmação",
+  FINALIZADA: "Finalizada",
   CANCELADA: "Cancelada",
   EXPIRADA: "Expirada",
   RECUSADA: "Recusada",

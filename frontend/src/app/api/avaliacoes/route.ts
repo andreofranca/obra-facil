@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
         throw new HttpError("Apenas o cliente dono da solicitação pode avaliar", 403);
       }
 
-      if (solicitacao.status !== "CONCLUIDA") {
-        throw new HttpError("Apenas solicitações concluídas podem ser avaliadas", 400);
+      if (solicitacao.status !== "FINALIZADA") {
+        throw new HttpError("Apenas solicitações finalizadas podem ser avaliadas", 400);
       }
 
       if (solicitacao.avaliacao) {

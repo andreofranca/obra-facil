@@ -47,6 +47,7 @@ export class PaymentService {
       });
 
       return updatedTransaction;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       // Falha de sistema (rede, timeout, etc)
       await prisma.transaction.update({
@@ -97,6 +98,7 @@ export class PaymentService {
           providerId: transferResult.providerId,
         },
       });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       await prisma.transfer.update({
         where: { id: transfer.id },

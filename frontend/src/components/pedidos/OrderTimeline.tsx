@@ -9,7 +9,8 @@ const TIMELINE_STEPS = [
   { id: "EM_ANALISE", label: "Em análise" },
   { id: "ACEITA", label: "Proposta enviada" },
   { id: "EM_EXECUCAO", label: "Em execução" },
-  { id: "CONCLUIDA", label: "Concluído" },
+  { id: "AGUARDANDO_CONFIRMACAO", label: "Aguard. Confirmação" },
+  { id: "FINALIZADA", label: "Finalizado" },
 ] as const;
 
 export function OrderTimeline({ status }: OrderTimelineProps) {
@@ -17,8 +18,10 @@ export function OrderTimeline({ status }: OrderTimelineProps) {
   
   // Find current index based on status
   let currentIndex = TIMELINE_STEPS.findIndex((s) => s.id === status);
-  if (status === "CONCLUIDA") {
-    currentIndex = TIMELINE_STEPS.findIndex((s) => s.id === "EM_EXECUCAO");
+  if (status === "CONCLUIDA" || status === "FINALIZADA") {
+    currentIndex = TIMELINE_STEPS.findIndex((s) => s.id === "FINALIZADA");
+  } else if (status === "AGUARDANDO_CONFIRMACAO") {
+    currentIndex = TIMELINE_STEPS.findIndex((s) => s.id === "AGUARDANDO_CONFIRMACAO");
   }
   if (currentIndex === -1) {
     if (isCancelled) currentIndex = TIMELINE_STEPS.length; // all inactive if we just want to show cancelled

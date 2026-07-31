@@ -4,7 +4,9 @@ export type SolicitacaoServicoStatus =
   | "NEGOCIACAO"
   | "ACEITA"
   | "EM_EXECUCAO"
+  | "AGUARDANDO_CONFIRMACAO"
   | "CONCLUIDA"
+  | "FINALIZADA"
   | "CANCELADA"
   | "EXPIRADA"
   | "RECUSADA";

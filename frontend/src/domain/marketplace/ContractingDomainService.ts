@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrismaClient, SolicitacaoStatus, PropostaStatus } from '@prisma/client';
 import { PaymentService } from '@/lib/payments/service';
 

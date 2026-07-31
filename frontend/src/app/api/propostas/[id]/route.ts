@@ -55,6 +55,7 @@ export async function PATCH(
         });
 
         return apiSuccess(acceptedProposal);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         audit.log(reqLogger, request, {
           action: "PROPOSTA_STATUS_CHANGED",
@@ -81,6 +82,7 @@ export async function PATCH(
       });
 
       return apiSuccess(rejectedProposal);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
        audit.log(reqLogger, request, {
         action: "PROPOSTA_STATUS_CHANGED",

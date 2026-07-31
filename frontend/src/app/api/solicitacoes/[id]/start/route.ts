@@ -44,20 +44,21 @@ export async function POST(
         throw new HttpError("Ação permitida apenas para o profissional contratado", 403);
       }
 
-      if (current.status !== "EM_EXECUCAO") {
-        throw new HttpError("A solicitação deve estar EM_EXECUCAO para ser finalizada", 400);
+      if (current.status !== "ACEITA") {
+        throw new HttpError("A solicitação deve estar ACEITA para ser iniciada", 400);
       }
 
       const updated = await tx.solicitarServico.update({
         where: { id },
         data: {
-          status: "AGUARDANDO_CONFIRMACAO",
+          status: "EM_EXECUCAO",
           updatedAt: new Date(),
+          startedAt: new Date(),
           historicoStatus: {
             create: {
               usuarioId: session.userId,
               statusAnterior: current.status,
-              novoStatus: "AGUARDANDO_CONFIRMACAO",
+              novoStatus: "EM_EXECUCAO",
             }
           }
         },
@@ -76,7 +77,7 @@ export async function POST(
 
     audit.log(reqLogger, request, {
       action: "SOLICITACAO_STATUS_CHANGED",
-      severity: "CRITICAL",
+      severity: "INFO",
       userId: session.userId,
       targetId: solicitacao.id,
       result: "SUCCESS",
@@ -92,6 +93,6 @@ export async function POST(
       return apiError(error.message, error.status);
     }
     reqLogger.error(error);
-    return apiError("Erro ao finalizar solicitação", 500);
+    return apiError("Erro ao iniciar solicitação", 500);
   }
 }
