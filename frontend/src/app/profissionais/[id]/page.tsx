@@ -45,8 +45,8 @@ export default async function ProfissionalPage({
   }
 
   // Derived determinist mock data for UI visual constraints
-  const principalServico = profissional.servicos[0];
-  const especialidade = principalServico?.categoria.nome || "Especialista Parceiro";
+  const principalServico = profissional.servicos?.[0];
+  const especialidade = principalServico?.categoria?.nome || "Especialista Parceiro";
   
   const session = await getAuthSession();
   let isFavorito = false;

@@ -6,6 +6,7 @@ import type {
   PropostaStatus,
 } from "@/types/proposta";
 import PropostaItem from "@/components/propostas/PropostaItem";
+import { Header, Footer } from "@/components/layout";
 
 const prisma = new PrismaClient();
 
@@ -106,29 +107,33 @@ export default async function MinhasPropostasPage() {
   const propostasResumo = propostas.map(mapProposta);
 
   return (
-    <main className="p-10">
-      <div className="max-w-5xl">
-        <h1 className="text-4xl font-bold mb-6">
-          Minhas Propostas
-        </h1>
+    <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
+      <Header />
+      <main className="flex-1 w-full p-4 sm:p-10 max-w-7xl mx-auto">
+        <div className="max-w-5xl mx-auto">
+          <h1 className="text-4xl font-bold mb-6 text-neutral-text">
+            Minhas Propostas
+          </h1>
 
-        {propostasResumo.length === 0 ? (
-          <div className="border rounded-lg p-6 shadow">
-            <p>
-              Nenhuma proposta recebida para suas solicitações.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {propostasResumo.map((proposta) => (
-              <div key={proposta.id}>
-                {/* Use PropostaItem client component for actions */}
-                <PropostaItem proposta={proposta} />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </main>
+          {propostasResumo.length === 0 ? (
+            <div className="border rounded-lg p-6 shadow">
+              <p>
+                Nenhuma proposta recebida para suas solicitações.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {propostasResumo.map((proposta) => (
+                <div key={proposta.id}>
+                  {/* Use PropostaItem client component for actions */}
+                  <PropostaItem proposta={proposta} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+      <Footer />
+    </div>
   );
 }

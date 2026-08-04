@@ -4,6 +4,7 @@ import ProfissionalPedidosClient from "@/components/profissional/ProfissionalPed
 import { getAuthSession } from "@/lib/auth";
 import type { SolicitacaoProfissionalResumo } from "@/types/solicitacao";
 import { PrismaClient } from "@prisma/client";
+import { Header, Footer } from "@/components/layout";
 
 const prisma = new PrismaClient();
 
@@ -51,17 +52,21 @@ export default async function ProfissionalPedidosPage() {
 
   if (session.role !== "PROFESSIONAL" || !session.profissionalId) {
     return (
-      <main className="p-10">
-        <div className="max-w-3xl border rounded-lg p-6 shadow">
-          <h1 className="text-3xl font-bold mb-4">
-            Painel do Profissional
-          </h1>
-          <p>
-            Esta área está disponível apenas para usuários
-            profissionais.
-          </p>
-        </div>
-      </main>
+      <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
+        <Header />
+        <main className="flex-1 w-full p-4 sm:p-10 max-w-7xl mx-auto">
+          <div className="max-w-3xl border rounded-lg p-6 shadow">
+            <h1 className="text-3xl font-bold mb-4">
+              Painel do Profissional
+            </h1>
+            <p>
+              Esta área está disponível apenas para usuários
+              profissionais.
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
@@ -84,14 +89,18 @@ export default async function ProfissionalPedidosPage() {
   const estimatedRevenue = revenueData._sum.valor ? Number(revenueData._sum.valor) : 0;
 
   return (
-    <main className="bg-neutral-background min-h-screen pt-4">
-      <ProfissionalPedidosClient
-        initialSolicitacoes={solicitacoes}
-        initialErrorMessage={errorMessage}
-        profissionalNome={session.name || "Profissional"}
-        summary={summary}
-        revenue={estimatedRevenue}
-      />
-    </main>
+    <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
+      <Header />
+      <main className="flex-1 w-full bg-neutral-background pt-4">
+        <ProfissionalPedidosClient
+          initialSolicitacoes={solicitacoes}
+          initialErrorMessage={errorMessage}
+          profissionalNome={session.name || "Profissional"}
+          summary={summary}
+          revenue={estimatedRevenue}
+        />
+      </main>
+      <Footer />
+    </div>
   );
 }

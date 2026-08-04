@@ -42,10 +42,14 @@ export class ContractingDomainService {
         data: { status: 'RECUSADA', updatedAt: new Date() },
       });
 
-      // 3. Atualiza Solicitação para EM_EXECUCAO
+      // 3. Atualiza Solicitação para ACEITA e atribui o profissional
       const updatedSolicitacao = await tx.solicitarServico.update({
         where: { id: proposta.solicitacaoId },
-        data: { status: 'EM_EXECUCAO', updatedAt: new Date() },
+        data: { 
+          status: 'ACEITA', 
+          profissionalId: proposta.profissionalId,
+          updatedAt: new Date() 
+        },
       });
 
       return { acceptedProposal, updatedSolicitacao };
