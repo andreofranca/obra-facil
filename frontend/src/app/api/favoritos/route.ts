@@ -69,3 +69,28 @@ export async function DELETE(request: NextRequest) {
     return apiError("Erro ao remover favorito", 500);
   }
 }
+
+export async function GET(request: NextRequest) {
+  const reqLogger = logger.withRequest(request);
+  try {
+    const session = await getAuthSession();
+
+    if (!session || !session.userId || session.role !== "CLIENT" || !session.clienteId) {
+      return apiError("Acesso permitido apenas para clientes", 403);
+    }
+
+    const favoritos = await prisma.favorito.findMany({
+      where: {
+        clienteId: session.clienteId,
+      },
+      include: {
+        profissional: true,
+      },
+    });
+
+    return apiSuccess({ favoritos }, 200);
+  } catch (error) {
+    reqLogger.error(error);
+    return apiError("Erro ao buscar favoritos", 500);
+  }
+}

@@ -65,6 +65,11 @@ A Sprint 09.1 consolidou a camada de sessão e autorização em:
 - Estimativa de conclusão do MVP: aproximadamente 80%.
 - Estimativa de maturidade para a versão 1.0: aproximadamente 60%.
 
+## Metodologia Oficial: Engineering Operating System (EOS) Versão: 1.0
+
+Este projeto utiliza o framework EOS (Engineering Operating System) na versão 1.0. 
+Consulte o diretório `/eos` para as especificações completas de processos, cerimônias, nomenclatura e gestão do ciclo de vida do desenvolvimento.
+
 ## Roadmap Resumido
 
 - Curto prazo: reforço de autorização, proteção de rotas e validações adicionais de sessão.

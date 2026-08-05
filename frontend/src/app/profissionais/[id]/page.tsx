@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import React from 'react';
 import Link from 'next/link';
 import '../vitrine.css';
+import { FavoriteButton } from "@/components/profissional/FavoriteButton";
 
 // Mock data fetcher function
 const getProfessional = (id: string) => {
@@ -86,7 +87,7 @@ export default function ProfessionalProfile({ params }: { params: { id: string }
             <div className="profile-actions">
               <button className="btn-accent">Solicitar orçamento</button>
               <button className="btn-primary">Conversar</button>
-              <button className="btn-secondary">Favoritar</button>
+              <FavoriteButton profissionalId={prof.id} initialIsFavorito={false} />
             </div>
           </div>
         </div>

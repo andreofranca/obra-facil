@@ -96,3 +96,7 @@ Componentes principais:
 ## Estratégia de versionamento
 
 - Versionamento semântico para releases (tags `vMAJOR.MINOR.PATCH`)
+
+## Metodologia Oficial: Engineering Operating System (EOS) Versão: 1.0
+
+Este projeto adota as diretrizes arquiteturais e operacionais estabelecidas pelo framework EOS (Engineering Operating System) versão 1.0. Mais detalhes e especificações podem ser encontrados no diretório `/eos`.

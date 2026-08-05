@@ -37,7 +37,7 @@ const MetricCard = ({ title, value, icon, trend, positive, color }: any) => (
   </div>
 );
 
-export default function ProfissionalPedidosClient() {
+export default function ProfissionalPedidosClient({ metrics, requests }: { metrics?: any, requests?: any }) {
   const [activeTab, setActiveTab] = useState('visao-geral');
 
   const tabs = [
@@ -92,44 +92,83 @@ export default function ProfissionalPedidosClient() {
         <div className="space-y-6">
           {/* Main Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MetricCard title="Receita (Mês)" value="R$ 14.500" icon={<IconDollar />} trend="12%" positive={true} color="text-emerald-600 bg-emerald-100" />
-            <MetricCard title="Novos Pedidos" value="48" icon={<IconShoppingBag />} trend="8%" positive={true} color="text-blue-600 bg-blue-100" />
-            <MetricCard title="Taxa de Conversão" value="64%" icon={<IconTrendingUp />} trend="3%" positive={true} color="text-indigo-600 bg-indigo-100" />
-            <MetricCard title="Avaliação Média" value="4.9" icon={<IconStar />} trend="0.1" positive={true} color="text-amber-500 bg-amber-100" />
+            <MetricCard title="Receita (Total)" value={metrics?.revenue || 'R$ 0,00'} icon={<IconDollar />} positive={true} color="text-emerald-600 bg-emerald-100" />
+            <MetricCard title="Total de Pedidos" value={metrics?.totalRequests || '0'} icon={<IconShoppingBag />} positive={true} color="text-blue-600 bg-blue-100" />
+            <MetricCard title="Taxa de Conversão" value={metrics?.conversion || '0%'} icon={<IconTrendingUp />} positive={true} color="text-indigo-600 bg-indigo-100" />
+            <MetricCard title="Pedidos Ativos" value={metrics?.activeRequests || '0'} icon={<IconBriefcase />} positive={true} color="text-amber-500 bg-amber-100" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Histórico / Atividades Recentes */}
             <div className="lg:col-span-2 bg-white/70 backdrop-blur-md rounded-3xl p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-slate-800">Histórico & Aceites</h2>
+                <h2 className="text-xl font-bold text-slate-800">Novas Solicitações & Histórico</h2>
                 <button className="text-sm font-semibold text-blue-600 hover:text-blue-700">Ver tudo</button>
               </div>
               <div className="space-y-4">
-                {[
-                  { id: 1, title: 'Limpeza Residencial', client: 'Ana Costa', status: 'Aceito', time: 'Há 2 horas', icon: <IconCheckCircle />, color: 'text-emerald-500' },
-                  { id: 2, title: 'Manutenção Elétrica', client: 'Carlos Silva', status: 'Em Análise', time: 'Há 5 horas', icon: <IconClock />, color: 'text-amber-500' },
-                  { id: 3, title: 'Pintura Completa', client: 'Mariana Luz', status: 'Concluído', time: 'Ontem', icon: <IconBriefcase />, color: 'text-blue-500' },
-                ].map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100/50">
+                {requests && requests.length > 0 ? requests.slice(0, 5).map((item: any) => (
+                  <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100/50 gap-4">
                     <div className="flex items-center gap-4">
-                      <div className={`p-2.5 rounded-full bg-white shadow-sm ${item.color}`}>
-                        {item.icon}
+                      <div className={`p-2.5 rounded-full bg-white shadow-sm flex-shrink-0 ${
+                        item.status === 'ACEITA' || item.solicitacao.status === 'FINALIZADA' ? 'text-emerald-500' :
+                        item.status === 'RECUSADA' ? 'text-rose-500' : 
+                        item.status === 'PENDENTE' ? 'text-blue-500' : 'text-amber-500'
+                      }`}>
+                        {item.status === 'ACEITA' || item.solicitacao.status === 'FINALIZADA' ? <IconCheckCircle /> :
+                         item.status === 'RECUSADA' ? <IconClock /> : 
+                         item.status === 'PENDENTE' ? <IconBell /> : <IconBriefcase />}
                       </div>
                       <div>
-                        <h4 className="font-semibold text-slate-800">{item.title}</h4>
-                        <p className="text-sm text-slate-500">{item.client} • {item.time}</p>
+                        <h4 className="font-semibold text-slate-800">{item.solicitacao.titulo}</h4>
+                        <p className="text-sm text-slate-500">{item.solicitacao.cliente.nome} • {new Date(item.createdAt).toLocaleDateString('pt-BR')} • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.valor)}</p>
                       </div>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-white border ${
-                      item.status === 'Aceito' ? 'text-emerald-700 border-emerald-200' : 
-                      item.status === 'Em Análise' ? 'text-amber-700 border-amber-200' : 
-                      'text-blue-700 border-blue-200'
-                    }`}>
-                      {item.status}
-                    </span>
+                    {item.status === 'PENDENTE' ? (
+                      <div className="flex gap-2 self-end sm:self-auto">
+                        <button 
+                          onClick={async () => {
+                            await fetch(`/api/propostas/${item.id}/status`, { method: 'POST', body: JSON.stringify({ status: 'ACEITA' }) });
+                            window.location.reload();
+                          }}
+                          className="px-4 py-1.5 rounded-full text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm"
+                        >
+                          Aceitar
+                        </button>
+                        <button 
+                          onClick={async () => {
+                            await fetch(`/api/propostas/${item.id}/status`, { method: 'POST', body: JSON.stringify({ status: 'RECUSADA' }) });
+                            window.location.reload();
+                          }}
+                          className="px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-rose-600 border border-rose-200 hover:bg-rose-50 transition-colors shadow-sm"
+                        >
+                          Recusar
+                        </button>
+                      </div>
+                    ) : item.solicitacao.status === 'EM_EXECUCAO' && item.status === 'ACEITA' ? (
+                      <div className="flex gap-2 self-end sm:self-auto">
+                        <button 
+                          onClick={async () => {
+                            await fetch(`/api/solicitacoes/${item.solicitacao.id}/finalizar`, { method: 'POST' });
+                            window.location.reload();
+                          }}
+                          className="px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm"
+                        >
+                          Finalizar Serviço
+                        </button>
+                      </div>
+                    ) : (
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-white border self-end sm:self-auto ${
+                        item.status === 'ACEITA' || item.solicitacao.status === 'FINALIZADA' ? 'text-emerald-700 border-emerald-200' : 
+                        item.status === 'RECUSADA' ? 'text-rose-700 border-rose-200' : 
+                        'text-amber-700 border-amber-200'
+                      }`}>
+                        {item.solicitacao.status === 'FINALIZADA' ? 'Finalizado' : item.status}
+                      </span>
+                    )}
                   </div>
-                ))}
+                )) : (
+                  <p className="text-sm text-slate-500 py-4 text-center">Nenhum histórico disponível.</p>
+                )}
               </div>
             </div>
 
@@ -138,21 +177,22 @@ export default function ProfissionalPedidosClient() {
               <div className="absolute top-0 right-0 p-12 bg-blue-500/10 blur-3xl rounded-full"></div>
               <h2 className="text-xl font-bold mb-6 relative z-10">Serviços em Andamento</h2>
               <div className="space-y-5 relative z-10">
-                {[
-                  { id: 1, title: 'Reforma Cozinha', progress: 75, client: 'Roberto A.' },
-                  { id: 2, title: 'Instalação Ar', progress: 30, client: 'Empresa X' },
-                ].map((service) => (
-                  <div key={service.id} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 hover:bg-white/20 transition-colors cursor-pointer">
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-semibold text-white">{service.title}</h4>
-                      <span className="text-xs font-medium text-blue-300">{service.progress}%</span>
+                {requests && requests.filter((r: any) => r.solicitacao.status === 'EM_EXECUCAO').length > 0 ? (
+                  requests.filter((r: any) => r.solicitacao.status === 'EM_EXECUCAO').slice(0, 3).map((service: any) => (
+                    <div key={service.id} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 hover:bg-white/20 transition-colors cursor-pointer">
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="font-semibold text-white">{service.solicitacao.titulo}</h4>
+                        <span className="text-xs font-medium text-blue-300">Em andamento</span>
+                      </div>
+                      <p className="text-sm text-slate-300 mb-3">{service.solicitacao.cliente.nome}</p>
+                      <div className="w-full bg-slate-700 rounded-full h-1.5">
+                        <div className="bg-blue-400 h-1.5 rounded-full transition-all duration-1000 w-1/2"></div>
+                      </div>
                     </div>
-                    <p className="text-sm text-slate-300 mb-3">{service.client}</p>
-                    <div className="w-full bg-slate-700 rounded-full h-1.5">
-                      <div className="bg-blue-400 h-1.5 rounded-full transition-all duration-1000" style={{ width: `${service.progress}%` }}></div>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-300 py-4 text-center">Nenhum serviço em andamento no momento.</p>
+                )}
               </div>
               <button className="w-full mt-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-xl text-sm font-semibold transition-colors border border-white/10">
                 Gerenciar Serviços

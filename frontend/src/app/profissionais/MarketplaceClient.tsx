@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Input, Button, Card, Badge, Skeleton } from "@/components/ui";
 import { Search, MapPin, Star, Briefcase, FilterX } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { FavoriteButton } from "@/components/profissional/FavoriteButton";
 
 // Types derived from the API response
 type Categoria = {
@@ -43,8 +45,10 @@ export default function MarketplaceClient() {
   const [error, setError] = useState<string | null>(null);
 
   // Filtros
+  const searchParams = useSearchParams();
+  const initialCategoria = searchParams.get("categoria") || "";
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategoria, setSelectedCategoria] = useState("");
+  const [selectedCategoria, setSelectedCategoria] = useState(initialCategoria);
 
   // Debounce do termo de busca
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -251,9 +255,14 @@ export default function MarketplaceClient() {
                             </div>
                           )}
                         </div>
-                        <Badge tone={profissional.ativo ? "success" : "neutral"} className="rounded-full shadow-sm mt-10">
-                          {profissional.ativo ? "Disponível" : "Ocupado"}
-                        </Badge>
+                        <div className="flex flex-col items-end gap-2 z-20 mt-8">
+                          <Badge tone={profissional.ativo ? "success" : "neutral"} className="rounded-full shadow-sm">
+                            {profissional.ativo ? "Disponível" : "Ocupado"}
+                          </Badge>
+                          <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                            <FavoriteButton profissionalId={profissional.id} initialIsFavorito={false} />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Info */}
@@ -298,4 +307,3 @@ export default function MarketplaceClient() {
       </div>
   );
 }
-

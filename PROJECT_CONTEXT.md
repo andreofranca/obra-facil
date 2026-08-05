@@ -207,11 +207,11 @@ Modelo Freemium.
 
 ---
 
-## Metodologia
+## Metodologia Oficial: Engineering Operating System (EOS) Versão: 1.0
 
-AI-First Development
+Este projeto adota o framework EOS (Engineering Operating System) versão 1.0. Para detalhes e diretrizes de processos, consulte o diretório `/eos`.
 
-Toda funcionalidade deverá possuir:
+O desenvolvimento também segue o princípio de AI-First Development. Toda funcionalidade deverá possuir:
 
 * Objetivo
 * Regras de negócio
