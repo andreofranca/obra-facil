@@ -41,7 +41,7 @@ describe("Integration: LoginPage", () => {
   it("deve chamar a API e redirecionar em caso de sucesso", async () => {
     (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ token: "fake-token" }),
+      json: async () => ({ user: { role: "CLIENT" } }),
     });
 
     render(<LoginPage />);

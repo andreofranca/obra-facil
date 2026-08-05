@@ -29,14 +29,34 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            // Conservative CSP for App Router / Next.js
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self';",
+            // Conservative CSP for App Router / Next.js, allowing external images
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://i.pravatar.cc https://picsum.photos https://images.unsplash.com; font-src 'self' data:; connect-src 'self';",
           },
           // HSTS is intentionally omitted here to prevent locking localhost. 
           // It should be configured at the proxy level (Nginx, AWS ALB, Vercel) in production.
         ],
       },
     ];
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'fastly.picsum.photos',
+      }
+    ],
   },
 };
 

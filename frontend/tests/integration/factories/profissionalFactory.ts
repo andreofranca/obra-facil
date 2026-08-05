@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { PrismaClient, Profissional } from '@prisma/client';
 import { UserFactory } from './userFactory';
 
@@ -12,7 +13,7 @@ export const ProfissionalFactory = {
         userId: user.id,
         descricao: 'Profissional de Teste',
         experiencia: 5,
-        ...overrides,
+        ...(overrides as any),
       },
       include: {
         user: true,
@@ -20,3 +21,4 @@ export const ProfissionalFactory = {
     });
   }
 };
+

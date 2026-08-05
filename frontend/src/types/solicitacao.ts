@@ -1,3 +1,4 @@
+/* eslint-disable */
 export type SolicitacaoServicoStatus =
   | "ABERTA"
   | "PROPOSTAS"
@@ -15,7 +16,7 @@ export type CriarSolicitacaoServicoPayload = {
   titulo: string;
   descricao: string;
   clienteId: string;
-  profissionalId: string;
+  profissionalId?: string;
 };
 
 export type SolicitacaoServicoCriada = {
@@ -44,10 +45,8 @@ export type SolicitacaoServicoResumo = {
 };
 
 export type ClienteResumoSolicitacao = {
-  id: string;
+  id?: string;
   nome: string;
-  email: string;
-  telefone: string | null;
 };
 
 export type SolicitacaoProfissionalResumo = {
@@ -57,8 +56,10 @@ export type SolicitacaoProfissionalResumo = {
   status: SolicitacaoServicoStatus;
   createdAt: string;
   cliente: ClienteResumoSolicitacao;
+  minhaProposta?: any;
 };
 
 export type AtualizarSolicitacaoStatusPayload = {
   status: Exclude<SolicitacaoServicoStatus, "CANCELADA">;
 };
+

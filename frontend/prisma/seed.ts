@@ -8,6 +8,9 @@ async function main() {
 
   // Limpar a base de dados
   console.log('Limpando dados antigos...');
+  await prisma.transfer.deleteMany();
+  await prisma.transaction.deleteMany();
+  await prisma.favorito.deleteMany();
   await prisma.avaliacaoServico.deleteMany();
   await prisma.mensagemSolicitacao.deleteMany();
   await prisma.historicoStatusServico.deleteMany();
@@ -22,7 +25,7 @@ async function main() {
   await prisma.plano.deleteMany();
   await prisma.user.deleteMany();
 
-  const MOCK_PASSWORD_HASH = '$2a$12$KkQeK/oU4Jj4.aP8Rz0u6e6eJb.Z.g4wV0Y0c8b6b.r6e5c5c5c5c'; // Representa "senha123"
+  const MOCK_PASSWORD_HASH = '8127bb59fe214d2762cdff91bc691804:c1ebd465f2a24d7b635f05ff1c1d34c9a934ce8bf51b0291da27e0f230861ea651fff5be6a8de037fdb90cf674ced69fdf22d5aded3303500582ae5a387c8bb1'; // Representa "senha123"
 
   // 1. Criar Categorias de Serviço (25 categorias)
   console.log('Criando Categorias de Serviço...');
@@ -79,6 +82,13 @@ async function main() {
             descricao: faker.lorem.paragraph(),
             experiencia: faker.number.int({ min: 1, max: 30 }),
             ativo: true,
+            fotoPerfil: `https://i.pravatar.cc/150?u=${faker.string.uuid()}`,
+            fotoCapa: faker.image.urlPicsumPhotos({ width: 1200, height: 400 }),
+            galeria: Array.from({ length: 4 }).map(() => faker.image.urlPicsumPhotos({ width: 600, height: 400 })),
+            certificacoes: ['NR-10', 'NR-35', 'Senai - Elétrica', 'Mestre de Obras'],
+            obrasExecutadas: faker.number.int({ min: 10, max: 200 }),
+            whatsapp: faker.phone.number({ style: 'international' }),
+            disponibilidade: faker.helpers.arrayElement(['Imediata', 'Próxima semana', 'Apenas finais de semana']),
             endereco: {
               create: {
                 cidade: faker.location.city(),
@@ -180,6 +190,38 @@ async function main() {
           clienteId,
           profissionalId
         }
+      });
+    }
+
+    // 8. Criar Histórico de Status
+    await prisma.historicoStatusServico.create({
+      data: {
+        solicitacaoId: solicitacao.id,
+        usuarioId: (await prisma.cliente.findUnique({ where: { id: clienteId } }))!.userId,
+        statusAnterior: null,
+        novoStatus: status,
+      }
+    });
+  }
+
+  // 9. Criar Favoritos (5 a 10 favoritos por cliente)
+  console.log('Criando Favoritos...');
+  for (const clienteId of clientesIds) {
+    const numFavoritos = faker.number.int({ min: 2, max: 8 });
+    const profissionaisFavoritados = faker.helpers.arrayElements(profissionaisIds, numFavoritos);
+    for (const profId of profissionaisFavoritados) {
+      await prisma.favorito.upsert({
+        where: {
+          clienteId_profissionalId: {
+            clienteId,
+            profissionalId: profId
+          }
+        },
+        create: {
+          clienteId,
+          profissionalId: profId
+        },
+        update: {}
       });
     }
   }

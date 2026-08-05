@@ -13,11 +13,14 @@ interface ChatMessagesProps {
 export function ChatMessages({ mensagens, usuarioAtualId }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const prevLengthRef = useRef(mensagens.length);
+
   useEffect(() => {
-    if (bottomRef.current) {
+    if (bottomRef.current && mensagens.length > prevLengthRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [mensagens]);
+    prevLengthRef.current = mensagens.length;
+  }, [mensagens.length]);
 
   if (mensagens.length === 0) {
     return <ChatEmptyState />;

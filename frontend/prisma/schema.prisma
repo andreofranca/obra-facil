@@ -41,6 +41,14 @@ model Profissional {
   descricao    String?
   experiencia  Int?
   ativo        Boolean            @default(true)
+  fotoPerfil   String?
+  fotoCapa     String?
+  obrasExecutadas Int?            @default(0)
+  disponibilidade String?
+  whatsapp     String?
+  certificacoes String[]
+  galeria      String[]
+  metadata     Json?
   user         User               @relation(fields: [userId], references: [id])
   avaliacoesServico AvaliacaoServico[]
   servicos        Servico[]

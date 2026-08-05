@@ -123,7 +123,7 @@ async function loginHandler(request: NextRequest) {
       httpOnly: true,
       sameSite: "lax",
       path: "/",
-      secure: process.env.NODE_ENV === "production",
+      secure: request.nextUrl.protocol === "https:",
       maxAge: 60 * 60 * 24 * 7,
     }
   );

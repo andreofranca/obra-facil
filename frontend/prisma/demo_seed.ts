@@ -97,6 +97,20 @@ async function main() {
             descricao: `Sou especialista em serviços de ${categoryName}. Tenho vasta experiência e busco sempre entregar o melhor acabamento com rapidez e honestidade.`,
             experiencia: faker.number.int({ min: 2, max: 25 }),
             ativo: true,
+            fotoPerfil: `https://i.pravatar.cc/300?img=${i + 1}`,
+            fotoCapa: `https://picsum.photos/seed/${i}/800/300`,
+            obrasExecutadas: faker.number.int({ min: 10, max: 500 }),
+            disponibilidade: faker.helpers.arrayElement(["Integral", "Seg a Sex", "Finais de Semana", "Imediata"]),
+            whatsapp: faker.phone.number({ style: 'national' }),
+            certificacoes: faker.helpers.arrayElements([
+              "NR-10 (Segurança em Instalações)",
+              "NR-35 (Trabalho em Altura)",
+              "Curso SENAI Eletromecânica",
+              "Certificação Especialista Suvinil",
+              "Gestão de Obras SEBRAE",
+              "Pintura Decorativa Tigre"
+            ], faker.number.int({ min: 1, max: 3 })),
+            galeria: Array.from({ length: faker.number.int({ min: 3, max: 6 }) }).map((_, idx) => `https://picsum.photos/seed/${i}_${idx}/400/300`),
             endereco: {
               create: {
                 cidade: faker.location.city(),

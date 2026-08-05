@@ -27,8 +27,7 @@ function parseSolicitacaoPayload(
 
   if (
     !isNonEmptyString(payload.titulo) ||
-    !isNonEmptyString(payload.descricao) ||
-    !isNonEmptyString(payload.profissionalId)
+    !isNonEmptyString(payload.descricao)
   ) {
     return null;
   }
@@ -36,7 +35,7 @@ function parseSolicitacaoPayload(
   return {
     titulo: payload.titulo.trim(),
     descricao: payload.descricao.trim(),
-    profissionalId: payload.profissionalId.trim(),
+    profissionalId: typeof payload.profissionalId === "string" && payload.profissionalId.trim().length > 0 ? payload.profissionalId.trim() : undefined,
   };
 }
 
@@ -141,7 +140,7 @@ export async function POST(request: NextRequest) {
 
     if (!payload) {
       return apiError(
-        "Informe titulo, descricao e profissionalId para criar a solicitação",
+        "Informe titulo e descricao para criar a solicitação",
         400
       );
     }
@@ -156,14 +155,16 @@ export async function POST(request: NextRequest) {
       return apiError("Cliente não encontrado", 404);
     }
 
-    const profissional = await prisma.profissional.findUnique({
-      where: {
-        id: payload.profissionalId,
-      },
-    });
+    if (payload.profissionalId) {
+      const profissional = await prisma.profissional.findUnique({
+        where: {
+          id: payload.profissionalId,
+        },
+      });
 
-    if (!profissional) {
-      return apiError("Profissional não encontrado", 404);
+      if (!profissional) {
+        return apiError("Profissional não encontrado", 404);
+      }
     }
 
     const now = new Date();

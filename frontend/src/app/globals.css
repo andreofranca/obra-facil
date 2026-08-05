@@ -1,38 +1,73 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F8FAFC;
-  --foreground: #0F172A;
+  --background: #FAFAFC;
+  --foreground: #09090B;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans), sans-serif;
+  --font-sans: var(--font-geist-sans), 'Inter', sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
 
-  /* Premium Brand Palette */
-  --color-brand-primary: #2563EB;
-  --color-brand-secondary: #3B82F6;
+  /* Premium Brand Palette: Deep Indigo */
+  --color-brand-primary: #4338CA;
+  --color-brand-secondary: #6366F1;
   --color-brand-accent: #F59E0B;
 
   /* Neutral Slate Palette for sophisticated feel */
   --color-neutral-white: #FFFFFF;
-  --color-neutral-background: #F8FAFC;
+  --color-neutral-background: #FAFAFC;
   --color-neutral-surface: #FFFFFF;
-  --color-neutral-border: #E2E8F0;
-  --color-neutral-muted: #64748B;
-  --color-neutral-text: #0F172A;
+  --color-neutral-border: #E4E4E7;
+  --color-neutral-muted: #71717A;
+  --color-neutral-text: #09090B;
 
   /* Feedback Colors */
-  --color-feedback-success: #22C55E;
+  --color-feedback-success: #10B981;
   --color-feedback-error: #EF4444;
   --color-feedback-warning: #F59E0B;
   --color-feedback-info: #3B82F6;
 
   /* Premium Shadows */
-  --shadow-soft: 0 4px 24px -4px rgba(15, 23, 42, 0.04);
-  --shadow-elevated: 0 12px 32px -4px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 4px 20px -2px rgba(9, 9, 11, 0.05);
+  --shadow-elevated: 0 12px 32px -4px rgba(9, 9, 11, 0.08);
+  --shadow-floating: 0 20px 40px -8px rgba(67, 56, 202, 0.15);
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.4s ease-out;
+  --animate-fade-in-up: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-scale-in: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@utility glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+@utility text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(to right, var(--color-brand-primary), var(--color-brand-secondary));
 }
 
 body {

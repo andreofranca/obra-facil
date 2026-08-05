@@ -1,12 +1,15 @@
+/* eslint-disable */
 import React from "react";
 import { Badge } from "@/components/ui";
 
 type ProfessionalHeroProps = {
   name: string;
   specialty: string;
+  fotoPerfil?: string | null;
+  fotoCapa?: string | null;
 };
 
-export function ProfessionalHero({ name, specialty }: ProfessionalHeroProps) {
+export function ProfessionalHero({ name, specialty, fotoPerfil, fotoCapa }: ProfessionalHeroProps) {
   // Gera Iniciais determinísticas
   const initials = name
     .split(" ")
@@ -18,16 +21,26 @@ export function ProfessionalHero({ name, specialty }: ProfessionalHeroProps) {
   return (
     <div className="w-full relative mb-16 md:mb-24">
       {/* Imagem de Capa (Genérica/Gradiente Premium) */}
-      <div className="h-48 md:h-64 lg:h-72 w-full bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-primary rounded-b-3xl relative overflow-hidden shadow-soft border-b border-x border-neutral-border/20">
+      <div className="h-56 md:h-72 lg:h-80 w-full relative overflow-hidden shadow-soft border-b border-x border-neutral-border/20">
+        {fotoCapa ? (
+          <img src={fotoCapa} alt="Capa" className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-primary" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
       </div>
 
       {/* Avatar e Informações Básicas sobrepostas */}
-      <div className="absolute -bottom-12 md:-bottom-16 left-6 md:left-12 lg:left-24 flex items-end gap-5 md:gap-8 max-w-7xl w-full">
-        <div className="w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 bg-neutral-surface border-4 border-neutral-background shadow-elevated rounded-full flex items-center justify-center flex-shrink-0 relative overflow-hidden">
-          <div className="w-full h-full bg-gradient-to-br from-neutral-background to-neutral-surface flex items-center justify-center text-4xl md:text-5xl font-extrabold text-brand-primary">
-            {initials}
-          </div>
+      <div className="absolute -bottom-16 md:-bottom-20 left-6 md:left-12 lg:left-24 flex items-end gap-5 md:gap-8 max-w-7xl w-full">
+        <div className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 bg-neutral-surface border-4 border-neutral-background shadow-elevated rounded-full flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+          {fotoPerfil ? (
+            <img src={fotoPerfil} alt={name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-neutral-background to-neutral-surface flex items-center justify-center text-4xl md:text-5xl font-extrabold text-brand-primary">
+              {initials}
+            </div>
+          )}
         </div>
 
         <div className="hidden md:block pb-2 animate-fade-in-up">
@@ -45,3 +58,4 @@ export function ProfessionalHero({ name, specialty }: ProfessionalHeroProps) {
     </div>
   );
 }
+

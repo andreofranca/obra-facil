@@ -5,11 +5,18 @@ export type ProfissionalResumo = {
   descricao: string | null;
   experiencia: number | null;
   ativo: boolean;
+  fotoPerfil?: string | null;
+  fotoCapa?: string | null;
+  obrasExecutadas?: number | null;
+  disponibilidade?: string | null;
+  whatsapp?: string | null;
+  certificacoes?: string[];
+  galeria?: string[];
   user: {
-    id: string;
+    id?: string;
     name: string;
-    email: string;
-    phone: string | null;
+    email?: string;
+    phone?: string | null;
   };
   servicos: {
     id: string;

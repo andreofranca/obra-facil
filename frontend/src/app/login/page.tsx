@@ -47,11 +47,20 @@ export default function LoginPage() {
       const responseData = (await response.json()) as AuthResponse | AuthErrorResponse;
 
       if (!response.ok) {
-        setErrorMessage("error" in responseData ? responseData.error : "Não foi possível entrar");
+        const message = "error" in responseData && typeof responseData.error === 'string'
+          ? responseData.error
+          : "Não foi possível entrar";
+        setErrorMessage(message);
         return;
       }
 
-      router.push("/meus-pedidos");
+      if ("user" in responseData && responseData.user) {
+        if (responseData.user.role === "PROFESSIONAL") {
+          router.push("/profissional/pedidos");
+        } else {
+          router.push("/meus-pedidos");
+        }
+      }
     } catch {
       setErrorMessage("Erro inesperado ao fazer login");
     }
