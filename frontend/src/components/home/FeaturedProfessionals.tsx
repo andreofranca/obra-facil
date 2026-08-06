@@ -42,8 +42,8 @@ export async function FeaturedProfessionals() {
             }
 
             const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(profissional.user.name)}&backgroundColor=b6e3f4`;
-            const cidade = "São Paulo";
-            const estado = "SP";
+            const cidade = profissional.endereco?.cidade || "Local";
+            const estado = profissional.endereco?.estado || "não informado";
 
             return (
               <Card

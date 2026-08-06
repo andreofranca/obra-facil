@@ -21,6 +21,7 @@ interface GetProfissionaisOptions {
 
 const include = {
   user: true,
+  endereco: true,
   avaliacoesServico: true,
   servicos: {
     include: {

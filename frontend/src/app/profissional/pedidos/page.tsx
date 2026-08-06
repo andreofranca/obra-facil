@@ -40,7 +40,7 @@ export default async function ProfissionalPedidosPage() {
     orderBy: { createdAt: 'desc' }
   });
 
-  const acceptedOrFinished = proposals.filter(p => p.status === 'ACEITA');
+  const acceptedOrFinished = proposals.filter(p => p.status === 'ACEITA' || p.solicitacao.status === 'FINALIZADA');
   const revenue = acceptedOrFinished.reduce((acc, p) => acc + Number(p.valor || 0), 0);
   const conversion = proposals.length > 0 ? ((acceptedOrFinished.length / proposals.length) * 100).toFixed(0) : '0';
 
@@ -50,6 +50,41 @@ export default async function ProfissionalPedidosPage() {
     totalRequests: proposals.length,
     activeRequests: proposals.filter(p => p.status === 'PENDENTE' || p.solicitacao.status === 'EM_EXECUCAO').length
   };
+
+  const messages = await prisma.mensagemSolicitacao.findMany({
+    where: {
+      solicitacao: { profissionalId: profissional.id }
+    },
+    include: {
+      autor: true,
+      solicitacao: true
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 10
+  });
+
+  const avaliacoes = await prisma.avaliacaoServico.findMany({
+    where: { profissionalId: profissional.id },
+    include: { cliente: { include: { user: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 5
+  });
+
+  const clientStats: Record<string, { id: string; name: string; services: number; revenue: number }> = {};
+  acceptedOrFinished.forEach(p => {
+    const cId = p.solicitacao.clienteId;
+    if (!clientStats[cId]) {
+      clientStats[cId] = {
+        id: cId,
+        name: p.solicitacao.cliente.user.name,
+        services: 0,
+        revenue: 0
+      };
+    }
+    clientStats[cId].services += 1;
+    clientStats[cId].revenue += Number(p.valor);
+  });
+  const topClientes = Object.values(clientStats).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
 
   // Convert dates and Decimal for Client Component
   const serializableProposals = proposals.map(p => ({
@@ -69,5 +104,28 @@ export default async function ProfissionalPedidosPage() {
     }
   }));
 
-  return <ProfissionalPedidosClient metrics={metrics} requests={serializableProposals} />;
+  const serializableMessages = messages.map(m => ({
+    id: m.id,
+    name: m.autor?.name || 'Sistema',
+    msg: m.mensagem,
+    time: m.createdAt.toISOString(),
+    unread: m.usuarioId !== session.userId // simplistic check
+  }));
+
+  const serializableAvaliacoes = avaliacoes.map(a => ({
+    id: a.id,
+    name: a.cliente.user.name,
+    nota: a.nota,
+    comentario: a.comentario
+  }));
+
+  return (
+    <ProfissionalPedidosClient 
+      metrics={metrics} 
+      requests={serializableProposals}
+      messages={serializableMessages}
+      topClientes={topClientes}
+      avaliacoes={serializableAvaliacoes}
+    />
+  );
 }

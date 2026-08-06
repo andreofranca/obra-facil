@@ -159,12 +159,12 @@ export default function LoginPage() {
                     </span>
                   </label>
 
-                  <a 
-                    href="#esqueci-senha" 
-                    className="text-sm font-semibold text-brand-primary hover:text-brand-secondary transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-sm"
+                  <span 
+                    title="Em Desenvolvimento"
+                    className="text-sm font-semibold text-neutral-muted/50 cursor-not-allowed transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-sm"
                   >
-                    Esqueci a senha
-                  </a>
+                    Esqueci a senha (Em Breve)
+                  </span>
                 </div>
               </div>
 

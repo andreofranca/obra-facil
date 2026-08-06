@@ -181,7 +181,7 @@ export default function CadastroPage() {
                     />
                   </div>
                   <label htmlFor="terms" className="text-sm font-medium text-neutral-muted cursor-pointer leading-tight">
-                    Eu concordo com os <a href="#" className="text-brand-primary hover:underline">Termos de Uso</a> e a <a href="#" className="text-brand-primary hover:underline">Política de Privacidade</a>.
+                    Eu concordo com os Termos de Uso e a Política de Privacidade.
                   </label>
                 </div>
                 {errors.terms && (

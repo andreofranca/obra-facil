@@ -48,8 +48,8 @@ export function Footer() {
             &copy; {new Date().getFullYear()} ObraFácil. Todos os direitos reservados.
           </p>
           <div className="flex gap-4">
-            <Link href="/termos" className="text-neutral-muted hover:text-brand-primary text-sm transition-colors">Termos</Link>
-            <Link href="/privacidade" className="text-neutral-muted hover:text-brand-primary text-sm transition-colors">Privacidade</Link>
+            <span className="text-neutral-muted/50 text-sm cursor-not-allowed" title="Em Desenvolvimento">Termos (Em Breve)</span>
+            <span className="text-neutral-muted/50 text-sm cursor-not-allowed" title="Em Desenvolvimento">Privacidade (Em Breve)</span>
           </div>
         </div>
       </Container>

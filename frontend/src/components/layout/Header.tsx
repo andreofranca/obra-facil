@@ -37,29 +37,23 @@ export function Header() {
                   <Link href="/meus-pedidos" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
                     Meus Pedidos
                   </Link>
-                  <Link href="/favoritos" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
+                  <Link href="/meus-favoritos" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
                     Favoritos
                   </Link>
-                  <Link href="/perfil" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
-                    Perfil
-                  </Link>
+                  <span className="text-neutral-text/50 font-medium text-sm cursor-not-allowed" title="Em Desenvolvimento">
+                    Perfil (Em Breve)
+                  </span>
                 </>
               )}
 
               {session?.role === "PROFESSIONAL" && (
                 <>
-                  <Link href="/profissional/dashboard" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
+                  <Link href="/profissional/pedidos" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
                     Dashboard
                   </Link>
-                  <Link href="/profissional/pedidos" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
-                    Pedidos
-                  </Link>
-                  <Link href="/profissional/agenda" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
-                    Agenda
-                  </Link>
-                  <Link href="/profissional/perfil" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
-                    Perfil
-                  </Link>
+                  <span className="text-neutral-text/50 font-medium text-sm cursor-not-allowed" title="Em Desenvolvimento">
+                    Perfil (Em Breve)
+                  </span>
                 </>
               )}
             </nav>

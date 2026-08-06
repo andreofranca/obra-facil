@@ -37,7 +37,7 @@ const MetricCard = ({ title, value, icon, trend, positive, color }: any) => (
   </div>
 );
 
-export default function ProfissionalPedidosClient({ metrics, requests }: { metrics?: any, requests?: any }) {
+export default function ProfissionalPedidosClient({ metrics, requests, messages, topClientes, avaliacoes }: { metrics?: any, requests?: any, messages?: any, topClientes?: any, avaliacoes?: any }) {
   const [activeTab, setActiveTab] = useState('visao-geral');
 
   const tabs = [
@@ -63,10 +63,9 @@ export default function ProfissionalPedidosClient({ metrics, requests }: { metri
               <IconSearch />
             </div>
           </div>
-          <button className="p-2.5 bg-white border border-slate-200 rounded-full text-slate-600 hover:text-blue-600 hover:border-blue-200 shadow-sm transition-all relative">
+          <span title="Notificações (Em Desenvolvimento)" className="cursor-not-allowed p-2.5 bg-white border border-slate-200 rounded-full text-slate-400 shadow-sm transition-all relative">
             <IconBell />
-            <span className="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full animate-pulse"></span>
-          </button>
+          </span>
           <div className="h-10 w-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full shadow-md cursor-pointer border-2 border-white"></div>
         </div>
       </header>
@@ -260,22 +259,22 @@ export default function ProfissionalPedidosClient({ metrics, requests }: { metri
               <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
                 <IconMessage /> Mensagens Recentes
               </h2>
-              <span className="bg-rose-100 text-rose-600 text-xs font-bold px-2 py-1 rounded-full">3 Novas</span>
+              {messages && messages.filter((m: any) => m.unread).length > 0 && (
+                <span className="bg-rose-100 text-rose-600 text-xs font-bold px-2 py-1 rounded-full">
+                  {messages.filter((m: any) => m.unread).length} Novas
+                </span>
+              )}
             </div>
             <div className="space-y-4">
-              {[
-                { name: 'Ana Costa', msg: 'Pode confirmar o horário de amanhã?', time: '10:42', unread: true },
-                { name: 'Carlos Silva', msg: 'Obrigado pelo excelente trabalho!', time: 'Ontem', unread: false },
-                { name: 'João Santos', msg: 'Quais os métodos de pagamento?', time: 'Segunda', unread: true },
-              ].map((msg, idx) => (
+              {messages && messages.length > 0 ? messages.map((msg: any, idx: number) => (
                 <div key={idx} className="flex gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer border border-transparent hover:border-slate-100">
                   <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-lg flex-shrink-0">
-                    {msg.name.charAt(0)}
+                    {msg.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
                       <h4 className={`font-semibold ${msg.unread ? 'text-slate-900' : 'text-slate-700'}`}>{msg.name}</h4>
-                      <span className="text-xs text-slate-400">{msg.time}</span>
+                      <span className="text-xs text-slate-400">{new Date(msg.time).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</span>
                     </div>
                     <p className={`text-sm mt-1 truncate ${msg.unread ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
                       {msg.msg}
@@ -285,7 +284,9 @@ export default function ProfissionalPedidosClient({ metrics, requests }: { metri
                     <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mt-2"></div>
                   )}
                 </div>
-              ))}
+              )) : (
+                <p className="text-sm text-slate-500 py-4 text-center">Nenhuma mensagem recente.</p>
+              )}
             </div>
           </div>
 
@@ -296,43 +297,42 @@ export default function ProfissionalPedidosClient({ metrics, requests }: { metri
                 <IconUsers /> Top Clientes
               </h2>
               <div className="flex gap-4 overflow-x-auto pb-2 -mx-2 px-2 snap-x hide-scrollbar">
-                {[
-                  { name: 'Empresa Alpha', services: 12, rev: 'R$ 4.5k' },
-                  { name: 'Condomínio Sol', services: 8, rev: 'R$ 3.2k' },
-                  { name: 'Mariana L.', services: 5, rev: 'R$ 1.8k' },
-                ].map((cli, idx) => (
+                {topClientes && topClientes.length > 0 ? topClientes.map((cli: any, idx: number) => (
                   <div key={idx} className="snap-start min-w-[140px] p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-white border border-slate-200 shadow-sm flex flex-col items-center text-center hover:-translate-y-1 transition-transform cursor-pointer">
                     <div className="w-14 h-14 bg-slate-200 rounded-full mb-3 flex items-center justify-center text-slate-500 font-bold text-xl">
-                      {cli.name.charAt(0)}
+                      {cli.name.charAt(0).toUpperCase()}
                     </div>
-                    <h4 className="font-semibold text-slate-800 text-sm mb-1">{cli.name}</h4>
+                    <h4 className="font-semibold text-slate-800 text-sm mb-1 line-clamp-1">{cli.name}</h4>
                     <p className="text-xs text-slate-500 mb-2">{cli.services} serviços</p>
-                    <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md w-full">{cli.rev}</span>
+                    <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md w-full">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cli.revenue)}
+                    </span>
                   </div>
-                ))}
+                )) : (
+                  <p className="text-sm text-slate-500 py-4 text-center w-full">Sem dados de clientes ainda.</p>
+                )}
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-3xl p-7 shadow-xl text-white relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-16 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
-              <div className="flex justify-between items-center mb-4 relative z-10">
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <IconStar /> Nova Avaliação!
-                </h2>
-                <div className="flex gap-1 text-white">
-                  <IconStar /><IconStar /><IconStar /><IconStar /><IconStar />
+            {avaliacoes && avaliacoes.length > 0 && (
+              <div className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-3xl p-7 shadow-xl text-white relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-16 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors"></div>
+                <div className="flex justify-between items-center mb-4 relative z-10">
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    <IconStar /> Última Avaliação!
+                  </h2>
+                  <div className="flex gap-1 text-white">
+                    {[...Array(avaliacoes[0].nota)].map((_, i) => <IconStar key={i} />)}
+                  </div>
+                </div>
+                <p className="text-amber-50 text-lg font-medium italic mb-4 relative z-10">
+                  "{avaliacoes[0].comentario || 'Ótimo serviço!'}"
+                </p>
+                <div className="flex justify-between items-center relative z-10">
+                  <span className="text-sm font-semibold text-amber-100">- {avaliacoes[0].name}</span>
                 </div>
               </div>
-              <p className="text-amber-50 text-lg font-medium italic mb-4 relative z-10">
-                "Serviço impecável, muito rápido e organizado. Recomendo com certeza!"
-              </p>
-              <div className="flex justify-between items-center relative z-10">
-                <span className="text-sm font-semibold text-amber-100">- Mariana Luz</span>
-                <button className="text-xs font-bold bg-white text-amber-600 px-4 py-2 rounded-full shadow-md hover:bg-amber-50 transition-colors">
-                  Responder
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       )}

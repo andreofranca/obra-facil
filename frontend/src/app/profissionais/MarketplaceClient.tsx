@@ -29,6 +29,11 @@ type Profissional = {
   user: {
     name: string;
   };
+  endereco?: {
+    cidade: string | null;
+    estado: string | null;
+  } | null;
+  avaliacoesServico?: { nota: number }[];
   servicos: {
     titulo: string;
     categoria: {
@@ -90,7 +95,7 @@ export default function MarketplaceClient() {
         if (!res.ok) throw new Error("Erro ao buscar profissionais");
         
         const data = await res.json();
-        setProfissionais(data);
+        setProfissionais(Array.isArray(data) ? data : (data.items || []));
       } catch (err) {
         console.error(err);
         setError("Não foi possível carregar o catálogo no momento. Tente novamente.");
@@ -204,10 +209,18 @@ export default function MarketplaceClient() {
                 .substring(0, 2)
                 .toUpperCase();
 
-              // Para manter a pureza do React (react-hooks/purity), usamos o ID de forma determinística
-              const charCode = profissional.id.charCodeAt(0) || 1;
-              const rating = profissional.avaliacaoMedia || (4.5 + (charCode % 5) * 0.1).toFixed(1);
-              const totalReviews = 5 + (charCode % 45); // Mock visual determinístico
+              let reviewsCount = 0;
+              let rating = 0;
+              if (profissional.avaliacoesServico && profissional.avaliacoesServico.length > 0) {
+                reviewsCount = profissional.avaliacoesServico.length;
+                rating = Math.round(
+                  profissional.avaliacoesServico.reduce((acc, curr) => acc + curr.nota, 0) / reviewsCount
+                );
+              }
+              const displayRating = reviewsCount > 0 ? rating.toFixed(1) : "Novo";
+              const displayTotal = reviewsCount > 0 ? `(${reviewsCount})` : "";
+              const cidade = profissional.endereco?.cidade || "Local";
+              const estado = profissional.endereco?.estado || "não informado";
 
               return (
                 <Link
@@ -234,8 +247,8 @@ export default function MarketplaceClient() {
                       
                       <div className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
                         <Star className="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]" />
-                        <span className="text-white text-xs font-bold">{rating}</span>
-                        <span className="text-white/80 text-[10px]">({totalReviews})</span>
+                        <span className="text-white text-xs font-bold">{displayRating}</span>
+                        <span className="text-white/80 text-[10px]">{displayTotal}</span>
                       </div>
                     </div>
 
@@ -293,7 +306,7 @@ export default function MarketplaceClient() {
                           )}
                           <span className="flex items-center gap-1">
                             <MapPin className="w-3.5 h-3.5" />
-                            São Paulo, SP
+                            {cidade}{estado ? `, ${estado}` : ''}
                           </span>
                         </div>
                       </div>

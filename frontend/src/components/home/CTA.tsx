@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui";
+import Link from "next/link";
 
 export function CTA() {
   return (
@@ -20,12 +21,14 @@ export function CTA() {
             Publique sua necessidade agora e receba orçamentos gratuitos dos melhores profissionais da sua região.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button
-              size="lg"
-              className="bg-neutral-white text-brand-primary hover:bg-neutral-background border-none shadow-lg shadow-black/10 rounded-full px-10 h-14 text-lg font-bold w-full sm:w-auto transition-transform hover:-translate-y-1"
-            >
-              Solicitar orçamento
-            </Button>
+            <Link href="/solicitar-servico" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="bg-neutral-white text-brand-primary hover:bg-neutral-background border-none shadow-lg shadow-black/10 rounded-full px-10 h-14 text-lg font-bold w-full transition-transform hover:-translate-y-1"
+              >
+                Solicitar orçamento
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

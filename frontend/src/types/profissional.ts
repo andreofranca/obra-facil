@@ -18,6 +18,10 @@ export type ProfissionalResumo = {
     email?: string;
     phone?: string | null;
   };
+  endereco?: {
+    cidade: string | null;
+    estado: string | null;
+  } | null;
   servicos: {
     id: string;
     titulo: string;
