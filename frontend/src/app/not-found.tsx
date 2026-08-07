@@ -1,11 +1,10 @@
 import Link from 'next/link';
-import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
-      <Header />
+      
       
       <main className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="max-w-md text-center space-y-6">
@@ -24,7 +23,7 @@ export default function NotFound() {
         </div>
       </main>
 
-      <Footer />
+      
     </div>
   );
 }

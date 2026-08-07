@@ -5,20 +5,15 @@ import {
   Hero,
   HowItWorks,
 } from "@/components/home";
-import { AppLayout, Header, Footer } from "@/components/layout";
 
 export default function Home() {
   return (
-    <AppLayout 
-      contentSize="xl"
-      navigation={<Header />}
-      footer={<Footer />}
-    >
+    <div className="min-h-screen bg-slate-950 text-white">
       <Hero />
       <CategoryGrid />
       <FeaturedProfessionals />
       <HowItWorks />
       <CTA />
-    </AppLayout>
+    </div>
   );
 }

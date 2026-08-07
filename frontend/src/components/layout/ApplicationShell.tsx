@@ -6,13 +6,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { 
   Home, 
   Search, 
-  Store, 
   FileText, 
   Calendar, 
   MessageSquare, 
   Heart, 
   DollarSign, 
-  Star,
   User, 
   Settings, 
   LogOut,
@@ -37,8 +35,7 @@ const MAIN_NAVIGATION = [
   { name: "Mensagens", href: "/mensagens", icon: MessageSquare },
   { name: "Favoritos", href: "/meus-favoritos", icon: Heart },
   { name: "Financeiro", href: "/financeiro", icon: DollarSign },
-  { name: "Avaliações", href: "/avaliacoes", icon: Star },
-  { name: "Meu Perfil", href: "/perfil", icon: User },
+  { name: "Perfil", href: "/perfil", icon: User },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
   { name: "Sair", href: "#", icon: LogOut, isLogout: true },
 ];
@@ -50,6 +47,7 @@ export default function ApplicationShell({ children, user }: ApplicationShellPro
 
   // Fecha o menu mobile quando muda a rota
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
@@ -209,7 +207,7 @@ export default function ApplicationShell({ children, user }: ApplicationShellPro
             <Link href="/" className="text-slate-400 hover:text-white transition-colors">
               <Home className="w-4 h-4" />
             </Link>
-            {getBreadcrumb().map((crumb, i) => (
+            {getBreadcrumb().map((crumb) => (
               <React.Fragment key={crumb.path}>
                 <ChevronRight className="w-4 h-4 text-slate-600 mx-1" />
                 {crumb.isLast ? (

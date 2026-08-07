@@ -1,10 +1,9 @@
 import { Skeleton } from "@/components/ui";
-import { Header, Footer } from "@/components/layout";
 
 export default function Loading() {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
-      <Header />
+      
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8">
         <div className="space-y-12">
           {/* Skeleton for Hero roughly */}
@@ -25,7 +24,7 @@ export default function Loading() {
           </div>
         </div>
       </main>
-      <Footer />
+      
     </div>
   );
 }

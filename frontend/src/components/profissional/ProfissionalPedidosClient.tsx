@@ -19,80 +19,17 @@ export default function ProfissionalPedidosClient({
   const [activeTab, setActiveTab] = useState('dashboard');
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans flex overflow-hidden">
+    <div className="flex-1 flex flex-col relative z-10 w-full text-slate-200">
       {/* Background Decor */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/20 rounded-full blur-[120px]"></div>
-        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-purple-600/20 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px]"></div>
-      </div>
+      
 
       {/* Sidebar Panel */}
-      <aside className="w-64 bg-slate-900/50 backdrop-blur-xl border-r border-slate-700/50 flex-col hidden lg:flex z-10 relative">
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-            Obra<span className="text-indigo-500">Fácil</span>
-          </h2>
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mt-2">Painel de Operações</p>
-        </div>
-        
-        <nav className="flex-1 px-4 space-y-2 mt-4">
-          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'dashboard' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}>
-            <LayoutDashboard size={20} />
-            <span className="font-medium">Dashboard</span>
-          </button>
-          <button onClick={() => setActiveTab('servicos')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'servicos' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}>
-            <FileText size={20} />
-            <span className="font-medium">Serviços Ativos</span>
-          </button>
-          <button onClick={() => setActiveTab('agenda')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'agenda' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}>
-            <CalendarDays size={20} />
-            <span className="font-medium">Agenda</span>
-          </button>
-          <button onClick={() => setActiveTab('clientes')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'clientes' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}>
-            <Users size={20} />
-            <span className="font-medium">Clientes</span>
-          </button>
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all cursor-not-allowed opacity-50" title="Financeiro (Em Desenvolvimento)">
-            <BarChart3 size={20} />
-            <span className="font-medium">Financeiro</span>
-          </button>
-        </nav>
-        
-        <div className="p-4 mt-auto">
-          <div className="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                PR
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">Minha Conta</p>
-                <p className="text-xs text-slate-400 truncate">Profissional Verificado</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
+      
 
       {/* Main Area */}
-      <main className="flex-1 flex flex-col relative z-10 overflow-y-auto hide-scrollbar">
+      <main className="flex-1 flex flex-col relative">
         {/* Topbar */}
-        <header className="sticky top-0 z-20 bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 px-8 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-white capitalize">{activeTab.replace('-', ' ')}</h1>
-          
-          <div className="flex items-center gap-4">
-            <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input type="text" placeholder="Buscar OS, cliente..." className="pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 w-64 transition-all" />
-            </div>
-            <button className="relative p-2 text-slate-400 hover:text-white transition-colors cursor-not-allowed opacity-50" title="Notificações (Em Desenvolvimento)">
-              <Bell size={20} />
-            </button>
-            <button className="p-2 text-slate-400 hover:text-white transition-colors cursor-not-allowed opacity-50" title="Configurações (Em Desenvolvimento)">
-              <Settings size={20} />
-            </button>
-          </div>
-        </header>
+        
 
         {/* Dynamic Content */}
         <div className="p-8 pb-24 space-y-8 max-w-7xl mx-auto w-full">

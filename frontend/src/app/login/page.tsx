@@ -9,7 +9,6 @@ import { z } from "zod";
 import { Button, Card, Logo } from "@/components/ui";
 import { EmailInput } from "@/components/form/EmailInput";
 import { PasswordInput } from "@/components/form/PasswordInput";
-import { Footer } from "@/components/layout";
 import type { AuthErrorResponse, AuthResponse } from "@/types/auth";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -202,7 +201,7 @@ export default function LoginPage() {
       </main>
       
       <div className="lg:hidden mt-auto">
-        <Footer />
+        
       </div>
     </div>
   );

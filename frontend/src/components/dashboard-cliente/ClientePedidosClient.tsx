@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Search, Star, MapPin, ChevronRight, Clock, 
-  Heart, Award, Sparkles,
+  Heart, Award,
   ThumbsUp, ShieldCheck, Zap, AlertCircle, CheckCircle
 } from 'lucide-react';
 
@@ -19,6 +19,7 @@ interface ClientePedidosClientProps {
 }
 
 export function ClientePedidosClient({ 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   user, 
   categorias, 
   prosDestaque, 
@@ -49,51 +50,15 @@ export function ClientePedidosClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans pb-24 overflow-x-hidden">
+    <div className="flex-1 w-full text-slate-200 font-sans pb-24 overflow-x-hidden pt-10">
       {/* Background Decor */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/20 rounded-full blur-[120px]"></div>
-        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-purple-600/20 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px]"></div>
-      </div>
+      
 
       <div className="relative z-10 max-w-5xl mx-auto">
         {/* Header - Boas-Vindas */}
-        <header className="pt-12 pb-8 px-6">
-          <div className="flex justify-between items-center mb-8">
-            <div className="space-y-1">
-              <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                Olá, {user?.name}! <Sparkles className="text-yellow-400 w-6 h-6 animate-pulse" />
-              </h1>
-              <p className="text-slate-400 text-lg">O que deseja fazer hoje?</p>
-            </div>
-            <div className="relative group cursor-pointer">
-              <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full blur opacity-70 group-hover:opacity-100 transition duration-500"></div>
-              <div className="relative w-14 h-14 rounded-full border-2 border-slate-800 bg-indigo-600 flex items-center justify-center text-white font-bold text-xl">
-                {user?.name?.charAt(0).toUpperCase()}
-              </div>
-            </div>
-          </div>
+        
 
-          {/* Search Bar - Glassmorphism */}
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-slate-400 group-focus-within:text-indigo-400 transition-colors" />
-            </div>
-            <input
-              type="text"
-              className="block w-full pl-12 pr-4 py-4 bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-slate-800/80 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] transition-all"
-              placeholder="Buscar pedreiro, encanador, eletricista..."
-            />
-            <div className="absolute inset-y-0 right-2 flex items-center">
-               <Link href="/profissionais" className="bg-indigo-500 hover:bg-indigo-600 text-white p-2 rounded-xl transition-colors">
-                 <ChevronRight className="w-5 h-5" />
-               </Link>
-            </div>
-          </div>
-        </header>
-
-        <main className="px-6 space-y-12">
+        <main className="px-6 space-y-12 w-full max-w-7xl mx-auto">
           
           {/* Categorias */}
           <section>

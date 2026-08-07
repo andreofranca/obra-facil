@@ -11,7 +11,6 @@ import { TextInput } from "@/components/form/TextInput";
 import { EmailInput } from "@/components/form/EmailInput";
 import { PhoneInput } from "@/components/form/PhoneInput";
 import { PasswordInput } from "@/components/form/PasswordInput";
-import { Footer } from "@/components/layout";
 import type { AuthErrorResponse, AuthResponse } from "@/types/auth";
 import { ArrowRight, User, Mail, Phone, Lock } from "lucide-react";
 import { LIMITS } from "@/lib/constants/limits";
@@ -223,7 +222,7 @@ export default function CadastroPage() {
       </main>
       
       <div className="lg:hidden mt-auto">
-        <Footer />
+        
       </div>
     </div>
   );
