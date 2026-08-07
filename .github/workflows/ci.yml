@@ -33,7 +33,22 @@ jobs:
         run: npm run lint
 
       - name: Run Tests & Coverage
-        run: npm run test:coverage
+        run: npm run test:coverage > vitest-log.txt 2>&1
+        continue-on-error: true
+
+      - name: Upload Vitest Log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vitest-log
+          path: ./frontend/vitest-log.txt
+
+      - name: Fail if tests failed
+        run: |
+          if grep -q "failed" ./frontend/vitest-log.txt; then
+            cat ./frontend/vitest-log.txt
+            exit 1
+          fi
 
       - name: Build Application
         run: npm run build
