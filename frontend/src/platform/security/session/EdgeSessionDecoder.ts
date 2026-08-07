@@ -10,7 +10,10 @@ export class EdgeSessionDecoder {
       const [payloadBase64] = cookieValue.split(".");
       if (!payloadBase64) return null;
 
-      const decodedPayload = Buffer.from(payloadBase64, "base64url").toString("utf8");
+      let base64 = payloadBase64.replace(/-/g, "+").replace(/_/g, "/");
+      while (base64.length % 4) base64 += "=";
+      const bytes = new Uint8Array(atob(base64).split("").map(c => c.charCodeAt(0)));
+      const decodedPayload = new TextDecoder("utf-8").decode(bytes);
       return JSON.parse(decodedPayload) as T;
     } catch {
       return null;

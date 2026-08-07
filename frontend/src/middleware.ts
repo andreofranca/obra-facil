@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { EdgeSessionDecoder } from "@/platform/security";
+import { EdgeSessionDecoder } from "@/platform/security/session/EdgeSessionDecoder";
 
 const protectedClientRoutes = [
   "/meus-pedidos",
@@ -10,7 +10,7 @@ const protectedClientRoutes = [
 
 const protectedProfessionalRoutes = ["/profissional"];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   // Observability: Start of request
   const requestStart = Date.now();
   const requestId = crypto.randomUUID();

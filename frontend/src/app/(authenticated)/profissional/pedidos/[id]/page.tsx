@@ -8,7 +8,6 @@ import { ReviewCard } from "@/components/reviews";
 import { getAuthSession } from "@/lib/auth";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
-import { Header, Footer } from "@/components/layout";
 
 const prisma = new PrismaClient();
 
@@ -124,15 +123,14 @@ export default async function ProfissionalPedidoPage({
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
-      <Header />
-      <main className="flex-1 w-full p-4 sm:p-10 max-w-4xl mx-auto">
+    <div className="min-h-screen flex flex-col bg-transparent font-sans">
+            <main className="flex-1 w-full p-4 sm:p-10 max-w-4xl mx-auto">
         <div>
           <h1 className="text-4xl font-bold mb-6">
             Pedido de {solicitacao.cliente.user.name}
           </h1>
 
-          <section className="border rounded-lg p-6 shadow bg-white">
+          <section className="border rounded-lg p-6 shadow bg-slate-800/50 backdrop-blur-xl">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <h2 className="text-xl font-semibold mb-3">
@@ -192,7 +190,7 @@ export default async function ProfissionalPedidoPage({
           </div>
 
           {solicitacao.avaliacao && (
-            <div className="mt-6 border rounded-lg p-6 shadow bg-white">
+            <div className="mt-6 border rounded-lg p-6 shadow bg-slate-800/50 backdrop-blur-xl">
               <h2 className="text-xl font-semibold mb-4">Avaliação do Cliente</h2>
               <ReviewCard
                 id={solicitacao.avaliacao.id}
@@ -225,7 +223,6 @@ export default async function ProfissionalPedidoPage({
           </div>
         </div>
       </main>
-      <Footer />
-    </div>
+          </div>
   );
 }

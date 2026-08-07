@@ -67,7 +67,7 @@ async function main() {
     const user = await prisma.user.create({
       data: {
         name: `${firstName} ${lastName}`,
-        email: i === 0 ? 'cliente@demo.com' : faker.internet.email({ firstName, lastName }).toLowerCase(),
+        email: i === 0 ? 'cliente@pmo.com' : faker.internet.email({ firstName, lastName }).toLowerCase(),
         phone: faker.phone.number({ style: 'national' }),
         password: MOCK_PASSWORD_HASH,
         role: UserRole.CLIENT,
@@ -88,7 +88,7 @@ async function main() {
     const user = await prisma.user.create({
       data: {
         name: `${firstName} ${lastName}`,
-        email: i === 0 ? 'profissional@demo.com' : faker.internet.email({ firstName, lastName }).toLowerCase(),
+        email: i === 0 ? 'profissional@pmo.com' : faker.internet.email({ firstName, lastName }).toLowerCase(),
         phone: faker.phone.number({ style: 'national' }),
         password: MOCK_PASSWORD_HASH,
         role: UserRole.PROFESSIONAL,

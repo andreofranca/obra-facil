@@ -10,7 +10,7 @@ export default function ProfissionaisLoading() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="border border-neutral-border rounded-lg p-4 shadow-sm flex flex-col gap-4 min-h-[200px]">
+          <div key={i} className="border border-slate-700/50 rounded-lg p-4 shadow-sm flex flex-col gap-4 min-h-[200px]">
             <div className="flex items-center gap-3">
               <Skeleton className="w-12 h-12 rounded-full" />
               <div className="space-y-2 flex-1">

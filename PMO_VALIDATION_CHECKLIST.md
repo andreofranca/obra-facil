@@ -8,51 +8,63 @@ Este documento rastreia a conversão de todos os componentes da aplicação para
 - ❌ Não implementada (Pendente)
 
 ## Cliente
-- ⚠️ Cadastro
+- ✅ Cadastro
 - ✅ Login
 - ✅ Logout
-- ❌ Recuperação de senha
+- ✅ Recuperação de senha
 - ⚠️ Perfil
 - ✅ Favoritos
 - ✅ Pesquisa
 - ✅ Categorias
 - ⚠️ Solicitações
-- ❌ Chat
+- ✅ Chat
 - ⚠️ Propostas
 - ⚠️ Histórico
-- ❌ Avaliações
-- ❌ Notificações
+- ✅ Avaliações
+- ✅ Notificações
 
 ## Profissional
 - ⚠️ Cadastro
 - ⚠️ Perfil
-- ❌ Serviços
-- ❌ Disponibilidade
+- ✅ Serviços
+- ✅ Disponibilidade
 - ⚠️ Agenda
 - ✅ CRM (Dashboard base)
 - ✅ Recebimento de solicitações
 - ✅ Aceite
 - ✅ Recusa
 - ⚠️ Propostas
-- ❌ Chat
+- ✅ Chat
 - ✅ Execução (Em Andamento)
 - ✅ Finalização
 - ⚠️ Histórico
-- ❌ Financeiro
+- ⚠️ Financeiro
 - ✅ Métricas
 
 ## Marketplace
 - ✅ Busca
-- ⚠️ Filtros (Categorias funcionando, faltam os visuais laterais se existirem)
-- ❌ Ordenação
+- ⚠️ Filtros
+- ✅ Ordenação
 - ✅ Perfil
 - ⚠️ Galeria
-- ❌ Certificações
+- ✅ Certificações
 - ✅ Favoritos
-- ❌ Compartilhamento
+- ✅ Compartilhamento
+
+## Application Shell & UX (PMO)
+- ✅ Menu Global Persistente
+- ✅ Header Unificado (Pesquisa e Contexto do Usuário)
+- ✅ Breadcrumbs e Navegação sem Voltar
+- ✅ Saudação Personalizada ("Olá, André!")
 
 ## Administração
-- ❌ Operações de Admin (Listagem, Bloqueio, Aprovação)
+- ✅ Operações de Admin (Listagem, Bloqueio, Aprovação)
 
 ---
-*Atualizado via EOS Automático*
+*Atualizado via EOS Automático (Sprint I - Product Hardening / Application Shell Finalizado)*
+
+## VALIDAÇÃO UX E CONSOLIDAÇÃO SHELL
+- [X] Garantir que o Marketplace utilize os mesmos cards do meus-pedidos.
+- [X] Nenhuma tela da área restrita possui Sidebar ou Header próprio.
+- [X] Remoção de textos provisórios (\Olá Cliente\, \Em Breve\).
+- [X] Testes unitários passando em ambiente isolado.

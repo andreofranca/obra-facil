@@ -113,29 +113,30 @@ export default function MarketplaceClient() {
   };
 
   return (
-    <div className="flex-1 max-w-7xl mx-auto px-4 md:px-8 py-10 w-full">
-        
+    <div className="flex-1 max-w-7xl mx-auto px-4 md:px-8 py-10 w-full min-h-screen relative overflow-hidden text-slate-200 font-sans">
+      
+      <div className="relative z-10">
         {/* Header do Marketplace */}
         <div className="mb-10 animate-fade-in-up">
-          <h1 className="text-neutral-text text-4xl font-extrabold tracking-tight mb-4">
-            Encontre o profissional ideal
+          <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2 mb-4">
+            Catálogo de Profissionais
           </h1>
-          <p className="text-neutral-muted text-lg max-w-2xl leading-relaxed">
-            Navegue por nossa rede de especialistas verificados. Filtre por especialidade ou busque diretamente pelo que você precisa.
+          <p className="text-slate-400 text-lg max-w-2xl leading-relaxed">
+            Busque especialistas, verifique avaliações e contrate profissionais qualificados para sua obra.
           </p>
         </div>
 
         {/* Barra de Busca e Filtros */}
-        <div className="bg-neutral-surface rounded-2xl shadow-soft p-4 mb-10 border border-neutral-border sticky top-4 z-40 animate-fade-in-up" style={{ animationDelay: "100ms" }}>
+        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-4 mb-10 border border-slate-700/50 sticky top-4 z-40 animate-fade-in-up" style={{ animationDelay: "100ms" }}>
           <div className="flex flex-col md:flex-row gap-4 items-center">
             
             <div className="relative w-full md:flex-1">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-muted">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
                 <Search className="w-5 h-5" />
               </div>
               <Input
                 placeholder="Buscar por pedreiro, arquiteto, nome..."
-                className="pl-12 h-12 w-full rounded-xl border-neutral-border shadow-none"
+                className="pl-12 h-12 w-full rounded-xl border-slate-700 bg-slate-900/50 text-white placeholder-slate-400 focus:ring-indigo-500 focus:border-indigo-500 shadow-none transition-all"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -143,7 +144,7 @@ export default function MarketplaceClient() {
 
             <div className="w-full md:w-64">
               <select
-                className="w-full h-12 rounded-xl border border-neutral-border bg-neutral-white px-4 text-neutral-text font-medium outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors appearance-none cursor-pointer"
+                className="w-full h-12 rounded-xl border border-slate-700 bg-slate-900/50 px-4 text-white font-medium outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors appearance-none cursor-pointer"
                 value={selectedCategoria}
                 onChange={(e) => setSelectedCategoria(e.target.value)}
                 aria-label="Filtrar por categoria"
@@ -159,7 +160,7 @@ export default function MarketplaceClient() {
               type="button" 
               onClick={clearFilters}
               size="lg"
-              className="w-full md:w-auto h-12 rounded-xl bg-neutral-background text-neutral-text border border-neutral-border hover:bg-neutral-border shadow-none"
+              className="w-full md:w-auto h-12 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 shadow-none"
             >
               <FilterX className="w-4 h-4 mr-2" />
               Limpar
@@ -169,35 +170,35 @@ export default function MarketplaceClient() {
 
         {/* Estados de UI */}
         {error ? (
-          <div className="bg-feedback-error/10 border border-feedback-error/20 rounded-2xl p-8 text-center animate-fade-in-up">
-            <p className="text-feedback-error font-medium text-lg">{error}</p>
-            <Button onClick={clearFilters} className="mt-4">Tentar Novamente</Button>
+          <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-8 text-center animate-fade-in-up">
+            <p className="text-red-400 font-medium text-lg">{error}</p>
+            <Button onClick={clearFilters} className="mt-4 bg-slate-800 hover:bg-slate-700 text-white border-slate-700">Tentar Novamente</Button>
           </div>
         ) : isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="min-h-[320px] p-6 flex flex-col gap-4 border-none shadow-soft rounded-2xl bg-neutral-surface">
+              <Card key={i} className="min-h-[320px] p-6 flex flex-col gap-4 border border-slate-700/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] rounded-2xl bg-slate-800/50 backdrop-blur-xl">
                 <div className="flex gap-4 items-center">
-                  <Skeleton className="w-16 h-16 rounded-full" />
+                  <Skeleton className="w-16 h-16 rounded-full bg-slate-700" />
                   <div className="flex-1 space-y-2">
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-5 w-3/4 bg-slate-700" />
+                    <Skeleton className="h-4 w-1/2 bg-slate-700" />
                   </div>
                 </div>
-                <Skeleton className="h-4 w-full mt-4" />
-                <Skeleton className="h-4 w-5/6" />
-                <Skeleton className="h-10 w-full mt-auto rounded-xl" />
+                <Skeleton className="h-4 w-full mt-4 bg-slate-700" />
+                <Skeleton className="h-4 w-5/6 bg-slate-700" />
+                <Skeleton className="h-10 w-full mt-auto rounded-xl bg-slate-700" />
               </Card>
             ))}
           </div>
         ) : profissionais.length === 0 ? (
-          <div className="bg-neutral-surface border border-neutral-border rounded-2xl p-16 text-center shadow-soft flex flex-col items-center justify-center animate-fade-in-up">
-            <Search className="w-12 h-12 text-neutral-muted mb-4 opacity-50" />
-            <h3 className="text-neutral-text text-xl font-bold mb-2">Nenhum profissional encontrado</h3>
-            <p className="text-neutral-muted max-w-md">
+          <div className="bg-slate-800/50 border border-slate-700/50 backdrop-blur-xl rounded-2xl p-16 text-center shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] flex flex-col items-center justify-center animate-fade-in-up">
+            <Search className="w-12 h-12 text-slate-500 mb-4 opacity-50" />
+            <h3 className="text-white text-xl font-bold mb-2">Nenhum profissional encontrado</h3>
+            <p className="text-slate-400 max-w-md">
               Não encontramos resultados para seus filtros atuais. Tente buscar por outros termos ou limpar as categorias.
             </p>
-            <Button onClick={clearFilters} className="mt-6 shadow-elevated rounded-xl">Limpar Filtros</Button>
+            <Button onClick={clearFilters} className="mt-6 bg-slate-700 hover:bg-slate-600 text-white rounded-xl">Limpar Filtros</Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -230,10 +231,10 @@ export default function MarketplaceClient() {
                   style={{ animationDelay: `${idx * 50}ms` }}
                 >
                   <Card
-                    className="flex flex-col min-h-[380px] cursor-pointer transition-all duration-500 ease-out bg-neutral-surface border border-neutral-border rounded-2xl shadow-soft group-hover:shadow-elevated group-hover:-translate-y-1 group-focus-visible:shadow-elevated overflow-hidden relative"
+                    className="flex flex-col min-h-[380px] cursor-pointer transition-all duration-500 ease-out bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] group-hover:-translate-y-1 overflow-hidden relative"
                   >
                     {/* Cover Photo */}
-                    <div className="h-32 w-full relative overflow-hidden bg-neutral-border">
+                    <div className="h-32 w-full relative overflow-hidden bg-slate-800">
                       {profissional.fotoCapa ? (
                         <img 
                           src={profissional.fotoCapa} 
@@ -241,12 +242,12 @@ export default function MarketplaceClient() {
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-r from-brand-primary/20 to-brand-secondary/20" />
+                        <div className="w-full h-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20" />
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
                       
                       <div className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
-                        <Star className="w-3.5 h-3.5 text-[#F59E0B] fill-[#F59E0B]" />
+                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
                         <span className="text-white text-xs font-bold">{displayRating}</span>
                         <span className="text-white/80 text-[10px]">{displayTotal}</span>
                       </div>
@@ -255,7 +256,7 @@ export default function MarketplaceClient() {
                     <div className="px-6 pb-6 pt-0 flex-1 flex flex-col">
                       {/* Avatar & Badges */}
                       <div className="flex justify-between items-start -mt-8 mb-3">
-                        <div className="w-16 h-16 rounded-2xl bg-neutral-white p-1 shadow-soft z-10 border border-neutral-border/50">
+                        <div className="w-16 h-16 rounded-2xl bg-slate-800 p-1 z-10 border border-slate-700/50">
                           {profissional.fotoPerfil ? (
                             <img 
                               src={profissional.fotoPerfil} 
@@ -280,10 +281,10 @@ export default function MarketplaceClient() {
 
                       {/* Info */}
                       <div className="mb-4">
-                        <h2 className="text-neutral-text font-sans text-xl font-bold leading-tight truncate group-hover:text-brand-primary transition-colors">
+                        <h2 className="text-white font-sans text-xl font-bold leading-tight truncate group-hover:text-brand-primary transition-colors">
                           {profissional.user.name}
                         </h2>
-                        <div className="flex items-center gap-2 mt-1.5 text-neutral-muted">
+                        <div className="flex items-center gap-2 mt-1.5 text-slate-400">
                           <Briefcase className="w-3.5 h-3.5" />
                           <p className="text-sm font-medium truncate">
                             {profissional.servicos[0]?.categoria?.nome || "Profissional parceiro"}
@@ -292,16 +293,16 @@ export default function MarketplaceClient() {
                       </div>
 
                       {/* Descrição */}
-                      <p className="text-neutral-muted font-sans text-sm leading-relaxed flex-1 line-clamp-3 mb-4">
+                      <p className="text-slate-400 font-sans text-sm leading-relaxed flex-1 line-clamp-3 mb-4">
                         {profissional.descricao || "Profissional verificado com excelência técnica e alto rigor na entrega de resultados. Garantia de qualidade em cada detalhe da sua obra."}
                       </p>
 
                       {/* Footer Info */}
-                      <div className="mt-auto pt-4 border-t border-neutral-border/50 flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-xs text-neutral-muted font-medium">
+                      <div className="mt-auto pt-4 border-t border-slate-700/50/50 flex items-center justify-between">
+                        <div className="flex items-center gap-4 text-xs text-slate-400 font-medium">
                           {profissional.obrasExecutadas !== undefined && profissional.obrasExecutadas !== null && (
                             <span className="flex items-center gap-1">
-                              <span className="text-neutral-text font-bold">{profissional.obrasExecutadas}</span> obras
+                              <span className="text-white font-bold">{profissional.obrasExecutadas}</span> obras
                             </span>
                           )}
                           <span className="flex items-center gap-1">
@@ -318,5 +319,6 @@ export default function MarketplaceClient() {
           </div>
         )}
       </div>
+    </div>
   );
 }

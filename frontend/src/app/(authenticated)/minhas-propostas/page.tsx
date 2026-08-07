@@ -6,7 +6,6 @@ import type {
   PropostaStatus,
 } from "@/types/proposta";
 import PropostaItem from "@/components/propostas/PropostaItem";
-import { Header, Footer } from "@/components/layout";
 
 const prisma = new PrismaClient();
 
@@ -107,11 +106,10 @@ export default async function MinhasPropostasPage() {
   const propostasResumo = propostas.map(mapProposta);
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
-      <Header />
-      <main className="flex-1 w-full p-4 sm:p-10 max-w-7xl mx-auto">
+    <div className="min-h-screen flex flex-col bg-transparent font-sans">
+            <main className="flex-1 w-full p-4 sm:p-10 max-w-7xl mx-auto">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-4xl font-bold mb-6 text-neutral-text">
+          <h1 className="text-4xl font-bold mb-6 text-white">
             Minhas Propostas
           </h1>
 
@@ -133,7 +131,6 @@ export default async function MinhasPropostasPage() {
           )}
         </div>
       </main>
-      <Footer />
-    </div>
+          </div>
   );
 }

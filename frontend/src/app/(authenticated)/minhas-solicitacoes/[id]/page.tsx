@@ -10,7 +10,6 @@ import { ProposalsSection } from "@/components/proposals";
 import { ReviewForm, ReviewCard } from "@/components/reviews";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
-import { Header, Footer } from "@/components/layout";
 
 const prisma = new PrismaClient();
 
@@ -105,9 +104,8 @@ export default async function MinhaSolicitacaoPage({
   }).format(new Date(solicitacao.createdAt));
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-background font-sans">
-      <Header />
-      <main className="flex-1 w-full p-4 sm:p-10 max-w-5xl mx-auto flex flex-col gap-8">
+    <div className="min-h-screen flex flex-col bg-transparent font-sans">
+            <main className="flex-1 w-full p-4 sm:p-10 max-w-5xl mx-auto flex flex-col gap-8">
         <div>
           <Link href="/meus-pedidos" className="inline-flex items-center text-sm font-medium text-brand-primary hover:underline mb-6" tabIndex={-1}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mr-1">
@@ -117,10 +115,10 @@ export default async function MinhaSolicitacaoPage({
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-neutral-text">
+              <h1 className="text-3xl sm:text-4xl font-bold text-white">
                 {solicitacao.titulo}
               </h1>
-              <p className="text-neutral-text/70 mt-1">
+              <p className="text-white/70 mt-1">
                 Solicitado em {dataFormatada}
               </p>
             </div>
@@ -130,21 +128,21 @@ export default async function MinhaSolicitacaoPage({
           </div>
         </div>
 
-        <Card className="p-6 bg-white/50 backdrop-blur-sm border-neutral-border/60">
-          <h2 className="text-lg font-bold text-neutral-text mb-4">Acompanhamento</h2>
+        <Card className="p-6 bg-slate-800/50 backdrop-blur-xl/50 backdrop-blur-sm border-slate-700/50/60">
+          <h2 className="text-lg font-bold text-white mb-4">Acompanhamento</h2>
           <OrderTimeline status={solicitacao.status as SolicitacaoServicoStatus} />
         </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           <div className="md:col-span-1 flex flex-col gap-6">
-            <Card className="p-5 bg-white/50 backdrop-blur-sm border-neutral-border/60">
-              <h2 className="text-base font-bold text-neutral-text mb-3">Detalhes</h2>
-              <p className="text-sm text-neutral-text/80 leading-relaxed mb-4">
+            <Card className="p-5 bg-slate-800/50 backdrop-blur-xl/50 backdrop-blur-sm border-slate-700/50/60">
+              <h2 className="text-base font-bold text-white mb-3">Detalhes</h2>
+              <p className="text-sm text-white/80 leading-relaxed mb-4">
                 {solicitacao.descricao}
               </p>
-              <div className="pt-4 border-t border-neutral-border/40">
-                <h3 className="text-xs font-semibold text-neutral-text/70 uppercase tracking-wider mb-1">Profissional</h3>
-                <p className="text-sm font-medium text-neutral-text">
+              <div className="pt-4 border-t border-slate-700/50/40">
+                <h3 className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-1">Profissional</h3>
+                <p className="text-sm font-medium text-white">
                   {solicitacao.profissional?.user.name || "Ainda não definido"}
                 </p>
               </div>
@@ -152,7 +150,7 @@ export default async function MinhaSolicitacaoPage({
           </div>
 
           <div className="md:col-span-2 flex flex-col gap-6">
-            <Card className="p-5 bg-white border-neutral-border shadow-sm">
+            <Card className="p-5 bg-slate-800/50 backdrop-blur-xl border-slate-700/50 shadow-sm">
               <ProposalsSection solicitacaoId={solicitacao.id} userRole="CLIENT" />
             </Card>
             
@@ -166,8 +164,8 @@ export default async function MinhaSolicitacaoPage({
             {solicitacao.status === "FINALIZADA" && (
               <div className="mt-4">
                 {solicitacao.avaliacao ? (
-                  <Card className="p-6 bg-white border-neutral-border shadow-sm">
-                    <h3 className="text-lg font-bold text-neutral-text mb-4">Sua Avaliação</h3>
+                  <Card className="p-6 bg-slate-800/50 backdrop-blur-xl border-slate-700/50 shadow-sm">
+                    <h3 className="text-lg font-bold text-white mb-4">Sua Avaliação</h3>
                     <ReviewCard
                       id={solicitacao.avaliacao.id}
                       nota={solicitacao.avaliacao.nota}
@@ -200,7 +198,6 @@ export default async function MinhaSolicitacaoPage({
           </div>
         </div>
       </main>
-      <Footer />
-    </div>
+          </div>
   );
 }

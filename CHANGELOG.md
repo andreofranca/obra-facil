@@ -33,3 +33,29 @@
 ### Adicionado
 - Centralização da autenticação em camada reutilizável.
 - Integração de rotas protegidas.
+
+## [Unreleased] - 2026-08-07
+### Added
+- Application Shell com layout global (Sidebar Persistente, Header de Pesquisa, Contexto de Usuário dinâmico).
+- Tratamento de nome ausente ou saudação vazia no componente de User Context ("Olá, {Nome}").
+- Navegação padronizada baseada em Breadcrumbs, eliminando dependência do botão voltar do navegador.
+- Unificação do Tema Escuro (Dark Mode) e Glassmorphism em todo o ambiente autenticado.
+- Dashboard do Profissional reprojetado como um Painel Operacional funcional e reativo.
+- Marketplace e Perfil do Profissional remodelados para estética premium e melhor visualização de portfólio.
+- Tratamento de botões não-funcionais (marcados explicitamente como "Em Desenvolvimento").
+
+### Fixed
+- Middleware file correctly renamed to 'middleware.ts'.
+- EdgeSessionDecoder refactored to support Edge runtime without node:crypto.
+- Session API '/api/auth/session' created to hydrate client layouts.
+- Redirect logic fixed for Professional logins.
+- Rate Limiting mitigado no ambiente de testes (E2E) paralelizado, corrigindo os 429 Too Many Requests.
+
+## [0.4.3] - 2026-08-07
+### Changed
+- Refatoração profunda para consolidar a UX das rotas autenticadas sob o \ApplicationShell\.
+- Marketplace (e outras telas) portado para a identidade visual do Tailwind (Dark Theme, Backdrop Blur) do \meus-pedidos\.
+- Remoção de textos provisórios (\Olá Cliente\, \Em Breve\, etc.).
+- Sidebar global responsiva e unificada.
+### Removed
+- Antigos componentes e layouts aninhados que causavam problemas de UX e Headers duplos.

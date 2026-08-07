@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FAFAFC;
-  --foreground: #09090B;
+  --background: #0F172A; /* slate-900 */
+  --foreground: #F1F5F9; /* slate-100 */
 }
 
 @theme inline {
@@ -12,17 +12,17 @@
   --font-mono: var(--font-geist-mono), monospace;
 
   /* Premium Brand Palette: Deep Indigo */
-  --color-brand-primary: #4338CA;
-  --color-brand-secondary: #6366F1;
-  --color-brand-accent: #F59E0B;
+  --color-brand-primary: #6366F1; /* indigo-500 */
+  --color-brand-secondary: #8B5CF6; /* purple-500 */
+  --color-brand-accent: #FBBF24; /* amber-400 */
 
-  /* Neutral Slate Palette for sophisticated feel */
+  /* Dark Slate Palette for sophisticated feel */
   --color-neutral-white: #FFFFFF;
-  --color-neutral-background: #FAFAFC;
-  --color-neutral-surface: #FFFFFF;
-  --color-neutral-border: #E4E4E7;
-  --color-neutral-muted: #71717A;
-  --color-neutral-text: #09090B;
+  --color-neutral-background: #0F172A; /* slate-900 */
+  --color-neutral-surface: rgba(30, 41, 59, 0.4); /* slate-800/40 */
+  --color-neutral-border: rgba(51, 65, 85, 0.5); /* slate-700/50 */
+  --color-neutral-muted: #94A3B8; /* slate-400 */
+  --color-neutral-text: #F1F5F9; /* slate-100 */
 
   /* Feedback Colors */
   --color-feedback-success: #10B981;

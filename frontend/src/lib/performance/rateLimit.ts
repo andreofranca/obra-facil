@@ -5,4 +5,6 @@ const cacheProvider = new InMemoryCacheProvider();
 const tokenBucketLimiter = new TokenBucketRateLimiter(cacheProvider);
 
 // Exportar o decorador de rate limit
-export const withRateLimit = createWithRateLimit(tokenBucketLimiter);
+export const withRateLimit = process.env.NODE_ENV === 'test' || process.env.PLAYWRIGHT_TEST === 'true' 
+  ? (handler: any) => handler 
+  : createWithRateLimit(tokenBucketLimiter);

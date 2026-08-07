@@ -51,9 +51,6 @@ export function Header() {
                   <Link href="/profissional/pedidos" className="text-neutral-text font-medium text-sm hover:text-brand-primary transition-colors">
                     Dashboard
                   </Link>
-                  <span className="text-neutral-text/50 font-medium text-sm cursor-not-allowed" title="Em Desenvolvimento">
-                    Perfil (Em Breve)
-                  </span>
                 </>
               )}
             </nav>
