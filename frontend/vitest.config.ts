@@ -15,7 +15,8 @@ export default defineConfig({
       exclude: [
         "src/app/layout.tsx", // Next.js entry point usually skipped in unit tests
         "src/**/*.d.ts",
-        "src/types/**/*"
+        "src/types/**/*",
+        "src/generated/**/*"
       ],
       // Thresholds futuros podem ser habilitados aqui
     },
