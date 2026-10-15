@@ -1,81 +1,161 @@
-"use client";
-import React from 'react';
-import { MessageSquare, Search, Filter, Plus, ChevronRight, MoreVertical } from 'lucide-react';
+import React from "react";
+import { redirect } from "next/navigation";
+import { getAuthSession } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { MensagensClient } from "./MensagensClient";
+import type { ConversaItem } from "@/types/chat";
+import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
 
-export default function MensagensPage() {
+export const dynamic = "force-dynamic";
+
+export default async function MensagensPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ solicitacaoId?: string }>;
+}) {
+  const session = await getAuthSession();
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  const resolvedParams = searchParams ? await searchParams : {};
+  const solicitacaoIdParam = resolvedParams.solicitacaoId;
+
+  let conversas: ConversaItem[] = [];
+
+  if (session.role === "CLIENT" && session.clienteId) {
+    const solicitacoes = await prisma.solicitarServico.findMany({
+      where: {
+        clienteId: session.clienteId,
+        profissionalId: { not: null },
+      },
+      include: {
+        profissional: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        mensagens: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          include: {
+            autor: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: { mensagens: true },
+        },
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    conversas = solicitacoes.map((s) => ({
+      id: s.id,
+      titulo: s.titulo,
+      status: s.status as SolicitacaoServicoStatus,
+      createdAt: s.createdAt.toISOString(),
+      updatedAt: s.updatedAt.toISOString(),
+      interlocutor: {
+        id: s.profissional?.id || "",
+        nome: s.profissional?.user.name || "Profissional",
+        role: "PROFESSIONAL",
+        email: s.profissional?.user.email,
+      },
+      ultimaMensagem: s.mensagens[0]
+        ? {
+            id: s.mensagens[0].id,
+            mensagem: s.mensagens[0].mensagem,
+            createdAt: s.mensagens[0].createdAt.toISOString(),
+            autorNome: s.mensagens[0].autor?.name,
+          }
+        : null,
+      totalMensagens: s._count.mensagens,
+    }));
+  } else if (session.role === "PROFESSIONAL" && session.profissionalId) {
+    const solicitacoes = await prisma.solicitarServico.findMany({
+      where: {
+        profissionalId: session.profissionalId,
+      },
+      include: {
+        cliente: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        mensagens: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          include: {
+            autor: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: { mensagens: true },
+        },
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    conversas = solicitacoes.map((s) => ({
+      id: s.id,
+      titulo: s.titulo,
+      status: s.status as SolicitacaoServicoStatus,
+      createdAt: s.createdAt.toISOString(),
+      updatedAt: s.updatedAt.toISOString(),
+      interlocutor: {
+        id: s.cliente.id,
+        nome: s.cliente.user.name,
+        role: "CLIENT",
+        email: s.cliente.user.email,
+      },
+      ultimaMensagem: s.mensagens[0]
+        ? {
+            id: s.mensagens[0].id,
+            mensagem: s.mensagens[0].mensagem,
+            createdAt: s.mensagens[0].createdAt.toISOString(),
+            autorNome: s.mensagens[0].autor?.name,
+          }
+        : null,
+      totalMensagens: s._count.mensagens,
+    }));
+  }
+
   return (
-    <div className="flex-1 w-full text-slate-200 font-sans pb-24 overflow-x-hidden pt-10">
-      <main className="px-6 space-y-8 w-full max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <div className="p-2 bg-blue-500/20 rounded-xl text-blue-400">
-                <MessageSquare size={28} />
-              </div>
-              Mensagens
-            </h1>
-            <p className="text-slate-400 mt-2">Gerencie e acompanhe suas atividades em tempo real.</p>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Buscar..." 
-                className="pl-10 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-              />
-            </div>
-            <button className="p-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-slate-700 transition-all">
-              <Filter size={18} />
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors font-medium text-sm">
-              <Plus size={18} />
-              Novo Registro
-            </button>
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-white">Registros Recentes</h2>
-          </div>
-          
-          <div className="divide-y divide-slate-800/50">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="p-6 hover:bg-slate-800/20 transition-colors flex items-center justify-between group cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-blue-400 group-hover:bg-blue-500/10 transition-colors">
-                    <MessageSquare size={20} />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-medium">Registro de Atividade #{1000 + i}</h3>
-                    <p className="text-sm text-slate-500 mt-1">Atualizado hoje às 14:{30 + i}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                    Concluído
-                  </span>
-                  <button className="p-2 text-slate-500 hover:text-white transition-colors">
-                    <MoreVertical size={20} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          <div className="p-4 border-t border-slate-800 flex justify-center">
-            <button className="text-sm font-medium text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors">
-              Carregar mais resultados
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
-      </main>
-    </div>
+    <MensagensClient
+      conversas={conversas}
+      usuarioAtual={{
+        id: session.userId,
+        name: session.name || "Usuário",
+        role: session.role,
+      }}
+      initialSelectedId={solicitacaoIdParam}
+    />
   );
 }

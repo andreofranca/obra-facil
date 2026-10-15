@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { getAuthSession } from "@/lib/auth";
 import { requireAuth } from "@/lib/auth/guards";
 import type { AuthSession } from "@/types/auth";
@@ -8,43 +8,13 @@ import { logger } from "@/lib/logger";
 import type {
   HistoricoChat,
   MensagemChat,
-  PayloadCriacaoMensagem,
 } from "@/types/chat";
-
-const prisma = new PrismaClient();
 
 type SolicitacaoParticipantes = {
   clienteId: string;
   profissionalId: string | null;
+  status?: string;
 };
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
-}
-
-function parsePayload(
-  body: unknown
-): PayloadCriacaoMensagem | null {
-  if (!body || typeof body !== "object") {
-    return null;
-  }
-
-  const payload = body as Record<string, unknown>;
-
-  if (
-    !isNonEmptyString(payload.solicitacaoId) ||
-    !isNonEmptyString(payload.usuarioId) ||
-    !isNonEmptyString(payload.mensagem)
-  ) {
-    return null;
-  }
-
-  return {
-    solicitacaoId: payload.solicitacaoId.trim(),
-    usuarioId: payload.usuarioId.trim(),
-    mensagem: payload.mensagem.trim(),
-  };
-}
 
 function canAccessSolicitacao(
   session: AuthSession,
@@ -100,6 +70,7 @@ async function getSolicitacao(id: string) {
       id: true,
       clienteId: true,
       profissionalId: true,
+      status: true,
     },
   });
 }
@@ -141,24 +112,37 @@ export async function GET(
       );
     }
 
-    const mensagens =
-      await prisma.mensagemSolicitacao.findMany({
-        where: {
-          solicitacaoId: id,
-        },
-        include: {
-          autor: {
-            select: {
-              id: true,
-              name: true,
-              role: true,
-            },
+    // Limite de segurança e estratégia de consulta dos registros mais recentes
+    const limitParam = _request.nextUrl.searchParams.get("limit");
+    const limit = limitParam
+      ? Math.min(Math.max(parseInt(limitParam, 10) || 100, 1), 200)
+      : 100;
+
+    const totalCount = await prisma.mensagemSolicitacao.count({
+      where: { solicitacaoId: id },
+    });
+
+    const skip = Math.max(0, totalCount - limit);
+
+    const mensagens = await prisma.mensagemSolicitacao.findMany({
+      where: {
+        solicitacaoId: id,
+      },
+      include: {
+        autor: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
           },
         },
-        orderBy: {
-          createdAt: "asc",
-        },
-      });
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+      skip,
+      take: limit,
+    });
 
     const historico: HistoricoChat = {
       solicitacaoId: id,
@@ -197,24 +181,45 @@ export async function POST(
     }
 
     const { id } = await context.params;
-    const payload = parsePayload(await request.json());
-
-    if (!payload) {
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
       return NextResponse.json(
-        {
-          error:
-            "Informe solicitacaoId, usuarioId e mensagem para enviar",
-        },
+        { error: "Corpo da requisição inválido" },
         { status: 400 }
       );
     }
 
-    if (
-      payload.solicitacaoId !== id ||
-      payload.usuarioId !== session.userId
-    ) {
+    const payload = body as Record<string, unknown> | null;
+    const textoMensagem =
+      typeof payload?.mensagem === "string" ? payload.mensagem.trim() : "";
+
+    if (!textoMensagem) {
+      return NextResponse.json(
+        { error: "A mensagem não pode ser vazia" },
+        { status: 400 }
+      );
+    }
+
+    if (textoMensagem.length > 5000) {
+      return NextResponse.json(
+        { error: "A mensagem excede o limite permitido de 5000 caracteres" },
+        { status: 400 }
+      );
+    }
+
+    // Proteção contra adulteração de ID de solicitação ou falsificação de remetente
+    if (payload?.solicitacaoId && payload.solicitacaoId !== id) {
       return NextResponse.json(
         { error: "Payload inválido para esta solicitação" },
+        { status: 400 }
+      );
+    }
+
+    if (payload?.usuarioId && payload.usuarioId !== session.userId) {
+      return NextResponse.json(
+        { error: "Identidade do remetente incompatível com a sessão autenticada" },
         { status: 400 }
       );
     }
@@ -235,12 +240,27 @@ export async function POST(
       );
     }
 
-    const mensagem =
-      await prisma.mensagemSolicitacao.create({
+    const isInactive =
+      solicitacao.status === "CONCLUIDA" ||
+      solicitacao.status === "FINALIZADA" ||
+      solicitacao.status === "CANCELADA" ||
+      solicitacao.status === "RECUSADA" ||
+      solicitacao.status === "EXPIRADA";
+
+    if (isInactive) {
+      return NextResponse.json(
+        { error: "Não é permitido enviar mensagens para uma solicitação inativa ou encerrada" },
+        { status: 400 }
+      );
+    }
+
+    // Persistência atômica: cria a mensagem associada ao usuário autenticado e atualiza o updatedAt da solicitação
+    const [novaMensagem] = await prisma.$transaction([
+      prisma.mensagemSolicitacao.create({
         data: {
           solicitacaoId: id,
-          usuarioId: payload.usuarioId,
-          mensagem: payload.mensagem,
+          usuarioId: session.userId,
+          mensagem: textoMensagem,
         },
         include: {
           autor: {
@@ -251,9 +271,14 @@ export async function POST(
             },
           },
         },
-      });
+      }),
+      prisma.solicitarServico.update({
+        where: { id },
+        data: { updatedAt: new Date() },
+      }),
+    ]);
 
-    return NextResponse.json(mapMensagem(mensagem), {
+    return NextResponse.json(mapMensagem(novaMensagem), {
       status: 201,
     });
   } catch (error) {

@@ -25,3 +25,24 @@ export type PayloadCriacaoMensagem = {
   usuarioId: string;
   mensagem: string;
 };
+
+export type ConversaItem = {
+  id: string; // solicitacaoId
+  titulo: string;
+  status: import("./solicitacao").SolicitacaoServicoStatus;
+  createdAt: string;
+  updatedAt: string;
+  interlocutor: {
+    id: string;
+    nome: string;
+    role: "CLIENT" | "PROFESSIONAL";
+    email?: string;
+  };
+  ultimaMensagem?: {
+    id: string;
+    mensagem: string;
+    createdAt: string;
+    autorNome?: string;
+  } | null;
+  totalMensagens: number;
+};
