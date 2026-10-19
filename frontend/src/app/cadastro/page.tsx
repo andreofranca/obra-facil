@@ -12,7 +12,7 @@ import { EmailInput } from "@/components/form/EmailInput";
 import { PhoneInput } from "@/components/form/PhoneInput";
 import { PasswordInput } from "@/components/form/PasswordInput";
 import type { AuthErrorResponse, AuthResponse } from "@/types/auth";
-import { ArrowRight, User, Mail, Phone, Lock } from "lucide-react";
+import { ArrowRight, User, Mail, Phone, Lock, Briefcase, UserCheck } from "lucide-react";
 import { LIMITS } from "@/lib/constants/limits";
 import { isValidPhone } from "@/lib/validation/phone";
 import { isValidPassword } from "@/lib/validation/password";
@@ -126,6 +126,23 @@ export default function CadastroPage() {
 
         <div className="flex-1 flex items-center justify-center p-6 md:p-12 lg:p-24 relative -mt-8 lg:mt-0 z-10">
           <Card className="w-full max-w-md p-8 md:p-10 bg-neutral-surface shadow-elevated border-none lg:shadow-none lg:border lg:border-neutral-border lg:bg-transparent rounded-3xl lg:rounded-none">
+            {/* Seletor de Tipo de Cadastro */}
+            <div className="flex rounded-xl bg-slate-800/20 p-1 mb-8 border border-neutral-border">
+              <div
+                className="flex-1 py-2 text-center text-sm font-semibold text-brand-primary bg-neutral-white shadow-sm rounded-lg flex items-center justify-center gap-2"
+              >
+                <UserCheck size={16} />
+                Quero Contratar
+              </div>
+              <Link
+                href="/cadastro/profissional"
+                className="flex-1 py-2 text-center text-sm font-medium text-neutral-muted hover:text-neutral-text transition-colors rounded-lg flex items-center justify-center gap-2"
+              >
+                <Briefcase size={16} />
+                Sou Profissional
+              </Link>
+            </div>
+
             <div className="mb-8 text-center lg:text-left">
               <h1 className="text-3xl font-extrabold text-neutral-text mb-2 tracking-tight">
                 Criar sua conta

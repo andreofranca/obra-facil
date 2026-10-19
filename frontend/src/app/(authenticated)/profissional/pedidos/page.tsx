@@ -1,5 +1,5 @@
 import ProfissionalPedidosClient from '@/components/profissional/ProfissionalPedidosClient';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { getAuthSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
@@ -10,10 +10,9 @@ export const metadata = {
 
 export default async function ProfissionalPedidosPage() {
   const session = await getAuthSession();
-  const prisma = new PrismaClient();
 
   if (!session?.userId) {
-    redirect('/auth/login');
+    redirect('/login');
   }
 
   const profissional = await prisma.profissional.findUnique({

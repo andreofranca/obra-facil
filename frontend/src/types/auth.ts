@@ -21,6 +21,19 @@ export type RegisterPayload = {
   password: string;
 };
 
+export type RegisterProfissionalPayload = {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  categoriaId: string;
+  descricao: string;
+  experiencia?: number;
+  cidade?: string;
+  estado?: string;
+  whatsapp?: string;
+};
+
 export type AuthResponse = {
   user: AuthSession;
 };

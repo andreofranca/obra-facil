@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import { ChatContainer } from "@/components/chat";
 import { ProposalsSection } from "@/components/proposals";
 import IniciarServicoButton from "@/components/solicitacao/IniciarServicoButton";
@@ -8,8 +8,6 @@ import { ReviewCard } from "@/components/reviews";
 import { getAuthSession } from "@/lib/auth";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
-
-const prisma = new PrismaClient();
 
 const statusLabels: Record<SolicitacaoServicoStatus, string> = {
   ABERTA: "Aberta",

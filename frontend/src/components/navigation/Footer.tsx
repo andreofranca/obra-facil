@@ -8,6 +8,7 @@ const footerGroups = [
     links: [
       { href: "/", label: "Início" },
       { href: "/profissionais", label: "Profissionais" },
+      { href: "/cadastro/profissional", label: "Seja um Profissional" },
       { href: "/#como-funciona", label: "Como funciona" },
     ],
   },

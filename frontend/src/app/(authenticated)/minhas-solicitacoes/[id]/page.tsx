@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 import { ChatContainer } from "@/components/chat";
 import { getAuthSession } from "@/lib/auth";
 import { OrderTimeline, OrderStatusBadge } from "@/components/pedidos";
@@ -10,8 +10,6 @@ import { ProposalsSection } from "@/components/proposals";
 import { ReviewForm, ReviewCard } from "@/components/reviews";
 import type { HistoricoChat, MensagemChat } from "@/types/chat";
 import type { SolicitacaoServicoStatus } from "@/types/solicitacao";
-
-const prisma = new PrismaClient();
 
 function mapMensagem(mensagem: {
   id: string;
