@@ -120,27 +120,42 @@ export default function ApplicationShell({ children, user }: ApplicationShellPro
         {/* RIGHT: USER CONTEXT */}
         <div className="flex items-center gap-3 sm:gap-6">
           <div className="hidden sm:flex items-center gap-4">
-            <button className="text-slate-400 hover:text-white transition-colors relative">
+            <button 
+              type="button"
+              className="text-slate-400 hover:text-white transition-colors relative cursor-pointer"
+              title="Notificações do sistema"
+              aria-label="Notificações do sistema"
+            >
               <Bell className="w-5 h-5" />
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-brand-primary rounded-full"></span>
             </button>
-            <button className="text-slate-400 hover:text-white transition-colors">
+            <Link 
+              href="/configuracoes" 
+              className="text-slate-400 hover:text-white transition-colors p-1"
+              title="Configurações"
+            >
               <Settings className="w-5 h-5" />
-            </button>
+            </Link>
           </div>
           
           <div className="flex items-center gap-3 pl-3 sm:pl-6 border-l border-slate-800">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-white leading-none">{greetingName}</p>
-              <p className="text-xs text-brand-primary font-medium mt-1">{roleName}</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-700 overflow-hidden flex items-center justify-center">
-              <User className="w-5 h-5 text-slate-400" />
-            </div>
+            <Link 
+              href="/perfil" 
+              className="flex items-center gap-3 group cursor-pointer"
+              title="Acessar Meu Perfil"
+            >
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-bold text-white leading-none group-hover:text-brand-primary transition-colors">{greetingName}</p>
+                <p className="text-xs text-brand-primary font-medium mt-1">{roleName}</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-700 group-hover:border-brand-primary overflow-hidden flex items-center justify-center transition-colors">
+                <User className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
+              </div>
+            </Link>
             <button 
               onClick={handleLogout}
-              className="p-2 text-slate-400 hover:text-red-400 transition-colors ml-1"
-              title="Sair"
+              className="p-2 text-slate-400 hover:text-red-400 transition-colors ml-1 cursor-pointer"
+              title="Sair da Conta"
             >
               <LogOut className="w-5 h-5" />
             </button>

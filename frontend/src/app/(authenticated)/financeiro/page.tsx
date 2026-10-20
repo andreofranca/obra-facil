@@ -1,79 +1,208 @@
-"use client";
-import React from 'react';
-import { DollarSign, Search, Filter, Plus, ChevronRight, MoreVertical } from 'lucide-react';
+import React from "react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getAuthSession } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { DollarSign, CheckCircle, Clock, ChevronRight, Info } from "lucide-react";
 
-export default function FinanceiroPage() {
+export const metadata = {
+  title: "Financeiro & Propostas | ObraFácil",
+  description: "Visão contábil e de valores de serviços contratados.",
+};
+
+export default async function FinanceiroPage() {
+  const session = await getAuthSession();
+
+  if (!session || !session.userId) {
+    redirect("/login");
+  }
+
+  const isPro = session.role === "PROFESSIONAL";
+
+  // Busca propostas reais
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let propostas: any[] = [];
+  let totalAcordado = 0;
+  let totalEmNegociacao = 0;
+
+  if (isPro && session.profissionalId) {
+    propostas = await prisma.proposta.findMany({
+      where: { profissionalId: session.profissionalId },
+      include: {
+        solicitacao: {
+          select: {
+            id: true,
+            titulo: true,
+            status: true,
+            cliente: { include: { user: { select: { name: true } } } },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  } else if (!isPro && session.clienteId) {
+    propostas = await prisma.proposta.findMany({
+      where: {
+        solicitacao: { clienteId: session.clienteId },
+      },
+      include: {
+        solicitacao: { select: { id: true, titulo: true, status: true } },
+        profissional: { include: { user: { select: { name: true } } } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  propostas.forEach((p) => {
+    const valor = Number(p.valor) || 0;
+    if (p.status === "ACEITA") {
+      totalAcordado += valor;
+    } else if (p.status === "PENDENTE") {
+      totalEmNegociacao += valor;
+    }
+  });
+
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(val);
+  };
+
   return (
-    <div className="flex-1 w-full text-slate-200 font-sans pb-24 overflow-x-hidden pt-10">
-      <main className="px-6 space-y-8 w-full max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <div className="p-2 bg-green-500/20 rounded-xl text-green-400">
-                <DollarSign size={28} />
-              </div>
-              Financeiro
-            </h1>
-            <p className="text-slate-400 mt-2">Gerencie e acompanhe suas atividades em tempo real.</p>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Buscar..." 
-                className="pl-10 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
-              />
+    <div className="flex-1 w-full text-slate-200 font-sans pb-24 overflow-x-hidden pt-8">
+      <main className="px-4 sm:px-6 space-y-8 w-full max-w-5xl mx-auto">
+        {/* Header Financeiro */}
+        <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 sm:p-8 shadow-xl">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400">
+              <DollarSign className="w-8 h-8" />
             </div>
-            <button className="p-2 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white hover:border-slate-700 transition-all">
-              <Filter size={18} />
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition-colors font-medium text-sm">
-              <Plus size={18} />
-              Novo Registro
-            </button>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                Painel Financeiro & Contratos
+              </h1>
+              <p className="text-sm text-slate-400 mt-1">
+                Acompanhe propostas aceitas, valores em negociação e histórico contratual.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Content Area */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-white">Registros Recentes</h2>
+        {/* Diagnóstico Contábil EOS */}
+        <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-2xl flex items-start gap-3 text-xs text-slate-400">
+          <Info className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
+          <p>
+            <strong>Governança Contábil EOS:</strong> Os valores informados refletem valores acordados em propostas aceitas e valores em negociação. Conforme a diretriz de integridade EOS-2026-049, valores de propostas aceitas não são declarados como &quot;pagamento liquidado&quot; até a confirmação de repasse financeiro do gateway bancário.
+          </p>
+        </div>
+
+        {/* Resumo Financeiro Real */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                {isPro ? "Valor Acordado em Custódia (Escrow)" : "Total Contratado em Serviços"}
+              </span>
+              <CheckCircle className="w-4 h-4 text-emerald-400" />
+            </div>
+            <p className="text-3xl font-extrabold text-white mt-2">
+              {formatCurrency(totalAcordado)}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">
+              Referente a propostas aceitas pelo cliente
+            </p>
           </div>
-          
-          <div className="divide-y divide-slate-800/50">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="p-6 hover:bg-slate-800/20 transition-colors flex items-center justify-between group cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-green-400 group-hover:bg-green-500/10 transition-colors">
-                    <DollarSign size={20} />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-medium">Registro de Atividade #{1000 + i}</h3>
-                    <p className="text-sm text-slate-500 mt-1">Atualizado hoje às 14:{30 + i}</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                    Concluído
-                  </span>
-                  <button className="p-2 text-slate-500 hover:text-white transition-colors">
-                    <MoreVertical size={20} />
-                  </button>
-                </div>
+
+          <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                {isPro ? "Valor em Negociação (Propostas Enviadas)" : "Propostas em Análise"}
+              </span>
+              <Clock className="w-4 h-4 text-amber-400" />
+            </div>
+            <p className="text-3xl font-extrabold text-white mt-2">
+              {formatCurrency(totalEmNegociacao)}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">
+              Aguardando confirmação ou aprovação
+            </p>
+          </div>
+        </div>
+
+        {/* Lista de Registros Contratuais Reais */}
+        <div className="bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-3xl overflow-hidden shadow-xl">
+          <div className="p-6 border-b border-slate-700/50 flex justify-between items-center">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-emerald-400" />
+              Histórico de Propostas e Valores ({propostas.length})
+            </h2>
+          </div>
+
+          {propostas.length === 0 ? (
+            <div className="p-12 text-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-slate-800 border border-slate-700 mx-auto flex items-center justify-center text-slate-500">
+                <DollarSign className="w-6 h-6" />
               </div>
-            ))}
-          </div>
-          
-          <div className="p-4 border-t border-slate-800 flex justify-center">
-            <button className="text-sm font-medium text-green-400 hover:text-green-300 flex items-center gap-1 transition-colors">
-              Carregar mais resultados
-              <ChevronRight size={16} />
-            </button>
-          </div>
+              <p className="text-base font-semibold text-white">Nenhum registro financeiro encontrado</p>
+              <p className="text-sm text-slate-400 max-w-md mx-auto">
+                {isPro
+                  ? "Envie propostas para os pedidos de serviços disponíveis para acompanhar suas oportunidades financeiras aqui."
+                  : "Suas solicitações de serviço com propostas recebidas serão consolidadas nesta área."}
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-800">
+              {propostas.map((prop) => {
+                const statusColor =
+                  prop.status === "ACEITA"
+                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                    : prop.status === "PENDENTE"
+                    ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                    : "bg-slate-800 text-slate-400 border-slate-700";
+
+                const interlocutor = isPro
+                  ? prop.solicitacao?.cliente?.user?.name || "Cliente"
+                  : prop.profissional?.user?.name || "Profissional";
+
+                return (
+                  <div key={prop.id} className="p-6 hover:bg-slate-800/20 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-3">
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusColor}`}>
+                          {prop.status}
+                        </span>
+                        <span className="text-xs text-slate-500">
+                          Enviada em {new Date(prop.createdAt).toLocaleDateString("pt-BR")}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-bold text-white">
+                        {prop.solicitacao?.titulo || "Solicitação de Serviço"}
+                      </h3>
+                      <p className="text-xs text-slate-400">
+                        {isPro ? `Contratante: ${interlocutor}` : `Profissional: ${interlocutor}`} • Prazo proposto: {prop.prazoDias} dias
+                      </p>
+                    </div>
+
+                    <div className="text-right flex sm:flex-col justify-between sm:justify-center items-center sm:items-end">
+                      <span className="text-base font-extrabold text-white">
+                        {formatCurrency(Number(prop.valor))}
+                      </span>
+                      {prop.solicitacao?.id && (
+                        <Link
+                          href={isPro ? `/profissional/pedidos/${prop.solicitacao.id}` : `/minhas-solicitacoes/${prop.solicitacao.id}`}
+                          className="text-xs text-brand-primary hover:underline flex items-center gap-1 mt-1"
+                        >
+                          Acessar Pedido
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </main>
     </div>
