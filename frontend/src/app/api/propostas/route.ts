@@ -253,7 +253,7 @@ export async function POST(request: NextRequest) {
       return apiError("Solicitação não encontrada", 404);
     }
 
-    if (solicitacao.profissionalId !== session.profissionalId) {
+    if (solicitacao.profissionalId && solicitacao.profissionalId !== session.profissionalId) {
       return apiError("Solicitação não vinculada a este profissional", 403);
     }
 

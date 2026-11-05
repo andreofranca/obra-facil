@@ -108,7 +108,7 @@ export default async function ProfissionalPedidoPage({
 
   if (
     !solicitacao ||
-    solicitacao.profissionalId !== session.profissionalId
+    (solicitacao.profissionalId && solicitacao.profissionalId !== session.profissionalId)
   ) {
     notFound();
   }

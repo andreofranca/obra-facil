@@ -166,7 +166,7 @@ describe("API: /api/auth/change-password", () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: "user-1",
       password: "hashed:CorrectOldPassword123!",
-    } as unknown as { id: string; password: string });
+    } as unknown as import("@prisma/client").User);
 
     const req = new NextRequest("http://localhost:3000/api/auth/change-password", {
       method: "POST",
@@ -197,8 +197,8 @@ describe("API: /api/auth/change-password", () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: "user-1",
       password: "hashed:CorrectOldPassword123!",
-    } as unknown as { id: string; password: string });
-    vi.mocked(prisma.user.update).mockResolvedValue({ id: "user-1" } as unknown as { id: string });
+    } as unknown as import("@prisma/client").User);
+    vi.mocked(prisma.user.update).mockResolvedValue({ id: "user-1" } as unknown as import("@prisma/client").User);
 
     const req = new NextRequest("http://localhost:3000/api/auth/change-password", {
       method: "POST",

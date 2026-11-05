@@ -1,66 +1,56 @@
-# SESSION CHECKPOINT — EOS-CHECKPOINT-049
+# SESSION CHECKPOINT — EOS-CHECKPOINT-051
 
 **Projeto:** ObraFácil  
-**Data do Checkpoint:** 19/10/2026  
-**Responsável:** Agente Executor  
-**Supervisão:** Arquiteto / Tech Lead  
-**Último Commit Consolidado Conhecido:** `df10ab622604a33e3133ecc428d0b58dffc1bf89` (`df10ab6` — `feat(auth): implementa onboarding de profissionais e saneia rotas de pedidos`)  
-**Branch Ativa:** `main` (em sincronia com `origin/main`)  
-**Missão Atual:** EOS-2026-049 — Perfil Real, Configurações e Governança do Application Shell  
-**Estado:** Implementação concluída, suite de testes ampliada (141 testes verdes), build de produção validado (35 rotas).
+**Data do Checkpoint:** 05/11/2026  
+**Responsável:** Agente de Engenharia  
+**Supervisão:** PMO / Arquiteto de Software / Tech Lead  
+**Último Commit de Referência no Remote:** `d11ff124d9e030a2eb75b0fb6097585b46e8c751` (`d11ff12` — `feat(perfil): implementa perfil real, configuracoes e saneamento do application shell`)  
+**Branch Ativa:** `main`  
+**Missão Atual:** EOS-2026-051 — Recuperação do Projeto, Checkpoint Git e Preparação para Homologação  
+**Estado:** Recuperação do projeto concluída, alterações saneadas e auditadas, Quality Gates locais validados (141 testes Vitest, 0 erros ESLint, 0 erros TypeScript, build Next.js com 35 rotas geradas), banco de dados preparado e aplicação pronta para testes manuais.
 
 ---
 
 ## 1. Status de Governança e Git
 
-* **Commit HEAD de Referência:** `df10ab6` (CI Run `39343637195` aprovada com sucesso).
-* **Arquivos Modificados Rastreados:**
-  1. `frontend/src/app/(authenticated)/perfil/page.tsx` (Migração para Server Component com busca de dados reais de User, Cliente e Profissional).
-  2. `frontend/src/app/(authenticated)/configuracoes/page.tsx` (Migração para Server Component autenticado conectado às ações de segurança).
-  3. `frontend/src/app/(authenticated)/agenda/page.tsx` (Substituição de dados fictícios por compromissos reais de solicitações acordadas).
-  4. `frontend/src/app/(authenticated)/financeiro/page.tsx` (Substituição de dados fictícios por propostas e valores acordados em escrow vs. negociação).
-  5. `frontend/src/components/layout/ApplicationShell.tsx` (Conexão do botão de configurações para `/configuracoes` e avatar do usuário para `/perfil`).
-  6. `SESSION_CHECKPOINT.md` (Atualização formal do estado de continuidade EOS).
-* **Arquivos Novos Criados:**
-  1. `frontend/src/app/api/perfil/route.ts` (Endpoint GET e PATCH com validação estrita no servidor e transação atômica).
-  2. `frontend/src/app/api/perfil/route.test.ts` (10 testes unitários e de segurança para perfil de CLIENT e PROFESSIONAL).
-  3. `frontend/src/app/(authenticated)/perfil/PerfilClient.tsx` (Componente de perfil real com edição de dados autorizados e feedback visual).
-  4. `frontend/src/app/(authenticated)/perfil/Perfil.test.tsx` (4 testes de interface do perfil).
-  5. `frontend/src/app/api/auth/change-password/route.ts` (Endpoint POST com validação de senha atual via BCrypt e requisitos de segurança).
-  6. `frontend/src/app/api/auth/change-password/route.test.ts` (7 testes de autorização e validação de troca de senha).
-  7. `frontend/src/app/(authenticated)/configuracoes/ConfiguracoesClient.tsx` (Interface de segurança com troca de senha e encerramento de sessão).
-  8. `frontend/src/app/(authenticated)/configuracoes/Configuracoes.test.tsx` (5 testes de interface e comportamento).
-* **Arquivos de Diagnóstico Preservados na Raiz:**
+* **Branch:** `main` (em sincronia inicial com `origin/main` no commit `d11ff12`).
+* **Arquivos Modificados Rastreados para o Checkpoint:**
+  1. `frontend/src/app/api/propostas/route.ts` (Saneamento do fluxo de propostas: autoriza envio de propostas a solicitações abertas onde `profissionalId === null`, mantendo bloqueio 403 estrito apenas quando a solicitação é direcionada exclusivamente a outro profissional).
+  2. `frontend/src/app/(authenticated)/profissional/pedidos/[id]/page.tsx` (Adequação da visualização detalhada de pedidos para que profissionais visualizem solicitações abertas disponíveis no marketplace).
+  3. `frontend/src/app/api/auth/change-password/route.test.ts` (Ajuste estrito de tipagem em mocks do Prisma User eliminando uso de `any` e em total conformidade com ESLint/TypeScript).
+  4. `frontend/src/app/api/auth/register-profissional/route.test.ts` (Ajuste estrito de tipagem em mocks do Prisma User eliminando uso de `any` e em total conformidade com ESLint/TypeScript).
+  5. `SESSION_CHECKPOINT.md` (Registro oficial do estado de governança e checkpoint EOS-2026-051).
+* **Novos Arquivos de Engenharia Criados:**
+  1. `frontend/scripts/homologacao-operacional.ts` (Suite de homologação operacional autônoma ponta a ponta cobrindo os 15 estágios do marketplace contra PostgreSQL real com limpeza higiênica).
+* **Arquivos de Diagnóstico Pré-Existentes Preservados Intocados na Raiz:**
   * `ann2.json`, `annotations.json`, `artifacts.json`, `artifacts2.json`, `check_runs.json`, `checks.json`, `checks2.json`, `job_log.txt`, `job_logs.txt`, `jobs.json`, `jobs2.json`, `jobs_real.json`, `runs.json`.
 
 ---
 
-## 2. Decisões Arquiteturais Tomadas na Missão EOS-2026-049
+## 2. Decisões Arquiteturais e Auditoria das Alterações
 
-1. **Determinação de Identidade Estritamente Server-Side (Zero Trust nos IDs do Navegador):**
-   * Tanto `/api/perfil` quanto `/api/auth/change-password` utilizam exclusivamente o `userId` contido no cookie assinado `obra_facil_session`. Nenhum identificador enviado no corpo das requisições é aceito para alterar registros de terceiros.
-2. **Diferenciação Estrita de Papéis na Edição de Perfil:**
-   * O cliente (`CLIENT`) só tem permissão de alterar `name` e `phone`. Qualquer tentativa de envio de campos de profissional é desconsiderada.
-   * O profissional (`PROFESSIONAL`) tem permissão de atualizar `name`, `phone`, `descricao`, `experiencia`, `whatsapp`, `cidade`, `estado` e `fotoPerfil`.
-3. **Transparência sobre Armazenamento de Imagens:**
-   * Como o projeto não possui infraestrutura de storage em nuvem (S3/GCS/Blob) configurada, não foram simulados uploads falsos. O sistema permite URLs diretas de imagem e renderiza avatares gerados automaticamente a partir das iniciais do usuário.
-4. **Governança Contábil em Agenda e Financeiro:**
-   * As telas `/agenda` e `/financeiro` foram higienizadas: todos os templates genéricos ("Registro de Atividade #100X") foram removidos.
-   * Em Agenda, exibem-se apenas solicitações contratadas/em andamento reais.
-   * Em Financeiro, distingue-se explicitamente "Valor Acordado em Custódia" (propostas aceitas) de "Valor em Negociação", alertando que a liquidação financeira efetiva depende de repasse bancário.
+1. **Desbloqueio de Solicitações Abertas no Marketplace:**
+   * Constatou-se que `frontend/src/app/api/propostas/route.ts` e a tela `/profissional/pedidos/[id]` exigiam que `solicitacao.profissionalId === session.profissionalId`. Isso impedia que novos profissionais enviassem propostas para oportunidades públicas do marketplace (`profissionalId === null`).
+   * A regra foi ajustada para autorizar o envio quando a solicitação for aberta (`profissionalId === null`) ou quando for direcionada expressamente àquele profissional, preservando o bloqueio de solicitações direcionadas a terceiros.
+2. **Homologação Operacional Autônoma com PostgreSQL Real:**
+   * Validado o ciclo completo com 15 testes operacionais cobrindo cadastro, autenticação, publicação, envio de propostas, chat com integridade relacional, aceite em custódia (escrow), ciclo de vida do pedido (início, finalização e confirmação), avaliação com nota/comentário e proteção contra falhas e acessos indevidos (IDOR e transições ilegais).
+3. **Qualidade de Código e Conformidade Estrita com Linters:**
+   * Garantida conformidade total de tipos no TypeScript (`npx tsc --noEmit` com 0 erros) e no ESLint (`0 erros`), tipando os mocks com `import("@prisma/client").User` sem concessão a `any`.
 
 ---
 
-## 3. Evidências de Qualidade Registradas
+## 3. Evidências dos Quality Gates Locais
 
-* **Testes Automatizados:** **141 testes aprovados** em **25 arquivos** (100% green na suite Vitest; 26 novos testes adicionados nesta missão).
-* **Análise Estática (ESLint):** **0 erros**. 1 aviso residual inofensivo no arquivo de cobertura gerado (`coverage/block-navigation.js`).
-* **Compilação de Produção (Next.js Turbopack):** Compilação TypeScript e Turbopack concluídas com código 0 (**35 rotas** estáticas e dinâmicas geradas com sucesso).
+* **Homologação Operacional E2E:** **15 de 15 testes aprovados** (0 falhas).
+* **Testes Automatizados (Vitest):** **141 testes aprovados** em **25 arquivos** (100% green).
+* **Análise Estática (ESLint):** **0 erros** (1 aviso inofensivo no arquivo de cobertura `coverage/block-navigation.js`).
+* **Checagem de Tipos (TypeScript):** **0 erros** (`npx tsc --noEmit` concluído com código 0).
+* **Compilação de Produção (Next.js Turbopack):** Compilação bem-sucedida, **35 rotas** geradas.
 
 ---
 
-## 4. Próximos Passos Recomendados
+## 4. Próximos Passos Imediatos
 
-* `EOS-2026-050`: Homologação Operacional do Ciclo Completo (Validação no navegador com criação concorrente de cliente e profissional, publicação de serviço, proposta, aceite, chat e avaliação).
-* `EOS-2026-051`: Infraestrutura de Upload de Imagens e Storage (S3/Cloud).
-* `EOS-2026-052`: Hardening de Produção, E2E e Preparação de Deploy.
+1. Homologação manual pelo responsável pelo projeto conforme roteiro da missão EOS-2026-051.
+2. Provisionamento de infraestrutura em nuvem (Database em nuvem e Storage S3/Cloudflare R2 para avatares e imagens).
+3. Integração com gateway de pagamentos real.

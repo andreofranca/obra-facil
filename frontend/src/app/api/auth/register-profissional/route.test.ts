@@ -160,7 +160,7 @@ describe("API: /api/auth/register-profissional (POST)", () => {
   it("3. deve rejeitar e-mail duplicado com status HTTP 409", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: "existing-user-id",
-    } as unknown as { id: string });
+    } as unknown as import("@prisma/client").User);
 
     const request = new NextRequest("http://localhost:3000/api/auth/register-profissional", {
       method: "POST",
